@@ -31,8 +31,8 @@
   },
   "dependencies": {},
   "combo": {
-    "lib.gesture": "1.0.0",
-    "lib.animation": "1.0.0"
+    "lib.motion": "1.0.0",
+    "lib.gesture": "1.0.0"
   },
   "keywords": [
     "lib",
