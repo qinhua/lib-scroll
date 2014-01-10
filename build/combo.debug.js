@@ -1,2 +1,2 @@
-document.write('<scr' + 'ipt id="combo_url_1389075569305" type="text/javascript" src="http://g.tbcdn.cn/mtb/??lib-motion/1.0.0/motion.debug.js,lib-gesture/1.0.0/gesture.debug.js"></scr' + 'ipt>')
+document.write('<scr' + 'ipt id="combo_url_1389323342833" type="text/javascript" src="http://g.tbcdn.cn/mtb/??lib-gesture/1.0.0/gesture.debug.js,lib-motion/1.0.0/motion.debug.js"></scr' + 'ipt>')
 document.write('<scr' + 'ipt id="combo_url_main" type="text/javascript" src="build/scroll.debug.js"></scr' + 'ipt>')

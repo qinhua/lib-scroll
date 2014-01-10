@@ -23,7 +23,7 @@ function getBoundaryOffset(scrollObj, y) {
     if(y > scrollObj.minScrollTop) {
         return y - scrollObj.minScrollTop;
     } else if (y < scrollObj.maxScrollTop){
-        return scrollObj.maxScrollTop - y;
+        return y - scrollObj.maxScrollTop;
     }
 }
 
@@ -101,8 +101,7 @@ function Scroll(element, options){
         }
 
         var s0 = getTransformOffset(that).y;
-        var bounceOffset = getBoundaryOffset(that, s0);
-        if(element.style.webkitAnimation === '' && bounceOffset) {
+        if(element.style.webkitAnimation === '' && getBoundaryOffset(that, s0)) {
             var s1 = touchBoundary(that, s0);
             if (!styleEl.parentNode) {
                 document.getElementsByTagName('head')[0].appendChild(styleEl);
@@ -138,7 +137,7 @@ function Scroll(element, options){
         }
 
         var y = that.transformOffset.y + e.displacementY;
-        console.log(y, that.minScrollTop, that.maxScrollTop);
+
         if(y > that.minScrollTop) {
             y = that.minScrollTop + (y - that.minScrollTop) / that.panFixRatio;
             that.panFixRatio *= 1.003;
@@ -179,7 +178,8 @@ function Scroll(element, options){
     
         var v0, a0, t0, s0;
         var v1, a1, t1, s1, sign;
-        var v2, a2, t2, s2, ft;
+        var v2, a2, t2, s2;
+        var s3, ft;
         s0 = getTransformOffset(that).y;
 
         var bounceOffset0 = getBoundaryOffset(that, s0);
@@ -204,52 +204,61 @@ function Scroll(element, options){
                 v1 = v0;
                 a1 = a0;
                 if(bounceOffset1 > 0) {
-                    s1 = that.minScrollTop;
+                    s2 = that.minScrollTop;
                     sign = 1;
                 } else {
-                    s1 = that.maxScrollTop;
+                    s2 = that.maxScrollTop;
                     sign = -1;
                 }
-                t1 = (sign * v1 - Math.sqrt(-2 * a1 * Math.abs(s1 - s0) + v1 * v1)) / a1;
+                t1 = (sign * v1 - Math.sqrt(-2 * a1 * Math.abs(s2 - s0) + v1 * v1)) / a1;
 
                 v2 = v1 - a1 * t1;
                 a2 = 0.008 * (v2 / Math.abs(v2));
                 t2 = v2 / a2;
-                s2 = s1 + v2 * t2 / 2;
-                ft = t1 + t2 + 400;
 
-                function quadratic2cubicBezier(a, b) {
-                    return [[(a / 3 + (a + b) / 3 - a) / (b - a), (a * a / 3 + a * b * 2 / 3 - a * a) / (b * b - a * a)],
-                        [(b / 3 + (a + b) / 3 - a) / (b - a), (b * b / 3 + a * b * 2 / 3 - a * a) / (b * b - a * a)]];
-                }            
+                s3 = s2 + v2 * t2 / 2;
+                ft = t1 + t2 + 400;
 
                 if (!styleEl.parentNode) {
                     document.getElementsByTagName('head')[0].appendChild(styleEl);
                 }
                 var className = 'bounce-' + that.viewport.scrollId + '-' + Date.now();
-            
+                var timeFunction1 = motion({
+                    v: v1,
+                    a: a1,
+                    t: t1
+                }).generateCubicBezier();
+                var timeFunction2 = motion({
+                    v: v2,
+                    a: a2,
+                    t: t2
+                }).generateCubicBezier();
+                
                 styleEl.innerHTML = '@-webkit-keyframes ' + className + ' {' + 
-                    '0% {-webkit-transform:translateY(' + s0 +'px)}' + 
+                    '0% {-webkit-transform:translateY(' + s0.toFixed(0) +'px)}' + 
                     //第1段：摩擦力作用下惯性运动
-                    (t1 / ft * 100).toFixed(1) + '% {-webkit-transform:translateY(' + s1.toFixed(0) + 'px);animation-timing-function:cubic-bezier(' + quadratic2cubicBezier(-t1-v1/a0/2, -t2-v1/a0/2) + ')}' + 
+                    (t1 / ft * 100).toFixed(1) + '% {-webkit-transform:translateY(' + s2.toFixed(0) + 'px);animation-timing-function:cubic-bezier(' + timeFunction1 + ')}' +    //quadratic2cubicBezier(-t1-v1/a1/2, -t2-v1/a1/2) 
                     //第2段：弹力作用下继续惯性运动
-                    ((t1 + t2) / ft * 100).toFixed(1) + '% {-webkit-transform:translateY(' + s2.toFixed(0) + 'px);animation-timing-function:cubic-bezier(' + quadratic2cubicBezier(-t2-v2/a2/2, 0) + ')}' + 
+                    ((t1 + t2) / ft * 100).toFixed(1) + '% {-webkit-transform:translateY(' + s3.toFixed(0) + 'px);animation-timing-function:cubic-bezier(' + timeFunction2 + ')}' + //quadratic2cubicBezier(-t2-v2/a2/2, 0) 
                     //第3段：弹回边缘
-                    '100% { -webkit-transform:translateY(' + s1.toFixed(0) + 'px);animation-timing-function:ease}' + 
+                    '100% { -webkit-transform:translateY(' + s2.toFixed(0) + 'px);animation-timing-function:ease}' + 
                 '}';
 
                 element.style.webkitAnimation = className + ' ' + (ft / 1000).toFixed(2) + 's';
-                element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
+                element.style.webkitTransform = 'translateY(' + s2.toFixed(0) + 'px)';
                 element.addEventListener('webkitAnimationEnd', scrollEnd, false);
             } else {
                 if (!styleEl.parentNode) {
                     document.getElementsByTagName('head')[0].appendChild(styleEl);
                 }
                 var className = 'bounce-' + that.viewport.scrollId + '-' + Date.now();
+                var timeFunction = motion({
+                    t: t0
+                }).generateCubicBezier();
 
                 styleEl.innerHTML = '@-webkit-keyframes ' + className + ' {' + 
                     '0% {-webkit-transform:translateY(' + s0.toFixed(0) + 'px)}' + 
-                    '100% {-webkit-transform:translateY(' + s1.toFixed(0)+'px);animation-timing-function:cubic-bezier(' + quadratic2cubicBezier(-t0, 0) + ')}' + 
+                    '100% {-webkit-transform:translateY(' + s1.toFixed(0)+'px);animation-timing-function:cubic-bezier(' + timeFunction + ')}' + //quadratic2cubicBezier(-t0, 0)
                 '}';
 
                 element.style.webkitAnimation = className + ' ' + (t0 / 1000).toFixed(2) + 's';
@@ -269,9 +278,9 @@ function Scroll(element, options){
 
         setTimeout(function() {
             if (!that.cancelScrollEnd) {
-                element.style.webkitBackfaceVisibility = 'initial';
-                element.style.webkitTransformStyle = 'flat';
-                element.style.webkitTransition = '';
+                element.style.webkitBackfaceVisibility = '';
+                element.style.webkitTransformStyle = '';
+                element.style.webkitAnimation = '';
                 fireEvent(that, 'scrollend');
             }
         }, 10);
@@ -356,9 +365,9 @@ var proto = {
         return el.parentNode.getBoundingClientRect().height;
     },
 
-    getBoundaryOffset: function(el) {
-        var y = getTransformOffset(el).y;
-        return getBoundaryOffset(el, y);
+    getBoundaryOffset: function() {
+        var y = getTransformOffset(this).y;
+        return Math.abs(getBoundaryOffset(this, y));
     },
 
     stopBounce: function(el) {
