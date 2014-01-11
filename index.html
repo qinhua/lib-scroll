@@ -78,15 +78,21 @@ body > div {
 
 
         for (var i = 0; i < 50; i++) {
-            html1.push('<span style="height:25px;"><select onclick=""><option>' + i + '</option></select></span><br />');
+            html1.push('<span style="height:25px;">' + i + '</span><br />');
         }
 
         for (var i = 0; i < 20; i++) {
             html2.push('<div style="height:25px;"><input type="text" value="' + i + '" /></div>');
         }
         activeEl.innerHTML = '<section>' + html1.join('') + '</section>';
-        inactiveEl.innerHTML = '<section>' + html1.join('') + 
-            '<div style="border:1px solid red; margin:10px auto; width:60%; height:250px; overflow:hidden;"><section>' + html2.join('') + '</section></div></section>';
+        inactiveEl.innerHTML = '<section>' + 
+                '<div style="height:50px;text-align:center;line-height:50px;" id="boundaryTop">下拉刷新</div>' + 
+                html1.join('') + 
+                '<div style="border:1px solid red; margin:10px auto; width:60%; height:250px; overflow:hidden;">' + 
+                    '<section>' + html2.join('') + '</section>' + 
+                '</div>' + 
+                '<div style="height:50px;text-align:center;line-height:50px;" id="boundaryBottom">上拉加载更多</div>' + 
+            '</section>';
 
         var scrollEl1 = activeEl.querySelector('section');
         var scrollEl2 = inactiveEl.querySelector('section');
@@ -94,30 +100,57 @@ body > div {
 
         scrollEl1.style.backgroundColor = '#CCC';
         scrollEl2.style.backgroundColor = '#999';
-        scrollEl2.style.paddingBottom = '30px';
         scrollEl3.style.backgroundColor = '#333';
 
-        // activeEl.addEventListener('click', function(e) {
-        //     var target = e.target,
-        //         ev;
-
-        //     if ( !(/(SELECT|INPUT|TEXTAREA)/i).test(target.tagName) ) {
-        //         ev = document.createEvent('MouseEvents');
-        //         ev.initMouseEvent('click', true, true, e.view, 1,
-        //             target.screenX, target.screenY, target.clientX, target.clientY,
-        //             e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
-        //             0, null);
-
-        //         ev._constructed = true;
-        //         target.dispatchEvent(ev);
-        //     }
-        // }, false);
-
         window['scrollObj1'] = lib.scroll(scrollEl1);
-
-        window['scrollObj2'] = lib.scroll(scrollEl2);
-
+        window['scrollObj2'] = lib.scroll(scrollEl2, {bounceOffset:{top:50, bottom:50}});
         window['scrollObj3'] = lib.scroll(scrollEl3);
+
+        scrollEl2.addEventListener('scrollstart', function() {
+            console.log('scrollstart');
+        }, false);
+
+        scrollEl2.addEventListener('scrollend', function() {
+            console.log('scrollend');
+        }, false);
+
+        scrollEl2.addEventListener('pullup', function(e) {
+            console.log('pullup', e.boundaryOffset);
+            var boundaryBottom = scrollEl2.querySelector('#boundaryBottom');
+            if (e.boundaryOffset > 25 && boundaryBottom.innerHTML === '上拉加载更多') {
+                boundaryBottom.innerHTML = '松开即加载';
+            } else if (e.boundaryOffset <=25 && boundaryBottom.innerHTML === '松开即加载'){
+                boundaryBottom.innerHTML = '上拉加载更多'
+            }
+        }, false);
+
+        scrollEl2.addEventListener('pullupend', function() {
+            console.log('pullupend');
+            scrollObj2.disable();
+            setTimeout(function() {
+                scrollObj2.scrollTo(scrollObj2.getScrollHeight(), true);
+                scrollObj2.enable();
+            }, 2000);
+        }, false);
+
+        scrollEl2.addEventListener('pulldown', function(e) {
+            console.log('pulldown', e.boundaryOffset);
+            var boundaryTop = scrollEl2.querySelector('#boundaryTop');
+            if (e.boundaryOffset > 25 && boundaryTop.innerHTML === '下拉刷新') {
+                boundaryTop.innerHTML = '松开即刷新';
+            } else if (e.boundaryOffset <= 25 && boundaryTop.innerHTML === '松开即刷新'){
+                boundaryTop.innerHTML = '下拉刷新'
+            }
+        }, false);
+
+        scrollEl2.addEventListener('pulldownend', function() {
+            console.log('pulldownend');
+            scrollObj2.disable();
+            setTimeout(function() {
+                scrollObj2.scrollTo(0, true);
+                scrollObj2.enable();
+            }, 2000);
+        }, false);
     })();
 </script>
 

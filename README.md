@@ -2,7 +2,7 @@
 
 ## 最新版本
 
-**1.0.0**
+**1.1.0**
 
 ## 安装依赖
 
@@ -17,90 +17,69 @@
 	var scroll = lib.scroll(el, options);
 
 - el - 需要滚动的元素
-- 附近选项
-	- bonceOffset - {top:0, bottom:0} 上下的回弹区域高度
+- options - 选项
+	- bonceOffset - {top:0, bottom:0} 上下回弹区域的高度
 
 
-### Scroll.enable(el, options)
+### scroll.enable()
 
-* @param {HTMLElement} a element
-* @param {object} [options]
+启用滚动（Y轴）。
 
-启用HTML元素内的滚动（Y轴）。options参数的字段包括：
+### scroll.disable()
 
-	- bounceTop: 顶部回弹的高度
-	- bounceBottom: 底部回弹的高度
+停用滚动（Y轴）。
 
-### Scroll.disable(el)
+### scroll.getScrollHeight()
 
-* @param {HTMLElement} a element
-
-停用HTML元素内的滚动。
-
-### Scroll.getScrollHeight(el)
-
-* @param {HTMLElement} a element
-* @return {Number} height
+* @return {number} height
 
 获取HTML元素区域的滚动高度。
 
-### Scroll.getScrollTop(el)
+### scroll.getScrollTop()
 
-* @param {HTMLElement} a element
-* @return {Number} height
+* @return {number} top
 
-获取HTML元素区域的滚动位置。
+获取滚动位置。
 
-### Scroll.refresh(el)
+### scroll.refresh()
 
-* @param {HTMLElement} a element
+刷新区域。
 
-刷新HTML元素区域。
+### scroll.offset(childEl)
 
-### Scroll.offset(el, child)
-
-* @param {HTMLElement} a element
-* @param {HTMLElement} a child element
+* @param {HTMLElement} childEl 滚动区域内的元素
 * @return {object} a rectangle object
 
-返回HTML元素区域内某元素的矩阵数据，包括`top/bottom/width/height/left/right`。
+返回区域内某元素的矩阵数据，包括`top/bottom/width/height/left/right`。
 
-### Scroll.scrollTo(el, y)
+### scroll.scrollTo(y, isSmooth)
 
-* @param {HTMLElement} a element
-* @param {Number} y value
+* @param {Number} y 滚动到的位置
+* @param {Boolean} isSmooth 是否平滑滚动
 
-滚动到HTML元素区域中的某位置。
+滚动到区域中的某位置。
 
-### Scroll.scrollToElement(el, child)
+### scroll.scrollToElement(childEl, isSmooth)
 
-* @param {HTMLElement} a element
-* @param {HTMLElement} a child element
+* @param {HTMLElement} childEl 滚动到的元素
+* @param {Boolean} isSmooth 是否平滑滚动
 
-滚动到HTML元素区域中的某元素。
+滚动到区域中的某元素。
 
-### Scroll.getBoundaryOffset(el)
+### scroll.getViewHeight()
 
-* @param {HTMLElement} a element
-* @return {object} a offset object
-
-获取HTML元素区域回弹时的偏移值。
-
-### Scroll.getViewHeight(el)
-
-* @param {HTMLElement} a element
 * @return {Number} height
 
-获得HTML元素区域的可见高度。
+获得区域的可见高度。
 
-### Scroll.stopBounce(el)
+### 事件
 
-* @param {HTMLElement} a element
+在滚动的元素上，可以监听如下这些事件：
 
-出现回弹时，停止回弹。
-
-### Scroll.resumeBounce(el)
-
-* @param {HTMLElement} a element
-
-恢复回弹。
+- scrollstart - 滚动开始
+- scrollend - 滚动结束
+- pulldown - 下拉
+- pulldownend - 下拉结束
+- pullup -上拉
+- pullupend - 上拉结束
+- 
