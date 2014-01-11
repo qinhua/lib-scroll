@@ -14,6 +14,13 @@
 
 ## 如何使用
 
+	var scroll = lib.scroll(el, options);
+
+- el - 需要滚动的元素
+- 附近选项
+	- bonceOffset - {top:0, bottom:0} 上下的回弹区域高度
+
+
 ### Scroll.enable(el, options)
 
 * @param {HTMLElement} a element

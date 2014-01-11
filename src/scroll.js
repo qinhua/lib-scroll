@@ -1,9 +1,8 @@
 ;(function(win, lib, undef) {
 var doc = win.document;
 var docEl = doc.documentElement;
-var styleEl = doc.createElement('style');
+//var styleEl = doc.createElement('style');
 var motion = lib.motion;
-var panFixRatio = 2;
 var prevented = false;
 var scrollObjs = {};
 
@@ -40,9 +39,6 @@ function fireEvent(scrollObj, eventName, extra) {
     var event = doc.createEvent('HTMLEvents');
     event.initEvent(eventName, true, true);
     event.scrollObj = scrollObj;
-    for (var p in extra) {
-        event[p] = extra[p];
-    }
     scrollObj.element.dispatchEvent(event);
 }
 
@@ -60,6 +56,15 @@ function getTransformOffset(scrollObj) {
     }
 
     return offset;
+}
+
+var has3d = 'WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix();
+function getTranslate(x, y) {
+    if (has3d) {
+        return 'translate3d(' + x + 'px, ' + y + 'px, 0)';
+    } else {
+        return 'translate(' + x + 'px, ' + y + 'px)';
+    }
 }
 
 function Scroll(element, options){
@@ -83,7 +88,7 @@ function Scroll(element, options){
 
 
     function touchstartHandler(e) {
-        if (!that.enabled || !!that.isStopBounce) {
+        if (!that.enabled || !!that.isStopBounce || e.currentTarget != that.viewport) {
             return;
         }
 
@@ -91,29 +96,34 @@ function Scroll(element, options){
         element.style.webkitBackfaceVisibility = 'hidden';
         element.style.webkitTransformStyle = 'preserve-3d';
         element.style.webkitTransform = getComputedStyle(element).webkitTransform;
+        element.style.webkitTransition = '';
         element.style.webkitAnimation = '';
-        element.removeEventListener('webkitAnimationEnd', scrollEnd, false);
+        element.removeEventListener('webkitTransitionEnd', scrollEnd);
+        element.removeEventListener('webkitAnimationEnd', scrollEnd);
     }
 
+
+
     function touchendHandler(e) {
-        if (!that.enabled || !!that.isStopBounce) {
+        if (!that.enabled || !!that.isStopBounce || e.currentTarget != that.viewport) {
             return;
         }
 
         var s0 = getTransformOffset(that).y;
-        if(element.style.webkitAnimation === '' && getBoundaryOffset(that, s0)) {
+        if(element.style.webkitTransition === '' && element.style.webkitAnimation === '' && getBoundaryOffset(that, s0)) {
             var s1 = touchBoundary(that, s0);
-            if (!styleEl.parentNode) {
-                document.getElementsByTagName('head')[0].appendChild(styleEl);
-            }
-            var className = 'bounce-' + that.viewport.scrollId + '-' + Date.now();
-            styleEl.innerHTML = '@-webkit-keyframes ' + className + ' {' + 
-                    '0% {-webkit-transform:translateY(' + s0.toFixed(0) + 'px)}' + 
-                    '100% {-webkit-transform:translateY(' + s1.toFixed(0) + 'px);animation-timing-function:ease}' + 
-            '}';
-            element.style.webkitAnimation = className + ' 0.4s';
+            // if (!styleEl.parentNode) {
+            //     document.getElementsByTagName('head')[0].appendChild(styleEl);
+            // }
+            // var className = 'bounce-' + that.viewport.scrollId + '-' + Date.now();
+            // styleEl.innerHTML = '@-webkit-keyframes ' + className + ' {' + 
+            //         '0% {-webkit-transform:translateY(' + s0.toFixed(0) + 'px)}' + 
+            //         '100% {-webkit-transform:translateY(' + s1.toFixed(0) + 'px);animation-timing-function:ease}' + 
+            // '}';
+            // element.style.webkitAnimation = className + ' 0.4s';
+            element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
             element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
-            element.addEventListener('webkitAnimationEnd', scrollEnd, false);
+            element.addEventListener('webkitTransitionEnd', scrollEnd, false);
         }
     }
 
@@ -122,6 +132,7 @@ function Scroll(element, options){
             return;
         }
 
+        e.stopPropagation();
         that.transformOffset = getTransformOffset(that);
         that.minScrollTop = getMinScrollTop(that);
         that.maxScrollTop = getMaxScrollTop(that);
@@ -136,6 +147,7 @@ function Scroll(element, options){
             return;
         }
 
+        e.stopPropagation();
         var y = that.transformOffset.y + e.displacementY;
 
         if(y > that.minScrollTop) {
@@ -161,27 +173,29 @@ function Scroll(element, options){
         }
 
         element.style.webkitAnimation = '';
-        element.style.webkitTransform = 'translate3d(' + [that.transformOffset.x + 'px', y + 'px', 0] + ')';
+        element.style.webkitTransform = getTranslate(that.transformOffset.x, y);
     }
 
     function panendHandler(e) {
         if (!that.enabled || !!that.isStopBounce) {
             return;
         }
+
+        e.stopPropagation();
     }
 
     function flickHandler(e) {
         if (!that.enabled || !!that.isStopBounce) {
             return;
         }
+        e.stopPropagation();
         that.cancelScrollEnd = true;
     
-        var v0, a0, t0, s0;
+        var v0, a0, t0, s0, s;
         var v1, a1, t1, s1, sign;
-        var v2, a2, t2, s2;
-        var s3, ft;
+        var v2, a2, t2, s2, ft;
+        
         s0 = getTransformOffset(that).y;
-
         var bounceOffset0 = getBoundaryOffset(that, s0);
         if(!bounceOffset0) {
             //手指离开屏幕时，已经超出滚动范围
@@ -197,83 +211,101 @@ function Scroll(element, options){
             a0 = 0.0015 * ( v0 / Math.abs(v0));
             t0 = v0 / a0;
 
-            s1 = s0 + t0 * v0 / 2;
-            var bounceOffset1 = getBoundaryOffset(that, s1);
+            s = s0 + t0 * v0 / 2;
+            var bounceOffset1 = getBoundaryOffset(that, s);
             if (bounceOffset1) {
                 //惯性运动足够滑出屏幕边缘
                 v1 = v0;
                 a1 = a0;
                 if(bounceOffset1 > 0) {
-                    s2 = that.minScrollTop;
+                    s1 = that.minScrollTop;
                     sign = 1;
                 } else {
-                    s2 = that.maxScrollTop;
+                    s1 = that.maxScrollTop;
                     sign = -1;
                 }
-                t1 = (sign * v1 - Math.sqrt(-2 * a1 * Math.abs(s2 - s0) + v1 * v1)) / a1;
+                t1 = (sign * v1 - Math.sqrt(-2 * a1 * Math.abs(s1 - s0) + v1 * v1)) / a1;
 
                 v2 = v1 - a1 * t1;
                 a2 = 0.008 * (v2 / Math.abs(v2));
                 t2 = v2 / a2;
-
-                s3 = s2 + v2 * t2 / 2;
+                s2 = s1 + v2 * t2 / 2;
                 ft = t1 + t2 + 400;
 
-                if (!styleEl.parentNode) {
-                    document.getElementsByTagName('head')[0].appendChild(styleEl);
-                }
-                var className = 'bounce-' + that.viewport.scrollId + '-' + Date.now();
                 var timeFunction1 = motion({
                     v: v1,
-                    a: a1,
+                    a: -a1,
                     t: t1
                 }).generateCubicBezier();
                 var timeFunction2 = motion({
                     v: v2,
-                    a: a2,
+                    a: -a2,
                     t: t2
                 }).generateCubicBezier();
                 
-                styleEl.innerHTML = '@-webkit-keyframes ' + className + ' {' + 
-                    '0% {-webkit-transform:translateY(' + s0.toFixed(0) +'px)}' + 
-                    //第1段：摩擦力作用下惯性运动
-                    (t1 / ft * 100).toFixed(1) + '% {-webkit-transform:translateY(' + s2.toFixed(0) + 'px);animation-timing-function:cubic-bezier(' + timeFunction1 + ')}' +    //quadratic2cubicBezier(-t1-v1/a1/2, -t2-v1/a1/2) 
-                    //第2段：弹力作用下继续惯性运动
-                    ((t1 + t2) / ft * 100).toFixed(1) + '% {-webkit-transform:translateY(' + s3.toFixed(0) + 'px);animation-timing-function:cubic-bezier(' + timeFunction2 + ')}' + //quadratic2cubicBezier(-t2-v2/a2/2, 0) 
-                    //第3段：弹回边缘
-                    '100% { -webkit-transform:translateY(' + s2.toFixed(0) + 'px);animation-timing-function:ease}' + 
-                '}';
+                // if (!styleEl.parentNode) {
+                //     document.getElementsByTagName('head')[0].appendChild(styleEl);
+                // }
+                // var className = 'bounce-' + that.viewport.scrollId + '-' + Date.now();
+                // styleEl.innerHTML = '@-webkit-keyframes ' + className + ' {' + 
+                //     '0% {-webkit-transform:translateY(' + s0.toFixed(0) +'px)}' + 
+                //     //第1段：摩擦力作用下惯性运动
+                //     (t1 / ft * 100).toFixed(1) + '% {-webkit-transform:translateY(' + s1.toFixed(0) + 'px);animation-timing-function:cubic-bezier(' + timeFunction1 + ')}' +    //quadratic2cubicBezier(-t1-v1/a1/2, -t2-v1/a1/2) 
+                //     //第2段：弹力作用下继续惯性运动
+                //     ((t1 + t2) / ft * 100).toFixed(1) + '% {-webkit-transform:translateY(' + s2.toFixed(0) + 'px);animation-timing-function:cubic-bezier(' + timeFunction2 + ')}' + //quadratic2cubicBezier(-t2-v2/a2/2, 0) 
+                //     //第3段：弹回边缘
+                //     '100% { -webkit-transform:translateY(' + s1.toFixed(0) + 'px);animation-timing-function:ease}' + 
+                // '}';
+                // element.style.webkitAnimation = className + ' ' + (ft / 1000).toFixed(2) + 's';
+                // element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
 
-                element.style.webkitAnimation = className + ' ' + (ft / 1000).toFixed(2) + 's';
-                element.style.webkitTransform = 'translateY(' + s2.toFixed(0) + 'px)';
-                element.addEventListener('webkitAnimationEnd', scrollEnd, false);
+                element.style.webkitTransition = '-webkit-transform ' + (t1 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction1 + ') 0';                
+                element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
+                element.addEventListener('webkitTransitionEnd', function() {
+                    element.removeEventListener('webkitTransitionEnd', arguments.callee);
+                    element.style.webkitTransition = '-webkit-transform ' + (t2 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction2 + ') 0';
+                    element.style.webkitTransform = 'translateY(' + s2.toFixed(0) + 'px)';
+
+                    element.addEventListener('webkitTransitionEnd', function() {
+                        element.removeEventListener('webkitTransitionEnd', arguments.callee);
+                        element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
+                        element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
+
+                        element.addEventListener('webkitTransitionEnd', scrollEnd, false);
+                    }, false);
+                }, false);
             } else {
-                if (!styleEl.parentNode) {
-                    document.getElementsByTagName('head')[0].appendChild(styleEl);
-                }
-                var className = 'bounce-' + that.viewport.scrollId + '-' + Date.now();
                 var timeFunction = motion({
+                    v: v0,
+                    a: -a0,
                     t: t0
                 }).generateCubicBezier();
 
-                styleEl.innerHTML = '@-webkit-keyframes ' + className + ' {' + 
-                    '0% {-webkit-transform:translateY(' + s0.toFixed(0) + 'px)}' + 
-                    '100% {-webkit-transform:translateY(' + s1.toFixed(0)+'px);animation-timing-function:cubic-bezier(' + timeFunction + ')}' + //quadratic2cubicBezier(-t0, 0)
-                '}';
+                // if (!styleEl.parentNode) {
+                //     document.getElementsByTagName('head')[0].appendChild(styleEl);
+                // }
+                // var className = 'bounce-' + that.viewport.scrollId + '-' + Date.now();
 
-                element.style.webkitAnimation = className + ' ' + (t0 / 1000).toFixed(2) + 's';
-                element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
-                element.addEventListener('webkitAnimationEnd', scrollEnd, false);
+                // styleEl.innerHTML = '@-webkit-keyframes ' + className + ' {' + 
+                //     '0% {-webkit-transform:translateY(' + s0.toFixed(0) + 'px)}' + 
+                //     '100% {-webkit-transform:translateY(' + s.toFixed(0)+'px);animation-timing-function:cubic-bezier(' + timeFunction + ')}' + //quadratic2cubicBezier(-t0, 0)
+                // '}';
+                // element.style.webkitAnimation = className + ' ' + (t0 / 1000).toFixed(2) + 's';
+                // element.style.webkitTransform = 'translateY(' + s.toFixed(0) + 'px)';
+
+                element.style.webkitTransition = '-webkit-transform ' + (t0 / 1000).toFixed(2) + 's ease 0';
+                element.style.webkitTransform = 'translateY(' + s.toFixed(0) + 'px)';
+                element.addEventListener('webkitTransitionEnd', scrollEnd, false);
             }
 
         }
     }
 
-    function scrollEnd() {
+    function scrollEnd(e) {
         if (!that.enabled || !!that.isStopBounce) {
             return;
         }
-
+        e.stopPropagation();
         that.cancelScrollEnd = false;
 
         setTimeout(function() {
@@ -291,7 +323,7 @@ var proto = {
     enable: function() {
         this.enabled = true;
 
-        if (prevented) {
+        if (!prevented) {
             prevented = true;
             doc.addEventListener('touchmove', function(e) {
                 e.preventDefault();
@@ -310,13 +342,12 @@ var proto = {
         }, 50);
     },
 
-    getScrollHeight: function(el) {
-        return el.getBoundingClientRect().height - (el.bounceTop||0) - (el.bounceBottom||0);
+    getScrollHeight: function() {
+        return this.element.getBoundingClientRect().height - (this.options.bounceOffset.top||0) - (this.options.bounceOffset.bottom||0);
     },
 
-    getScrollTop: function(el) {
-        var offset = getTransformOffset(el);
-        return -(offset.y + (el.bounceTop||0));
+    getScrollTop: function() {
+        return -getTransformOffset(this).y - (this.options.bounceOffset.top || 0);
     },
 
     refresh: function() {
@@ -331,11 +362,11 @@ var proto = {
         this.scrollTo(-this.transformOffset.y - (this.options.bounceOffset.top || 0));
     },
 
-    offset: function(el, child) {
-        var elRect = el.getBoundingClientRect(),
-            childRect = child.getBoundingClientRect(),
-            offsetRect = {
-                top: childRect.top - ((el.bounceTop || 0) + elRect.top),
+    offset: function(childEl) {
+        var elRect = this.element.getBoundingClientRect();
+        var childRect = childEl.getBoundingClientRect();
+        var offsetRect = {
+                top: childRect.top - ((this.options.bounceOffset.top || 0) + elRect.top),
                 left: childRect.left - elRect.left,
                 right: elRect.right - childRect.right,
                 width: childRect.width,
@@ -347,70 +378,80 @@ var proto = {
     },
 
     scrollTo: function(y) {
-        var el = this.element;
         var x = getTransformOffset(this).x;
         y = -y - (this.options.bounceOffset.top || 0);
-
         y = touchBoundary(this, y);
-        el.style.webkitAnimation = '';
-        el.style.webkitTransform = 'translate3d(' + [x + 'px', y + 'px', 0] + ')';
+        this.element.style.webkitAnimation = '';
+        this.element.style.webkitTransform = getTranslate(x, y);
     },
 
-    scrollToElement: function(el, child) {
-        var offset = this.offset(el, child);
-        this.scrollTo(el, offset.top);
+    scrollToElement: function(childEl) {
+        var offset = this.offset(childEl);
+        this.scrollTo(offset.top);
     },
 
     getViewHeight: function(el) {
-        return el.parentNode.getBoundingClientRect().height;
+        return this.viewport.getBoundingClientRect().height;
+    },
+
+    getTransformOffset: function() {
+        return getTransformOffset(this);
     },
 
     getBoundaryOffset: function() {
         var y = getTransformOffset(this).y;
-        return Math.abs(getBoundaryOffset(this, y));
+        return Math.abs(getBoundaryOffset(this, y) || 0);
     },
 
-    stopBounce: function(el) {
+    stopBounce: function() {
         isStopBounce = true;
+        this.element.style.webkitTransition = '';
 
-        var offset = getTransformOffset(el),
-            minScrollTop = getMinScrollTop(el),
-            maxScrollTop = getMaxScrollTop(el),
-            y = null
-            ;
+        var transformOffset = getTransformOffset(this);
+        var bouceOffset = this.options.bounceOffset;
+        var minScrollTop = getMinScrollTop(this);
+        var maxScrollTop = getMaxScrollTop(this);
+        var x = transformOffset.x;
+        var y = transformOffset.y;
 
-        if (offset.y > minScrollTop + (el.bounceTop||0)) {
-            y = minScrollTop + (el.bounceTop||0);
-        } else if (offset.y < maxScrollTop - (el.bounceBottom||0)) {
-            y = maxScrollTop - (el.bounceBottom||0);
+        if (y > minScrollTop + (bouceOffset.top || 0)) {
+            y = minScrollTop + (bouceOffset.top || 0);
+        } else if (y < maxScrollTop - (bouceOffset.bottom || 0)) {
+            y = maxScrollTop - (bouceOffset.bottom || 0);
+        } else {
+            y = null;
         }
 
         if (y != null) {
-            //anim.translate(el,
-            //  '0.4s', 'ease-in-out', '0s',
-            //  offset.x, y);
+            setTimeout(function() {
+                this.element.style.webkitTransform = getTranslate(x, y);
+                this.element.style.webkitTansition = '-webkit-transform 0.4s ease 0';
+            }, 10);
         }
     },
 
     resumeBounce: function(el) {
         isStopBounce = false;
 
-        var offset = anim.getTransformOffset(el),
-            minScrollTop = getMinScrollTop(el),
-            maxScrollTop = getMaxScrollTop(el),
-            y
-            ;
+        var offset = getTransformOffset(this);
+        var minScrollTop = getMinScrollTop(this);
+        var maxScrollTop = getMaxScrollTop(this);
+        var x = transformOffset.x;
+        var y = transformOffset.y;
 
-        if (offset.y > minScrollTop) {
+        if (y > minScrollTop) {
             y = minScrollTop;
-        } else if (offset < maxScrollTop){
+        } else if (y < maxScrollTop){
             y = maxScrollTop;
+        } else {
+            y = null;
         }
 
         if (y != null) {
-            //anim.translate(el,
-            //  '0.4s', 'ease-in-out', '0s',
-            //  offset.x, y);
+            setTimeout(function() {
+                this.element.style.webkitTransform = getTranslate(x, y);
+                this.element.style.webkitTansition = '-webkit-transform 0.4s ease 0';
+            }, 10);
         }
     }
 }

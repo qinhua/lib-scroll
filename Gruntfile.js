@@ -61,7 +61,7 @@ module.exports = function(grunt) {
             debug: {
                 options: {
                   useDebug: true,
-                  useDaily: false,
+                  useDaily: true,
                   output: 'url'
                 },
                 dest: '<%= distPath%>/combo.debug.js'
