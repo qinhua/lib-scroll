@@ -116,7 +116,6 @@ function Scroll(element, options){
             return;
         }
 
-        that.transformOffset = getTransformOffset(that);
         element.style.webkitBackfaceVisibility = 'hidden';
         element.style.webkitTransformStyle = 'preserve-3d';
         element.style.webkitTransform = getComputedStyle(element).webkitTransform;
@@ -346,8 +345,8 @@ function Scroll(element, options){
 
         setTimeout(function() {
             if (!that.cancelScrollEnd) {
-                element.style.webkitBackfaceVisibility = '';
-                element.style.webkitTransformStyle = '';
+                // element.style.webkitBackfaceVisibility = '';
+                // element.style.webkitTransformStyle = '';
                 element.style.webkitTransition = '';
                 element.style.webkitAnimation = '';
                 fireEvent(that, 'scrollend');

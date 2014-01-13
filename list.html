@@ -87,7 +87,19 @@
 </div>
 <script src="build/combo.debug.js" type="text/javascript"></script>
 <script>
-var scrollObj = lib.scroll(document.getElementById('tbh5v0'))
+var scrollObj = lib.scroll(document.getElementById('tbh5v0'));
+var list = document.getElementById('J_SearchList');
+list.addEventListener('click', function(e) {
+    var target = e.target;
+    while (target !== list && target !== document) {
+        if (target.tagName === 'A') {
+            e.preventDefault();
+            return false;
+        } else {
+            target = target.parentNode;
+        }
+    }
+}, false)
 </script>
 </body>
 </html>

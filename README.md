@@ -82,4 +82,3 @@
 - pulldownend - 下拉结束
 - pullup -上拉
 - pullupend - 上拉结束
-- 
