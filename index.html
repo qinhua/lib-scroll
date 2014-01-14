@@ -37,136 +37,121 @@ body * {
 }
 
 body > div {
-	width:100%;
-	height:100%;
-	overflow:hidden;
-	position:absolute;
-	top:0;
-	left:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    position:absolute;
+    top:0;
+    left:0;
 }
 
 .viewport {
-	position:relative;
-	width:100%;
-	height:100%;
-	box-sizing:border-box;
-	padding-bottom:100px;
-}
-
-.log {
-	position:absolute;
-	width:100%;
-	height:300px;
-	background-color:#999;
-	color:#EEE;
-	bottom:-200px;
-}
-
-.log > span {
-	height: 30px;
-}
-
-.log > div {
-	overflow-y:auto;
-	height:270px;
-	-webkit-overflow-scroll:touch;
+    position:relative;
+    width:100%;
+    height:100%;
+    box-sizing:border-box;
 }
 </style>
 </head>
 <body>
+
 <div>
-	<div class="viewport">
-		<div class="active"></div>
-		<div class="inactive"></div>
-	</div>
-	<div class="log" style="">
-		<span>打开/关闭</span>
-		<div></div>
-	</div>
+    <div class="viewport">
+        <div class="active"></div>
+        <div class="inactive"></div>
+    </div>
 </div>
 <script src="build/combo.debug.js" type="text/javascript"></script>
+<!-- <script src="../motion/src/motion.js" type="text/javascript"></script>
+<script src="../gesture/src/gesture.js" type="text/javascript"></script>
+<script src="src/scroll.js" type="text/javascript"></script> -->
 <script type="text/javascript">
-	var logEl = document.querySelector('.log'),
-		logDiv = document.querySelector('.log > div');
+    (function () {
+        var viewportEl = document.querySelector('.viewport');
+        var activeEl = document.querySelector('.viewport .active');
+        var inactiveEl = document.querySelector('.viewport .inactive');
+        var html1 = [], html2 = [];
 
-	logEl.querySelector('span').addEventListener('click', function() {
-		if (logEl.isShow) {
-			logEl.style.bottom = '-200px';
-			logEl.isShow = false;
-		} else {
-			logEl.style.bottom = '0';
-			logEl.isShow = true;
-		}
-	});
-
-	function log() {
-		var text = Array.prototype.slice.apply(arguments)
-			.map(function(v) {
-				if (typeof v === 'object') {
-					return JSON.stringify(v)
-				} else {
-					return v;
-				}
-			});
-
-		
-		logDiv.innerHTML = text + '<br/>' + logDiv.innerHTML;
-			
-		console.log.apply(console, arguments)
-	}
-
-	(function () {
-	var events = ['touchstart', 'panstart', 'pan', 'panend', 'flick', 'pulldown', 'pullup', 'scrollend', 'bouncestart', 'bounceend', 'panbounce'],
-		viewportEl = document.querySelector('.viewport')
-		activeEl = document.querySelector('.viewport .active'),
-		inactiveEl = document.querySelector('.viewport .inactive'),
-		html1 = [], html2 = []
-		;
+        viewportEl.style.cssText = 'background-color:#000; width:100%; height:100%; overflow:hidden; display: -webkit-box;';
+        activeEl.style.cssText = 'color:black; border:1px solid #ccc; box-sizing: border-box; width:50%; height:100%; -webkit-flex:1; overflow:hidden;'
+        inactiveEl.style.cssText = 'color:white; border:1px solid #ccc; box-sizing: border-box; width:50%; height:100%; -webkit-flex:1; overflow:hidden;'
 
 
-	viewportEl.style.cssText = 'background-color:#000; width:100%; height:100%; overflow:hidden; display: -webkit-box;';
-	activeEl.style.cssText = 'color:black; border:1px solid #ccc; box-sizing: border-box; width:50%; height:100%; -webkit-flex:1; overflow:hidden;'
-	inactiveEl.style.cssText = 'color:white; border:1px solid #ccc; box-sizing: border-box; width:50%; height:100%; -webkit-flex:1; overflow:hidden;'
+        for (var i = 0; i < 50; i++) {
+            html1.push('<span style="height:25px;">' + i + '</span><br />');
+        }
 
+        for (var i = 0; i < 20; i++) {
+            html2.push('<div style="height:25px;"><input type="text" value="' + i + '" /></div>');
+        }
+        activeEl.innerHTML = '<section>' + html1.join('') + '</section>';
+        inactiveEl.innerHTML = '<section>' + 
+                '<div style="height:50px;text-align:center;line-height:50px;" id="boundaryTop">下拉刷新</div>' + 
+                html1.join('') + 
+                '<div style="border:1px solid red; margin:10px auto; width:60%; height:250px; overflow:hidden;">' + 
+                    '<section>' + html2.join('') + '</section>' + 
+                '</div>' + 
+                '<div style="height:50px;text-align:center;line-height:50px;" id="boundaryBottom">上拉加载更多</div>' + 
+            '</section>';
 
-	for (var i = 0; i < 50; i++) {
-		html1.push('<span style="height:25px;">' + i + '</span><br />');
-	}
+        var scrollEl1 = activeEl.querySelector('section');
+        var scrollEl2 = inactiveEl.querySelector('section');
+        var scrollEl3 = scrollEl2.querySelector('section');
 
-	for (var i = 0; i < 50; i++) {
-		html2.push('<div style="height:25px;">inner-' + i + '</div>');
-	}
-	activeEl.innerHTML = '<section>' + html1.join('') + '</section>';
-	inactiveEl.innerHTML = '<section>' + html1.join('') + 
-		'<div style="border:1px solid red; margin:10px auto; width:60%; height:500px; overflow:hidden; "><section>' + html2.join('') + '</section></div></section>';
+        scrollEl1.style.backgroundColor = '#CCC';
+        scrollEl2.style.backgroundColor = '#999';
+        scrollEl3.style.backgroundColor = '#333';
 
-	var scrollEl1 = activeEl.querySelector('section'),
-		scrollEl2 = inactiveEl.querySelector('section'),
-		scrollEl3 = scrollEl2.querySelector('section')
-		;
+        window['scrollObj1'] = lib.scroll(scrollEl1);
+        window['scrollObj2'] = lib.scroll(scrollEl2, {bounceOffset:{top:50, bottom:50}});
+        window['scrollObj3'] = lib.scroll(scrollEl3);
 
-	scrollEl1.style.cssText = scrollEl2.style.cssText = scrollEl3.style.cssText = 
-		'-webkit-backface-visibility: hidden; -webkit-transform-style: preserve-3d;';
-	scrollEl1.style.backgroundColor = '#CCC';
-	scrollEl2.style.backgroundColor = '#999';
-	scrollEl3.style.backgroundColor = '#333';
+        scrollEl2.addEventListener('scrollstart', function() {
+            console.log('scrollstart');
+        }, false);
 
-	events.forEach(function(name) {
-		scrollEl2.addEventListener(name, function(event) {
-			log(name);
-		}, false);
-	});
+        scrollEl2.addEventListener('scrollend', function() {
+            console.log('scrollend');
+        }, false);
 
-	lib.scroll.enable(scrollEl1);
-	lib.scroll.refresh(scrollEl1);
+        scrollEl2.addEventListener('pullup', function(e) {
+            console.log('pullup', e.boundaryOffset);
+            var boundaryBottom = scrollEl2.querySelector('#boundaryBottom');
+            if (e.boundaryOffset > 25 && boundaryBottom.innerHTML === '上拉加载更多') {
+                boundaryBottom.innerHTML = '松开即加载';
+            } else if (e.boundaryOffset <=25 && boundaryBottom.innerHTML === '松开即加载'){
+                boundaryBottom.innerHTML = '上拉加载更多'
+            }
+        }, false);
 
-	lib.scroll.enable(scrollEl2);
-	lib.scroll.refresh(scrollEl2);
-	lib.scroll.scrollTo(scrollEl2,0);
+        scrollEl2.addEventListener('pullupend', function() {
+            console.log('pullupend');
+            scrollObj2.disable();
+            setTimeout(function() {
+                scrollObj2.scrollTo(scrollObj2.getScrollHeight(), true);
+                scrollObj2.enable();
+            }, 2000);
+        }, false);
 
-	lib.scroll.enable(scrollEl3);
-	lib.scroll.refresh(scrollEl3);
-	})();
+        scrollEl2.addEventListener('pulldown', function(e) {
+            console.log('pulldown', e.boundaryOffset);
+            var boundaryTop = scrollEl2.querySelector('#boundaryTop');
+            if (e.boundaryOffset > 25 && boundaryTop.innerHTML === '下拉刷新') {
+                boundaryTop.innerHTML = '松开即刷新';
+            } else if (e.boundaryOffset <= 25 && boundaryTop.innerHTML === '松开即刷新'){
+                boundaryTop.innerHTML = '下拉刷新'
+            }
+        }, false);
+
+        scrollEl2.addEventListener('pulldownend', function() {
+            console.log('pulldownend');
+            scrollObj2.disable();
+            setTimeout(function() {
+                scrollObj2.scrollTo(0, true);
+                scrollObj2.enable();
+            }, 2000);
+        }, false);
+    })();
 </script>
 
 </body>

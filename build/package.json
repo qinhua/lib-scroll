@@ -1,7 +1,7 @@
 {
   "name": "lib.scroll",
   "description": "dom scroll",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "http://gitlab.alibaba-inc.com/mtb/lib-scroll",
   "author": {
     "name": "zhuxun.jb",
@@ -31,8 +31,8 @@
   },
   "dependencies": {},
   "combo": {
-    "lib.gesture": "1.0.0",
-    "lib.animation": "1.0.0"
+    "lib.motion": "1.0.0",
+    "lib.gesture": "1.0.0"
   },
   "keywords": [
     "lib",
