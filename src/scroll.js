@@ -1,7 +1,6 @@
 ;(function(win, lib, undef) {
 var doc = win.document;
 var docEl = doc.documentElement;
-var styleEl = doc.createElement('style');
 var motion = lib.motion;
 var prevented = false;
 var scrollObjs = {};
@@ -151,15 +150,6 @@ function Scroll(element, options){
                 s1 = touchBoundary(that, s0);
                 webkitTransitionEndHandler = scrollEnd;
             }
-            // if (!styleEl.parentNode) {
-            //     document.getElementsByTagName('head')[0].appendChild(styleEl);
-            // }
-            // var className = 'bounce-' + that.viewport.scrollId + '-' + Date.now();
-            // styleEl.innerHTML = '@-webkit-keyframes ' + className + ' {' + 
-            //         '0% {-webkit-transform:translateY(' + s0.toFixed(0) + 'px)}' + 
-            //         '100% {-webkit-transform:translateY(' + s1.toFixed(0) + 'px);animation-timing-function:ease}' + 
-            // '}';
-            // element.style.webkitAnimation = className + ' 0.4s';
             element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
             element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
         } else {
@@ -227,9 +217,9 @@ function Scroll(element, options){
         e.stopPropagation();
         that.cancelScrollEnd = true;
     
-        var v0, a0, t0, s0, s;
-        var v1, a1, t1, s1, sign;
-        var v2, a2, t2, s2, ft;
+        var v0, a0, t0, s0, s, motion0;
+        var v1, a1, t1, s1, motion1,sign;
+        var v2, a2, t2, s2, motion2, ft;
         
         s0 = getTransformOffset(that).y;
         var bounceOffset0 = getBoundaryOffset(that, s0);
@@ -245,9 +235,13 @@ function Scroll(element, options){
                 v0 = -1.5;
             }
             a0 = 0.0015 * ( v0 / Math.abs(v0));
-            t0 = v0 / a0;
+            motion0 = motion({
+                v: v0,
+                a: -a0
+            });
+            t0 = motion0.t;
+            s = s0 + motion0.s;
 
-            s = s0 + t0 * v0 / 2;
             var bounceOffset1 = getBoundaryOffset(that, s);
             if (bounceOffset1) {
                 //惯性运动足够滑出屏幕边缘
@@ -260,75 +254,58 @@ function Scroll(element, options){
                     s1 = that.maxScrollTop;
                     sign = -1;
                 }
-                t1 = (sign * v1 - Math.sqrt(-2 * a1 * Math.abs(s1 - s0) + v1 * v1)) / a1;
+                motion1 = motion({
+                    v: sign * v1, 
+                    a: - sign * a1, 
+                    s: Math.abs(s1 - s0)
+                });
+                t1 = motion1.t;
 
                 v2 = v1 - a1 * t1;
                 a2 = 0.008 * (v2 / Math.abs(v2));
-                t2 = v2 / a2;
-                s2 = s1 + v2 * t2 / 2;
-                ft = t1 + t2 + 400;
-
-                var timeFunction1 = motion({
-                    v: v1,
-                    a: -a1,
-                    t: t1
-                }).generateCubicBezier();
-                var timeFunction2 = motion({
+                motion2 = motion({
                     v: v2,
-                    a: -a2,
-                    t: t2
-                }).generateCubicBezier();
-                
-                // if (!styleEl.parentNode) {
-                //     document.getElementsByTagName('head')[0].appendChild(styleEl);
-                // }
-                // var className = 'bounce-' + that.viewport.scrollId + '-' + Date.now();
-                // styleEl.innerHTML = '@-webkit-keyframes ' + className + ' {' + 
-                //     '0% {-webkit-transform:translateY(' + s0.toFixed(0) +'px)}' + 
-                //     //第1段：摩擦力作用下惯性运动
-                //     (t1 / ft * 100).toFixed(1) + '% {-webkit-transform:translateY(' + s1.toFixed(0) + 'px);animation-timing-function:cubic-bezier(' + timeFunction1 + ')}' +    //quadratic2cubicBezier(-t1-v1/a1/2, -t2-v1/a1/2) 
-                //     //第2段：弹力作用下继续惯性运动
-                //     ((t1 + t2) / ft * 100).toFixed(1) + '% {-webkit-transform:translateY(' + s2.toFixed(0) + 'px);animation-timing-function:cubic-bezier(' + timeFunction2 + ')}' + //quadratic2cubicBezier(-t2-v2/a2/2, 0) 
-                //     //第3段：弹回边缘
-                //     '100% { -webkit-transform:translateY(' + s1.toFixed(0) + 'px);animation-timing-function:ease}' + 
-                // '}';
-                // element.style.webkitAnimation = className + ' ' + (ft / 1000).toFixed(2) + 's';
+                    a: -a2
+                });
+                t2 = motion2.t;
+                s2 = s1 + motion2.s;
+
+                // var timeFunction1 = motion({
+                //     v: v1,
+                //     a: -a1,
+                //     t: t1
+                // }).generateCubicBezier();
+                // var timeFunction2 = motion({
+                //     v: v2,
+                //     a: -a2,
+                //     t: t2
+                // }).generateCubicBezier();
+
+                // element.style.webkitTransition = '-webkit-transform ' + (t1 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction1 + ') 0';                
                 // element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
-                // webkitAnimationEndHandler = scrollEnd;
+                // webkitTransitionEndHandler = function(e) {
+                //     element.style.webkitTransition = '-webkit-transform ' + (t2 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction2 + ') 0';
+                //     element.style.webkitTransform = 'translateY(' + s2.toFixed(0) + 'px)';
 
-                element.style.webkitTransition = '-webkit-transform ' + (t1 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction1 + ') 0';                
-                element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
+                //     webkitTransitionEndHandler = function(e) {
+                //         element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
+                //         element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
+
+                //         webkitTransitionEndHandler = scrollEnd;
+                //     }
+                // }
+
+                element.style.webkitTransition = '-webkit-transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0';                
+                element.style.webkitTransform = 'translateY(' + s2.toFixed(0) + 'px)';
                 webkitTransitionEndHandler = function(e) {
-                    element.style.webkitTransition = '-webkit-transform ' + (t2 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction2 + ') 0';
-                    element.style.webkitTransform = 'translateY(' + s2.toFixed(0) + 'px)';
-
-                    webkitTransitionEndHandler = function(e) {
-                        element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-                        element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
-
-                        webkitTransitionEndHandler = scrollEnd;
-                    }
+                    element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
+                    element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
+                    webkitTransitionEndHandler = scrollEnd;
                 }
             } else {
-                var timeFunction = motion({
-                    v: v0,
-                    a: -a0,
-                    t: t0
-                }).generateCubicBezier();
+                var timeFunction = motion0.generateCubicBezier();
 
-                // if (!styleEl.parentNode) {
-                //     document.getElementsByTagName('head')[0].appendChild(styleEl);
-                // }
-                // var className = 'bounce-' + that.viewport.scrollId + '-' + Date.now();
-
-                // styleEl.innerHTML = '@-webkit-keyframes ' + className + ' {' + 
-                //     '0% {-webkit-transform:translateY(' + s0.toFixed(0) + 'px)}' + 
-                //     '100% {-webkit-transform:translateY(' + s.toFixed(0)+'px);animation-timing-function:cubic-bezier(' + timeFunction + ')}' + //quadratic2cubicBezier(-t0, 0)
-                // '}';
-                // element.style.webkitAnimation = className + ' ' + (t0 / 1000).toFixed(2) + 's';
-                // element.style.webkitTransform = 'translateY(' + s.toFixed(0) + 'px)';
-
-                element.style.webkitTransition = '-webkit-transform ' + (t0 / 1000).toFixed(2) + 's ease 0';
+                element.style.webkitTransition = '-webkit-transform ' + (t0 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction + ') 0';
                 element.style.webkitTransform = 'translateY(' + s.toFixed(0) + 'px)';
                 webkitTransitionEndHandler = scrollEnd;
             }
