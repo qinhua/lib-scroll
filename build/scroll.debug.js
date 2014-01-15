@@ -217,7 +217,6 @@ function Scroll(element, options){
         e.stopPropagation();
         that.cancelScrollEnd = true;
     
-        var maxV, 
         var v0, a0, t0, s0, s, motion0;
         var v1, a1, t1, s1, motion1,sign;
         var v2, a2, t2, s2, motion2, ft;
