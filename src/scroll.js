@@ -217,6 +217,7 @@ function Scroll(element, options){
         e.stopPropagation();
         that.cancelScrollEnd = true;
     
+        var maxV, 
         var v0, a0, t0, s0, s, motion0;
         var v1, a1, t1, s1, motion1,sign;
         var v2, a2, t2, s2, motion2, ft;
@@ -228,11 +229,11 @@ function Scroll(element, options){
             //不作处理，让touchend handler处理
             //手指离开屏幕时，在滚动范围内，做一下惯性计算
             v0 = e.velocityY;
-            if (v0 > 1.5) { 
-                v0 = 1.5;
+            if (v0 > 2) { 
+                v0 = 2;
             }
-            if (v0 < -1.5) {
-                v0 = -1.5;
+            if (v0 < -2) {
+                v0 = -2;
             }
             a0 = 0.0015 * ( v0 / Math.abs(v0));
             motion0 = motion({
@@ -262,7 +263,7 @@ function Scroll(element, options){
                 t1 = motion1.t;
 
                 v2 = v1 - a1 * t1;
-                a2 = 0.008 * (v2 / Math.abs(v2));
+                a2 = 0.01 * (v2 / Math.abs(v2));
                 motion2 = motion({
                     v: v2,
                     a: -a2
