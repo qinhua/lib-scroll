@@ -336,13 +336,13 @@ var proto = {
     enable: function() {
         this.enabled = true;
 
-        if (!prevented) {
-            prevented = true;
-            doc.addEventListener('touchmove', function(e) {
-                e.preventDefault();
-                return false;
-            }, false);
-        }
+        // if (!prevented) {
+        //     prevented = true;
+        //     doc.addEventListener('touchmove', function(e) {
+        //         e.preventDefault();
+        //         return false;
+        //     }, false);
+        // }
     },
 
     disable: function() {

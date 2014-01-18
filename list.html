@@ -90,6 +90,11 @@
 <script type="text/javascript" src="../motion/src/motion.js"></script>
 <script type="text/javascript" src="src/scroll.js"></script> -->
 <script>
+document.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+    return false;
+}, false);
+
 var scrollObj = lib.scroll(document.getElementById('tbh5v0'));
 var list = document.getElementById('J_SearchList');
 list.addEventListener('click', function(e) {
