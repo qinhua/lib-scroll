@@ -6,7 +6,7 @@ var prevented = false;
 var scrollObjs = {};
 
 function getMinScrollTop(scrollObj) {
-    return 0 - (scrollObj.options.bounceOffset.top || 0);
+    return 0 - (scrollObj.options.paddingTop || 0);
 }
 
 function getMaxScrollTop(scrollObj) {
@@ -14,7 +14,7 @@ function getMaxScrollTop(scrollObj) {
     var pRect = scrollObj.element.parentNode.getBoundingClientRect();
     var minTop = getMinScrollTop(scrollObj);
     var maxTop = 0 - rect.height + pRect.height;
-    return Math.min(maxTop + (scrollObj.options.bounceOffset.bottom || 0), minTop);
+    return Math.min(maxTop + (scrollObj.options.paddingBottom || 0), minTop);
 }
 
 function getBoundaryOffset(scrollObj, y) {
@@ -75,7 +75,21 @@ function Scroll(element, options){
     var that = this;
 
     options = options || {};
-    options.bounceOffset = options.bounceOffset || {top:0, bottom:0};
+    if (options.padding) {
+        options.paddingTop = options.padding.top || 0;
+        options.paddingBottom = options.padding.bottom || 0;
+    }
+    options.isBounce = !!options.isBounce;
+    if (options.bounceOffset) {
+        options.isBounce = true;
+        options.paddingTop = options.bounceOffset.top || 0;
+        options.paddingBottom = options.bounceOffset.bottom || 0;
+        delete options.bounceOffset;
+    }
+    if (!options.isBounce) {
+        options.paddingTop = -options.paddingTop;
+        options.paddingBottom = -options.paddingBottom;
+    }
 
     this.options = options;
     this.element = element;
@@ -131,17 +145,18 @@ function Scroll(element, options){
 
         var s0 = getTransformOffset(that).y;
         var boundaryffset = getBoundaryOffset(that, s0);
-        var top = that.options.bounceOffset.top;
-        var bottom = that.options.bounceOffset.bottom;
+        var isBounce = that.options.isBounce;
+        var top = that.options.paddingTop;
+        var bottom = that.options.paddingBottom;
         if(element.style.webkitTransition === '' && element.style.webkitAnimation === '' && boundaryffset) {
             var s1;
             var endHandler;
-            if (boundaryffset > 0 && top && boundaryffset > top / 2) {
+            if (isBounce && boundaryffset > 0 && top && boundaryffset > top / 2) {
                 s1 = that.minScrollTop + top;
                 webkitTransitionEndHandler = function() {
                     fireEvent(that, 'pulldownend');
                 }
-            } else if (boundaryffset < 0 && bottom && Math.abs(boundaryffset) > bottom / 2) {
+            } else if (isBounce && boundaryffset < 0 && bottom && Math.abs(boundaryffset) > bottom / 2) {
                 s1 = that.maxScrollTop - bottom;
                 webkitTransitionEndHandler = function() {
                     fireEvent(that, 'pullupend');
@@ -222,8 +237,8 @@ function Scroll(element, options){
         var v2, a2, t2, s2, motion2, ft;
         
         s0 = getTransformOffset(that).y;
-        var bounceOffset0 = getBoundaryOffset(that, s0);
-        if(!bounceOffset0) {
+        var boundaryOffset0 = getBoundaryOffset(that, s0);
+        if(!boundaryOffset0) {
             //手指离开屏幕时，已经超出滚动范围
             //不作处理，让touchend handler处理
             //手指离开屏幕时，在滚动范围内，做一下惯性计算
@@ -242,12 +257,12 @@ function Scroll(element, options){
             t0 = motion0.t;
             s = s0 + motion0.s;
 
-            var bounceOffset1 = getBoundaryOffset(that, s);
-            if (bounceOffset1) {
+            var boundaryOffset1 = getBoundaryOffset(that, s);
+            if (boundaryOffset1) {
                 //惯性运动足够滑出屏幕边缘
                 v1 = v0;
                 a1 = a0;
-                if(bounceOffset1 > 0) {
+                if(boundaryOffset1 > 0) {
                     s1 = that.minScrollTop;
                     sign = 1;
                 } else {
@@ -333,9 +348,17 @@ function Scroll(element, options){
 }
 
 var proto = {
+    init: function() {
+        this.enable();
+        this.refresh();
+        this.scrollTo(0);
+
+        return this;
+    },
+
     enable: function() {
         this.enabled = true;
-
+        return this;
         // if (!prevented) {
         //     prevented = true;
         //     doc.addEventListener('touchmove', function(e) {
@@ -353,14 +376,16 @@ var proto = {
             el.style.webkitTransform = getComputedStyle(el).webkitTransform;
             el.style.webkitAnimation = '';
         }, 50);
+
+        return this;
     },
 
     getScrollHeight: function() {
-        return this.element.getBoundingClientRect().height - (this.options.bounceOffset.top||0) - (this.options.bounceOffset.bottom||0);
+        return this.element.getBoundingClientRect().height - (this.options.paddingTop||0) - (this.options.paddingBottom||0);
     },
 
     getScrollTop: function() {
-        return -getTransformOffset(this).y - (this.options.bounceOffset.top || 0);
+        return -getTransformOffset(this).y - (this.options.paddingTop || 0);
     },
 
     refresh: function() {
@@ -372,14 +397,16 @@ var proto = {
         this.transformOffset = getTransformOffset(this);
         this.minScrollTop = getMinScrollTop(this);
         this.maxScrollTop = getMaxScrollTop(this);
-        this.scrollTo(-this.transformOffset.y - (this.options.bounceOffset.top || 0));
+        this.scrollTo(-this.transformOffset.y - (this.options.paddingTop || 0));
+
+        return this;
     },
 
     offset: function(childEl) {
         var elRect = this.element.getBoundingClientRect();
         var childRect = childEl.getBoundingClientRect();
         var offsetRect = {
-                top: childRect.top - ((this.options.bounceOffset.top || 0) + elRect.top),
+                top: childRect.top - ((this.options.paddingTop || 0) + elRect.top),
                 left: childRect.left - elRect.left,
                 right: elRect.right - childRect.right,
                 width: childRect.width,
@@ -394,7 +421,7 @@ var proto = {
         var x = getTransformOffset(this).x;
         var element = this.element;
 
-        y = -y - (this.options.bounceOffset.top || 0);
+        y = -y - (this.options.paddingTop || 0);
         y = touchBoundary(this, y);
 
         if (isSmooth === true) {
@@ -408,11 +435,13 @@ var proto = {
             element.style.webkitAnimation = '';
         }
         element.style.webkitTransform = getTranslate(x, y);
+
+        return this;
     },
 
     scrollToElement: function(childEl, isSmooth) {
         var offset = this.offset(childEl);
-        this.scrollTo(offset.top, isSmooth);
+        return this.scrollTo(offset.top, isSmooth);
     },
 
     getViewHeight: function(el) {
@@ -435,9 +464,6 @@ lib.scroll = function(el, options) {
     } else {
         scroll = new Scroll(el, options);
     }
-    
-    scroll.enable();
-    scroll.refresh();
     return scroll;
 }
 

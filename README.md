@@ -2,7 +2,7 @@
 
 ## 最新版本
 
-**2.0.2**
+**2.0.3**
 
 ## 安装依赖
 
@@ -18,7 +18,9 @@
 
 - el - 需要滚动的元素
 - options - 选项
-	- bonceOffset - {top:0, bottom:0} 上下回弹区域的高度
+	- paddingTop - 上边缘空白
+	- paddingBottom - 下边缘空白
+	- isBounce - 是否启用空白的回弹效果
 
 
 ### scroll.enable()

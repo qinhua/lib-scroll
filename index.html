@@ -107,9 +107,17 @@ body > div {
         scrollEl2.style.backgroundColor = '#999';
         scrollEl3.style.backgroundColor = '#333';
 
-        window['scrollObj1'] = lib.scroll(scrollEl1);
-        window['scrollObj2'] = lib.scroll(scrollEl2, {bounceOffset:{top:50, bottom:50}});
-        window['scrollObj3'] = lib.scroll(scrollEl3);
+        window['scrollObj1'] = lib.scroll(scrollEl1).init();
+        window['scrollObj2'] = lib.scroll(scrollEl2, {
+            bounceOffset:{
+                top:50, 
+                bottom:50
+            }
+        }).init();
+        window['scrollObj3'] = lib.scroll(scrollEl3, {
+            paddingTop: 20, 
+            paddingBottom: 50
+        }).init();
 
         scrollEl2.addEventListener('scrollstart', function() {
             console.log('scrollstart');
