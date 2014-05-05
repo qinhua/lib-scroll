@@ -2,7 +2,7 @@
 
 ## 最新版本
 
-**2.0.3**
+**2.1.0**
 
 ## 安装依赖
 
@@ -15,11 +15,15 @@
 ## 如何使用
 
 	var scroll = lib.scroll(el, options);
+	scrll.init();
 
 - el - 需要滚动的元素
 - options - 选项
-	- paddingTop - 上边缘空白
-	- paddingBottom - 下边缘空白
+	- direction - 方向x/y
+	- paddingTop - 上边缘空白（方向为y时有效）
+	- paddingBottom - 下边缘空白（方向为y时有效）
+	- paddingLeft - 左边缘空白（方向为x时有效）
+	- paddingRight - 右边缘空白（方向为x时有效）
 	- isBounce - 是否启用空白的回弹效果
 
 
@@ -31,17 +35,29 @@
 
 停用滚动（Y轴）。
 
+### scroll.getScrollWidth()
+
+* @return {number} width
+
+获取HTML元素区域的滚动宽度（方向为x时有效）。
+
 ### scroll.getScrollHeight()
 
 * @return {number} height
 
-获取HTML元素区域的滚动高度。
+获取HTML元素区域的滚动高度（方向为y时有效）。
+
+### scroll.getScrollLeft()
+
+* @return {number} left
+
+获取滚动位置（方向为x时有效）。
 
 ### scroll.getScrollTop()
 
 * @return {number} top
 
-获取滚动位置。
+获取滚动位置（方向为y时有效）。
 
 ### scroll.refresh()
 
@@ -54,9 +70,9 @@
 
 返回区域内某元素的矩阵数据，包括`top/bottom/width/height/left/right`。
 
-### scroll.scrollTo(y, isSmooth)
+### scroll.scrollTo(s, isSmooth)
 
-* @param {Number} y 滚动到的位置
+* @param {Number} s 滚动到的位置
 * @param {Boolean} isSmooth 是否平滑滚动
 
 滚动到区域中的某位置。
@@ -68,11 +84,17 @@
 
 滚动到区域中的某元素。
 
+### scroll.getViewWidth()
+
+* @return {Number} width
+
+获得区域的可见宽度（方向为x时有效）。
+
 ### scroll.getViewHeight()
 
 * @return {Number} height
 
-获得区域的可见高度。
+获得区域的可见高度（方向为y时有效）。
 
 ### 事件
 

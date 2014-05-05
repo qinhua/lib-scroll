@@ -1,7 +1,7 @@
 {
   "name": "lib.scroll",
   "description": "dom scroll",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "homepage": "http://gitlab.alibaba-inc.com/mtb/lib-scroll",
   "author": {
     "name": "zhuxun.jb",
@@ -22,12 +22,12 @@
   },
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-depconcat": "~0.2.0",
-    "grunt-depcombo": "~0.1.0",
+    "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-copy": "~0.4.1",
     "grunt-contrib-uglify": "~0.2.0",
     "grunt-contrib-watch": "~0.4.0",
-    "grunt-contrib-clean": "~0.5.0"
+    "grunt-depcombo": "~0.2.2",
+    "grunt-depconcat": "~0.2.0"
   },
   "dependencies": {},
   "combo": {

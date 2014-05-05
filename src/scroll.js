@@ -5,33 +5,37 @@ var motion = lib.motion;
 var prevented = false;
 var scrollObjs = {};
 
-function getMinScrollTop(scrollObj) {
-    return 0 - (scrollObj.options.paddingTop || 0);
+function getMinScrollOffset(scrollObj) {
+    return 0 - (scrollObj.options[scrollObj.axis + 'Padding1'] || 0);
 }
 
-function getMaxScrollTop(scrollObj) {
+function getMaxScrollOffset(scrollObj) {
     var rect = scrollObj.element.getBoundingClientRect();
     var pRect = scrollObj.element.parentNode.getBoundingClientRect();
-    var minTop = getMinScrollTop(scrollObj);
-    var maxTop = 0 - rect.height + pRect.height;
-    return Math.min(maxTop + (scrollObj.options.paddingBottom || 0), minTop);
+    var min = getMinScrollOffset(scrollObj);
+    if (scrollObj.axis === 'y') {
+        var max = 0 - rect.height + pRect.height;
+    } else {
+        var max = 0 - rect.width + pRect.width;
+    }
+    return Math.min(max + (scrollObj.options[scrollObj.axis + 'Padding2'] || 0), min);
 }
 
-function getBoundaryOffset(scrollObj, y) {
-    if(y > scrollObj.minScrollTop) {
-        return y - scrollObj.minScrollTop;
-    } else if (y < scrollObj.maxScrollTop){
-        return y - scrollObj.maxScrollTop;
+function getBoundaryOffset(scrollObj, offset) {
+    if(offset > scrollObj.minScrollOffset) {
+        return offset - scrollObj.minScrollOffset;
+    } else if (offset < scrollObj.maxScrollOffset){
+        return offset - scrollObj.maxScrollOffset;
     }
 }
 
-function touchBoundary(scrollObj, y) {
-    if (y > scrollObj.minScrollTop) {
-        y = scrollObj.minScrollTop;
-    } else if (y < scrollObj.maxScrollTop) {
-        y = scrollObj.maxScrollTop;
+function touchBoundary(scrollObj, offset) {
+    if (offset > scrollObj.minScrollOffset) {
+        offset = scrollObj.minScrollOffset;
+    } else if (offset < scrollObj.maxScrollOffset) {
+        offset = scrollObj.maxScrollOffset;
     }
-    return y;
+    return offset;
 }
 
 function fireEvent(scrollObj, eventName, extra) {
@@ -75,23 +79,31 @@ function Scroll(element, options){
     var that = this;
 
     options = options || {};
-    if (options.padding) {
-        options.paddingTop = options.padding.top || 0;
-        options.paddingBottom = options.padding.bottom || 0;
-    }
     options.isBounce = !!options.isBounce;
+    if (options.padding) {
+        options.yPadding1 = options.padding.top || 0;
+        options.yPadding2 = options.padding.bottom || 0;
+        options.xPadding1 = options.padding.left || 0;
+        options.xPadding2 = options.padding.right || 0;
+        delete options.padding;
+    }
     if (options.bounceOffset) {
         options.isBounce = true;
-        options.paddingTop = options.bounceOffset.top || 0;
-        options.paddingBottom = options.bounceOffset.bottom || 0;
+        options.yPadding1 = options.bounceOffset.top || 0;
+        options.yPadding2 = options.bounceOffset.bottom || 0;
+        options.xPadding1 = options.bounceOffset.left || 0;
+        options.xPadding2 = options.bounceOffset.right || 0;
         delete options.bounceOffset;
     }
     if (!options.isBounce) {
-        options.paddingTop = -options.paddingTop;
-        options.paddingBottom = -options.paddingBottom;
+        options.yPadding1 = -options.yPadding1;
+        options.yPadding2 = -options.yPadding2;
+        options.xPadding1 = -options.xPadding1;
+        options.xPadding2 = -options.xPadding2;
     }
 
     this.options = options;
+    that.axis = options.direction || 'y';
     this.element = element;
     this.viewport = element.parentNode;
     this.viewport.addEventListener('touchstart', touchstartHandler, false);
@@ -115,15 +127,6 @@ function Scroll(element, options){
         }
     }, false);
 
-    var webkitAnimationEndHandler;
-    element.addEventListener('webkitAnimationEnd', function(e) {
-        if (webkitAnimationEndHandler) {
-            var handler = webkitAnimationEndHandler;
-            webkitAnimationEndHandler = null;
-            handler(e);
-        }
-    }, false);
-
     function touchstartHandler(e) {
         if (!that.enabled) {
             return;
@@ -133,9 +136,7 @@ function Scroll(element, options){
         element.style.webkitTransformStyle = 'preserve-3d';
         element.style.webkitTransform = getComputedStyle(element).webkitTransform;
         element.style.webkitTransition = '';
-        element.style.webkitAnimation = '';
         webkitTransitionEndHandler = null;
-        webkitAnimationEndHandler = null;
     }
 
     function touchendHandler(e) {
@@ -143,21 +144,21 @@ function Scroll(element, options){
             return;
         }
 
-        var s0 = getTransformOffset(that).y;
+        var s0 = getTransformOffset(that)[that.axis];
         var boundaryffset = getBoundaryOffset(that, s0);
         var isBounce = that.options.isBounce;
-        var top = that.options.paddingTop;
-        var bottom = that.options.paddingBottom;
+        var p1 = that.options[that.axis + 'Padding1'];
+        var p2 = that.options[that.axis + 'Padding1'];
         if(element.style.webkitTransition === '' && element.style.webkitAnimation === '' && boundaryffset) {
             var s1;
             var endHandler;
-            if (isBounce && boundaryffset > 0 && top && boundaryffset > top / 2) {
-                s1 = that.minScrollTop + top;
+            if (isBounce && boundaryffset > 0 && p1 && boundaryffset > p1 / 2) {
+                s1 = that.minScrollOffset + p1;
                 webkitTransitionEndHandler = function() {
                     fireEvent(that, 'pulldownend');
                 }
-            } else if (isBounce && boundaryffset < 0 && bottom && Math.abs(boundaryffset) > bottom / 2) {
-                s1 = that.maxScrollTop - bottom;
+            } else if (isBounce && boundaryffset < 0 && p2 && Math.abs(boundaryffset) > p2 / 2) {
+                s1 = that.maxScrollOffset - p2;
                 webkitTransitionEndHandler = function() {
                     fireEvent(that, 'pullupend');
                 }
@@ -179,8 +180,8 @@ function Scroll(element, options){
 
         e.stopPropagation();
         that.transformOffset = getTransformOffset(that);
-        that.minScrollTop = getMinScrollTop(that);
-        that.maxScrollTop = getMaxScrollTop(that);
+        that.minScrollOffset = getMinScrollOffset(that);
+        that.maxScrollOffset = getMaxScrollOffset(that);
         that.panFixRatio = 2.5;
         that.cancelScrollEnd = false;
         fireEvent(that, 'scrollstart');
@@ -192,20 +193,20 @@ function Scroll(element, options){
         }
 
         e.stopPropagation();
-        var y = that.transformOffset.y + e.displacementY;
+        var offset = that.transformOffset[that.axis] + e['displacement' + that.axis.toUpperCase()];
 
-        if(y > that.minScrollTop) {
-            y = that.minScrollTop + (y - that.minScrollTop) / that.panFixRatio;
+        if(offset > that.minScrollOffset) {
+            offset = that.minScrollOffset + (offset - that.minScrollOffset) / that.panFixRatio;
             that.panFixRatio *= 1.003;
-        } else if(y < that.maxScrollTop) {
-            y = that.maxScrollTop - (that.maxScrollTop - y) / that.panFixRatio;
+        } else if(offset < that.maxScrollOffset) {
+            offset = that.maxScrollOffset - (that.maxScrollOffset - offset) / that.panFixRatio;
             that.panFixRatio *= 1.003;
         }
         if (that.panFixRatio > 4) {
             that.panFixRatio = 4;
         }
 
-        var boundaryOffset = getBoundaryOffset(that, y);
+        var boundaryOffset = getBoundaryOffset(that, offset);
         if (boundaryOffset) {
             fireEvent(that, boundaryOffset > 0?'pulldown':'pullup', {
                 boundaryOffset: Math.abs(boundaryOffset)
@@ -214,7 +215,11 @@ function Scroll(element, options){
 
         element.style.webkitAnimation = '';
         element.style.webkitTransition = '';
-        element.style.webkitTransform = getTranslate(that.transformOffset.x, y);
+        if (that.axis === 'y') {
+            element.style.webkitTransform = getTranslate(that.transformOffset.x, offset);    
+        } else {
+            element.style.webkitTransform = getTranslate(offset, that.transformOffset.y);
+        }
     }
 
     function panendHandler(e) {
@@ -236,13 +241,13 @@ function Scroll(element, options){
         var v1, a1, t1, s1, motion1,sign;
         var v2, a2, t2, s2, motion2, ft;
         
-        s0 = getTransformOffset(that).y;
+        s0 = getTransformOffset(that)[that.axis];
         var boundaryOffset0 = getBoundaryOffset(that, s0);
         if(!boundaryOffset0) {
             //手指离开屏幕时，已经超出滚动范围
             //不作处理，让touchend handler处理
             //手指离开屏幕时，在滚动范围内，做一下惯性计算
-            v0 = e.velocityY;
+            v0 = e['velocity' + that.axis.toUpperCase()];
             if (v0 > 2) { 
                 v0 = 2;
             }
@@ -263,10 +268,10 @@ function Scroll(element, options){
                 v1 = v0;
                 a1 = a0;
                 if(boundaryOffset1 > 0) {
-                    s1 = that.minScrollTop;
+                    s1 = that.minScrollOffset;
                     sign = 1;
                 } else {
-                    s1 = that.maxScrollTop;
+                    s1 = that.maxScrollOffset;
                     sign = -1;
                 }
                 motion1 = motion({
@@ -285,43 +290,18 @@ function Scroll(element, options){
                 t2 = motion2.t;
                 s2 = s1 + motion2.s;
 
-                // var timeFunction1 = motion({
-                //     v: v1,
-                //     a: -a1,
-                //     t: t1
-                // }).generateCubicBezier();
-                // var timeFunction2 = motion({
-                //     v: v2,
-                //     a: -a2,
-                //     t: t2
-                // }).generateCubicBezier();
-
-                // element.style.webkitTransition = '-webkit-transform ' + (t1 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction1 + ') 0';                
-                // element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
-                // webkitTransitionEndHandler = function(e) {
-                //     element.style.webkitTransition = '-webkit-transform ' + (t2 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction2 + ') 0';
-                //     element.style.webkitTransform = 'translateY(' + s2.toFixed(0) + 'px)';
-
-                //     webkitTransitionEndHandler = function(e) {
-                //         element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-                //         element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
-
-                //         webkitTransitionEndHandler = scrollEnd;
-                //     }
-                // }
-
                 element.style.webkitTransition = '-webkit-transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0';                
-                element.style.webkitTransform = 'translateY(' + s2.toFixed(0) + 'px)';
+                element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s2.toFixed(0) + 'px)';
                 webkitTransitionEndHandler = function(e) {
                     element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-                    element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
+                    element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
                     webkitTransitionEndHandler = scrollEnd;
                 }
             } else {
                 var timeFunction = motion0.generateCubicBezier();
 
                 element.style.webkitTransition = '-webkit-transform ' + (t0 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction + ') 0';
-                element.style.webkitTransform = 'translateY(' + s.toFixed(0) + 'px)';
+                element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s.toFixed(0) + 'px)';
                 webkitTransitionEndHandler = scrollEnd;
             }
 
@@ -337,8 +317,6 @@ function Scroll(element, options){
 
         setTimeout(function() {
             if (!that.cancelScrollEnd) {
-                // element.style.webkitBackfaceVisibility = '';
-                // element.style.webkitTransformStyle = '';
                 element.style.webkitTransition = '';
                 element.style.webkitAnimation = '';
                 fireEvent(that, 'scrollend');
@@ -359,13 +337,6 @@ var proto = {
     enable: function() {
         this.enabled = true;
         return this;
-        // if (!prevented) {
-        //     prevented = true;
-        //     doc.addEventListener('touchmove', function(e) {
-        //         e.preventDefault();
-        //         return false;
-        //     }, false);
-        // }
     },
 
     disable: function() {
@@ -380,24 +351,41 @@ var proto = {
         return this;
     },
 
+    getScrollWidth: function() {
+        return this.element.getBoundingClientRect().width - (this.options.xPadding1||0) - (this.options.xPadding2||0);
+    },
+
     getScrollHeight: function() {
-        return this.element.getBoundingClientRect().height - (this.options.paddingTop||0) - (this.options.paddingBottom||0);
+        return this.element.getBoundingClientRect().height - (this.options.yPadding1||0) - (this.options.yPadding2||0);
+    },
+
+    getScrollLeft: function() {
+        return -getTransformOffset(this).x - (this.options.xPadding1 || 0);
     },
 
     getScrollTop: function() {
-        return -getTransformOffset(this).y - (this.options.paddingTop || 0);
+        return -getTransformOffset(this).y - (this.options.yPadding1 || 0);
     },
 
     refresh: function() {
         var el = this.element;
 
-        el.style.height = 'auto';
-        el.style.height = el.offsetHeight + 'px';
+        if (this.axis === 'y') {
+            el.style.height = 'auto';
+            el.style.height = (this.options.height || 
+                (el.lastElementChild.getBoundingClientRect().bottom - 
+                    el.firstElementChild.getBoundingClientRect().top)) + 'px';
+        } else {
+            el.style.width = 'auto';
+            el.style.width = (this.options.width || 
+                (el.lastElementChild.getBoundingClientRect().right - 
+                    el.firstElementChild.getBoundingClientRect().left)) + 'px';
+        }
 
         this.transformOffset = getTransformOffset(this);
-        this.minScrollTop = getMinScrollTop(this);
-        this.maxScrollTop = getMaxScrollTop(this);
-        this.scrollTo(-this.transformOffset.y - (this.options.paddingTop || 0));
+        this.minScrollOffset = getMinScrollOffset(this);
+        this.maxScrollOffset = getMaxScrollOffset(this);
+        this.scrollTo(-this.transformOffset[this.axis] - (this.options[this.axis + 'Padding1'] || 0));
 
         return this;
     },
@@ -405,24 +393,35 @@ var proto = {
     offset: function(childEl) {
         var elRect = this.element.getBoundingClientRect();
         var childRect = childEl.getBoundingClientRect();
-        var offsetRect = {
-                top: childRect.top - ((this.options.paddingTop || 0) + elRect.top),
-                left: childRect.left - elRect.left,
-                right: elRect.right - childRect.right,
-                width: childRect.width,
-                height: childRect.height
-            };
+        if (this.axis === 'y') {
+            var offsetRect = {
+                    top: childRect.top - ((this.options.yPadding1 || 0) + elRect.top),
+                    left: childRect.left - elRect.left,
+                    right: elRect.right - childRect.right,
+                    width: childRect.width,
+                    height: childRect.height
+                };
 
-        offsetRect.bottom = offsetRect.top + childRect.height;
+            offsetRect.bottom = offsetRect.top + offsetRect.height;
+        } else {
+            var offsetRect = {
+                    top: childRect.top - elRect.top,
+                    bottom: elRect.bottom - childRect.bottom,
+                    left: childRect.left - ((this.options.xPadding1 || 0) + elRect.left),
+                    width: childRect.width,
+                    height: childRect.height
+                };
+
+            offsetRect.right = offsetRect.left + offsetRect.width;
+        }
         return offsetRect;
     },
 
-    scrollTo: function(y, isSmooth) {
-        var x = getTransformOffset(this).x;
+    scrollTo: function(offset, isSmooth) {
         var element = this.element;
 
-        y = -y - (this.options.paddingTop || 0);
-        y = touchBoundary(this, y);
+        offset = -offset - (this.options[this.axis + 'Padding1'] || 0);
+        offset = touchBoundary(this, offset);
 
         if (isSmooth === true) {
             element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
@@ -434,17 +433,25 @@ var proto = {
             element.style.webkitTransition = '';
             element.style.webkitAnimation = '';
         }
-        element.style.webkitTransform = getTranslate(x, y);
+        if (this.axis === 'y') {
+            element.style.webkitTransform = getTranslate(getTransformOffset(this).x, offset);
+        } else {
+            element.style.webkitTransform = getTranslate(offset, getTransformOffset(this).y);
+        }
 
         return this;
     },
 
     scrollToElement: function(childEl, isSmooth) {
         var offset = this.offset(childEl);
-        return this.scrollTo(offset.top, isSmooth);
+        return this.scrollTo(this.axis === 'y'?offset.top:offset.left, isSmooth);
     },
 
-    getViewHeight: function(el) {
+    getViewWidth: function() {
+        return this.viewport.getBoundingClientRect().width;
+    },
+
+    getViewHeight: function() {
         return this.viewport.getBoundingClientRect().height;
     }
 }
@@ -456,6 +463,9 @@ for (var k in proto) {
 lib.scroll = function(el, options) {
     if (!el.parentNode) {
         throw new Error('wrong dom tree');
+    }
+    if (options && options.direction && ['x', 'y'].indexOf(options.direction) < 0) {
+        throw new Error('wrong direction');
     }
 
     var scroll;

@@ -56,15 +56,14 @@ body > div {
 <body>
 
 <div>
+    <div class="header"></div>
     <div class="viewport">
         <div class="active"></div>
         <div class="inactive"></div>
     </div>
 </div>
 <script src="build/combo.debug.js" type="text/javascript"></script>
-<!-- <script src="../motion/src/motion.js" type="text/javascript"></script>
-<script src="../gesture/src/gesture.js" type="text/javascript"></script>
-<script src="src/scroll.js" type="text/javascript"></script> -->
+<script src="build/scroll.debug.js" type="text/javascript"></script>
 <script type="text/javascript">
     (function () {
         document.addEventListener('touchmove', function(e) {
@@ -73,14 +72,15 @@ body > div {
         }, false);
 
         var viewportEl = document.querySelector('.viewport');
+        var headerEl = document.querySelector('.header');
         var activeEl = document.querySelector('.viewport .active');
         var inactiveEl = document.querySelector('.viewport .inactive');
-        var html1 = [], html2 = [];
+        var html1 = [], html2 = [], html3 = [];
 
-        viewportEl.style.cssText = 'background-color:#000; width:100%; height:100%; overflow:hidden; display: -webkit-box;';
+        headerEl.style.cssText = 'overflow:hidden; height:50px; width:100%;position:relative;z-index: 2;';
+        viewportEl.style.cssText = 'background-color:#000; width:100%; height:100%; box-sizing: border-box; padding-top: 50px; margin-top:-50px; overflow:hidden; display: -webkit-box;relative;z-index: 1;';
         activeEl.style.cssText = 'color:black; border:1px solid #ccc; box-sizing: border-box; width:50%; height:100%; -webkit-flex:1; overflow:hidden;'
         inactiveEl.style.cssText = 'color:white; border:1px solid #ccc; box-sizing: border-box; width:50%; height:100%; -webkit-flex:1; overflow:hidden;'
-
 
         for (var i = 0; i < 50; i++) {
             html1.push('<span style="height:25px;">' + i + '</span><br />');
@@ -89,6 +89,11 @@ body > div {
         for (var i = 0; i < 20; i++) {
             html2.push('<div style="height:25px;"><input type="text" value="' + i + '" /></div>');
         }
+
+        for (var i = 0; i < 20; i++) {
+            html3.push('<div style="width:40px;text-align:center;line-height:50px;padding:0 10px;"><span>' + i + '</span></div>');
+        }
+
         activeEl.innerHTML = '<section>' + html1.join('') + '</section>';
         inactiveEl.innerHTML = '<section>' + 
                 '<div style="height:50px;text-align:center;line-height:50px;" id="boundaryTop">下拉刷新</div>' + 
@@ -98,14 +103,17 @@ body > div {
                 '</div>' + 
                 '<div style="height:50px;text-align:center;line-height:50px;" id="boundaryBottom">上拉加载更多</div>' + 
             '</section>';
+        headerEl.innerHTML = '<section style="display:-webkit-box;height:100%;">' + html3.join('') + '</section>';
 
         var scrollEl1 = activeEl.querySelector('section');
         var scrollEl2 = inactiveEl.querySelector('section');
         var scrollEl3 = scrollEl2.querySelector('section');
+        var scrollEl4 = headerEl.querySelector('section');
 
         scrollEl1.style.backgroundColor = '#CCC';
         scrollEl2.style.backgroundColor = '#999';
         scrollEl3.style.backgroundColor = '#333';
+        scrollEl4.style.backgroundColor = '#FFF';
 
         window['scrollObj1'] = lib.scroll(scrollEl1).init();
         window['scrollObj2'] = lib.scroll(scrollEl2, {
@@ -118,6 +126,7 @@ body > div {
             paddingTop: 20, 
             paddingBottom: 50
         }).init();
+        window['scrollObj4'] = lib.scroll(scrollEl4, {direction: 'x'}).init();
 
         scrollEl2.addEventListener('scrollstart', function() {
             console.log('scrollstart');
