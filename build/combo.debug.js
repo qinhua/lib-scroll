@@ -1,1 +1,1 @@
-document.write('<scr' + 'ipt id="combo_url_1399278724097" type="text/javascript" src="http://g.assets.daily.taobao.net/mtb/??lib-motion/1.0.1/motion.debug.js,lib-gesture/1.1.1/gesture.debug.js"></scr' + 'ipt>')
+document.write('<scr' + 'ipt id="combo_url_1399281877281" type="text/javascript" src="http://g.assets.daily.taobao.net/mtb/??lib-motion/1.0.1/motion.debug.js,lib-gesture/1.1.2/gesture.debug.js"></scr' + 'ipt>')

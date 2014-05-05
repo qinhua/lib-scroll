@@ -167,7 +167,7 @@ function Scroll(element, options){
                 webkitTransitionEndHandler = scrollEnd;
             }
             element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-            element.style.webkitTransform = 'translateY(' + s1.toFixed(0) + 'px)';
+            element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
         } else {
             scrollEnd();
         }

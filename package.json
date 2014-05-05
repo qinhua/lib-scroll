@@ -32,7 +32,7 @@
   "dependencies": {},
   "combo": {
     "lib.motion": "1.0.1",
-    "lib.gesture": "1.1.1"
+    "lib.gesture": "1.1.2"
   },
   "keywords": [
     "lib",
