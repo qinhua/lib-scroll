@@ -20,11 +20,8 @@
 - el - 需要滚动的元素
 - options - 选项
 	- direction - 方向x/y
-	- paddingTop - 上边缘空白（方向为y时有效）
-	- paddingBottom - 下边缘空白（方向为y时有效）
-	- paddingLeft - 左边缘空白（方向为x时有效）
-	- paddingRight - 右边缘空白（方向为x时有效）
-	- isBounce - 是否启用空白的回弹效果
+	- padding[top/bottom/left/right] - 边缘空白
+	- bounceOffset[top/bottom/left/right] - 回弹距离
 
 
 ### scroll.enable()
@@ -102,7 +99,11 @@
 
 - scrollstart - 滚动开始
 - scrollend - 滚动结束
-- pulldown - 下拉
-- pulldownend - 下拉结束
-- pullup -上拉
-- pullupend - 上拉结束
+- pullleft - 往左拉（方向为x时有效）
+- pullleftend - 往左拉结束（方向为x时有效）
+- pullright - 往右拉（方向为x时有效）
+- pullrightend - 往右拉结束（方向为x时有效）
+- pulldown - 往下拉（方向为y时有效）
+- pulldownend - 往下拉结束（方向为y时有效）
+- pullup - 往上拉（方向为y时有效）
+- pullupend - 往上拉结束（方向为y时有效）

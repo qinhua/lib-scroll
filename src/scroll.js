@@ -155,12 +155,12 @@ function Scroll(element, options){
             if (isBounce && boundaryffset > 0 && p1 && boundaryffset > p1 / 2) {
                 s1 = that.minScrollOffset + p1;
                 webkitTransitionEndHandler = function() {
-                    fireEvent(that, 'pulldownend');
+                    fireEvent(that, that.axis === 'y'?'pulldownend':'pullrightend');
                 }
             } else if (isBounce && boundaryffset < 0 && p2 && Math.abs(boundaryffset) > p2 / 2) {
                 s1 = that.maxScrollOffset - p2;
                 webkitTransitionEndHandler = function() {
-                    fireEvent(that, 'pullupend');
+                    fireEvent(that, that.axis === 'y'?'pullupend':'pullleftend');
                 }
             } else {
                 s1 = touchBoundary(that, s0);
@@ -208,7 +208,7 @@ function Scroll(element, options){
 
         var boundaryOffset = getBoundaryOffset(that, offset);
         if (boundaryOffset) {
-            fireEvent(that, boundaryOffset > 0?'pulldown':'pullup', {
+            fireEvent(that, boundaryOffset > 0?(that.axis === 'y'?'pulldown':'pullright'):(that.axis === 'y'?'pullup':'pullleft'), {
                 boundaryOffset: Math.abs(boundaryOffset)
             });
         }
