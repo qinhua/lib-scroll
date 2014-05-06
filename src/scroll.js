@@ -443,6 +443,16 @@ var proto = {
         return offsetRect;
     },
 
+    isInView: function(childEl) {
+        var viewRect = this.viewport.getBoundingClientRect();
+        var childRect = childEl.getBoundingClientRect();
+        if (this.axis === 'y') {
+            return viewRect.top < childRect.bottom && viewRect.bottom > childRect.top;
+        } else {
+            return viewRect.left < childRect.right && viewRect.right > childRect.left;
+        }
+    },
+
     scrollTo: function(offset, isSmooth) {
         var element = this.element;
 

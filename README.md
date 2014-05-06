@@ -2,7 +2,7 @@
 
 ## 最新版本
 
-**2.1.0**
+**2.1.1**
 
 ## 安装依赖
 
@@ -69,6 +69,13 @@
 * @return {object} a rectangle object
 
 返回区域内某元素的矩阵数据，包括`top/bottom/width/height/left/right`。
+
+### scroll.isInView(childEl)
+
+* @param {HTMLElement} childEl 滚动区域内的元素
+* @return {Boolean} 是否在视觉区域内
+
+判断滚动区域内的元素是否在视觉区域内
 
 ### scroll.scrollTo(s, isSmooth)
 
