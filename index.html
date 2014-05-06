@@ -45,23 +45,87 @@ body > div {
     left:0;
 }
 
-.viewport {
+.h-scroll {
+    overflow:hidden; 
+    height:50px; 
+    width:100%;
     position:relative;
+    z-index: 2;
+}
+
+.h-scroll section {
+    display:-webkit-box;
+    height:100%;
+}
+
+.h-scroll div {
+    width:40px;
+    text-align:center;
+    line-height:50px;
+    padding:0 10px;
+}
+
+.v-scroll {
+    position:relative;
+    z-index: 1;
     width:100%;
     height:100%;
     box-sizing:border-box;
+    background-color:#000; 
+    padding-top: 50px; 
+    margin-top:-50px; 
+    overflow:hidden; 
+    display: -webkit-box;
 }
+
+.v-scroll > div {
+    border:1px solid #ccc; 
+    box-sizing: border-box; 
+    width:50%; height:100%; 
+    -webkit-flex:1; 
+    overflow:hidden;
+}
+
+.v-scroll > div:first-child span, #outter span {
+    height:25px;
+}
+
+#inner {
+    border:1px solid red;
+    margin:10px auto; 
+    width:60%; 
+    height:250px; 
+    overflow:hidden;
+}
+
+#inner div {
+    height:25px;
+}
+
+#boundaryTop, #boundaryBottom {
+    height:50px;
+    text-align:center;
+    line-height:50px;
+}
+
 </style>
 </head>
 <body>
-
 <div>
-    <div class="header"></div>
-    <div class="viewport">
-        <div class="active"></div>
-        <div class="inactive"></div>
+    <div class="h-scroll"><section></section></div>
+    <div class="v-scroll">
+        <div><section></section></div>
+        <div>
+            <section>
+                <div id="boundaryTop">下拉刷新</div>
+                <div id="outter"></div>
+                <div id="inner"><section></section></div>
+                <div id="boundaryBottom">上拉加载更多</div>
+            </section>
+        </div>
     </div>
 </div>
+<section style="height:1000px"></section>
 <script src="build/combo.debug.js" type="text/javascript"></script>
 <!--
 <script src="../motion/build/motion.debug.js" type="text/javascript"></script>
@@ -70,79 +134,85 @@ body > div {
 <script src="build/scroll.debug.js" type="text/javascript"></script>
 <script type="text/javascript">
     (function () {
-        document.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-            return false;
-        }, false);
-
-        var viewportEl = document.querySelector('.viewport');
-        var headerEl = document.querySelector('.header');
-        var activeEl = document.querySelector('.viewport .active');
-        var inactiveEl = document.querySelector('.viewport .inactive');
+        var hScroll = document.querySelector('.h-scroll');
+        var vScroll1 = document.querySelector('.v-scroll > div:first-child');
+        var vScroll2 = document.querySelector('.v-scroll > div:last-child');
         var html1 = [], html2 = [], html3 = [];
+        vScroll1.style.color = 'black';
+        vScroll2.style.color = 'white';
 
-        headerEl.style.cssText = 'overflow:hidden; height:50px; width:100%;position:relative;z-index: 2;';
-        viewportEl.style.cssText = 'background-color:#000; width:100%; height:100%; box-sizing: border-box; padding-top: 50px; margin-top:-50px; overflow:hidden; display: -webkit-box;relative;z-index: 1;';
-        activeEl.style.cssText = 'color:black; border:1px solid #ccc; box-sizing: border-box; width:50%; height:100%; -webkit-flex:1; overflow:hidden;'
-        inactiveEl.style.cssText = 'color:white; border:1px solid #ccc; box-sizing: border-box; width:50%; height:100%; -webkit-flex:1; overflow:hidden;'
+        var html = '';
+        for (var i = 0; i < 20; i++) {
+            html += '<div><span>' + i + '</span></div>';
+        }
+        hScroll.querySelector('section').innerHTML = html;
 
+        html = '';
         for (var i = 0; i < 50; i++) {
-            html1.push('<span style="height:25px;">' + i + '</span><br />');
+            html += '<span>' + i + '</span><br />';
         }
+        vScroll1.querySelector('section').innerHTML = html;
+        vScroll2.querySelector('#outter').innerHTML = html;
 
+        html = '';
         for (var i = 0; i < 20; i++) {
-            html2.push('<div style="height:25px;"><input type="text" value="' + i + '" /></div>');
+            html += '<div><input type="text" value="' + i + '" /></div>';
         }
+        vScroll2.querySelector('#inner section').innerHTML = html;
 
-        for (var i = 0; i < 20; i++) {
-            html3.push('<div style="width:40px;text-align:center;line-height:50px;padding:0 10px;"><span>' + i + '</span></div>');
-        }
+        var hScroller = hScroll.querySelector('section');
+        var vScroller = vScroll1.querySelector('section');
+        var vScrollOutter = vScroll2.querySelector('section');
+        var vScrollInner = vScrollOutter.querySelector('section');
+        hScroller.style.backgroundColor = '#FFF';
+        vScroller.style.backgroundColor = '#CCC';
+        vScrollOutter.style.backgroundColor = '#999';
+        vScrollInner.style.backgroundColor = '#333';
 
-        activeEl.innerHTML = '<section>' + html1.join('') + '</section>';
-        inactiveEl.innerHTML = '<section>' + 
-                '<div style="height:50px;text-align:center;line-height:50px;" id="boundaryTop">下拉刷新</div>' + 
-                html1.join('') + 
-                '<div style="border:1px solid red; margin:10px auto; width:60%; height:250px; overflow:hidden;">' + 
-                    '<section>' + html2.join('') + '</section>' + 
-                '</div>' + 
-                '<div style="height:50px;text-align:center;line-height:50px;" id="boundaryBottom">上拉加载更多</div>' + 
-            '</section>';
-        headerEl.innerHTML = '<section style="display:-webkit-box;height:100%;">' + html3.join('') + '</section>';
-
-        var scrollEl1 = activeEl.querySelector('section');
-        var scrollEl2 = inactiveEl.querySelector('section');
-        var scrollEl3 = scrollEl2.querySelector('section');
-        var scrollEl4 = headerEl.querySelector('section');
-
-        scrollEl1.style.backgroundColor = '#CCC';
-        scrollEl2.style.backgroundColor = '#999';
-        scrollEl3.style.backgroundColor = '#333';
-        scrollEl4.style.backgroundColor = '#FFF';
-
-        window['scrollObj1'] = lib.scroll(scrollEl1).init();
-        window['scrollObj2'] = lib.scroll(scrollEl2, {
+        window['hScroller'] = lib.scroll(hScroller, {
+            noBounce: true,
+            fireScrollEvent: true,
+            direction: 'x'
+        }).init();
+        window['vScroller'] = lib.scroll(vScroller, {
+            isPrevent: true
+        }).init();
+        window['vScrollOutter'] = lib.scroll(vScrollOutter, {
             bounceOffset:{
-                top:50, 
-                bottom:50
+                top: 50, 
+                bottom: 50
             }
         }).init();
-        window['scrollObj3'] = lib.scroll(scrollEl3, {
-            paddingTop: 20, 
-            paddingBottom: 50
+        window['vScrollInner'] = lib.scroll(vScrollInner, {
+            padding: {
+                top: 20,
+                bottom: 50
+            }
         }).init();
-        window['scrollObj4'] = lib.scroll(scrollEl4, {direction: 'x'}).init();
 
-        scrollEl2.addEventListener('scrollstart', function() {
+        hScroller.addEventListener('pullright', function(e) {
+            console.log('pullright', e.boundaryOffset);
+        });
+
+        hScroller.addEventListener('pullleft', function(e) {
+            console.log('pullleft', e.boundaryOffset);
+        });
+
+        hScroller.addEventListener('scrollstart', function() {
             console.log('scrollstart');
         }, false);
 
-        scrollEl2.addEventListener('scrollend', function() {
+        hScroller.addEventListener('scrolling', function(e){
+            console.log('scrolling');
+        }, false);
+
+        hScroller.addEventListener('scrollend', function() {
             console.log('scrollend');
         }, false);
 
-        scrollEl2.addEventListener('pullup', function(e) {
+        vScrollOutter.addEventListener('pullup', function(e) {
             console.log('pullup', e.boundaryOffset);
-            var boundaryBottom = scrollEl2.querySelector('#boundaryBottom');
+            var boundaryBottom = vScrollOutter.querySelector('#boundaryBottom');
             if (e.boundaryOffset > 25 && boundaryBottom.innerHTML === '上拉加载更多') {
                 boundaryBottom.innerHTML = '松开即加载';
             } else if (e.boundaryOffset <=25 && boundaryBottom.innerHTML === '松开即加载'){
@@ -150,18 +220,18 @@ body > div {
             }
         }, false);
 
-        scrollEl2.addEventListener('pullupend', function() {
+        vScrollOutter.addEventListener('pullupend', function() {
             console.log('pullupend');
-            scrollObj2.disable();
+            window.vScrollOutter.disable();
             setTimeout(function() {
-                scrollObj2.scrollTo(scrollObj2.getScrollHeight(), true);
-                scrollObj2.enable();
+                window.vScrollOutter.scrollTo(window.vScrollOutter.getScrollHeight(), true);
+                window.vScrollOutter.enable();
             }, 2000);
         }, false);
 
-        scrollEl2.addEventListener('pulldown', function(e) {
+        vScrollOutter.addEventListener('pulldown', function(e) {
             console.log('pulldown', e.boundaryOffset);
-            var boundaryTop = scrollEl2.querySelector('#boundaryTop');
+            var boundaryTop = vScrollOutter.querySelector('#boundaryTop');
             if (e.boundaryOffset > 25 && boundaryTop.innerHTML === '下拉刷新') {
                 boundaryTop.innerHTML = '松开即刷新';
             } else if (e.boundaryOffset <= 25 && boundaryTop.innerHTML === '松开即刷新'){
@@ -169,12 +239,12 @@ body > div {
             }
         }, false);
 
-        scrollEl2.addEventListener('pulldownend', function() {
+        vScrollOutter.addEventListener('pulldownend', function() {
             console.log('pulldownend');
-            scrollObj2.disable();
+            window.vScrollOutter.disable();
             setTimeout(function() {
-                scrollObj2.scrollTo(0, true);
-                scrollObj2.enable();
+                window.vScrollOutter.scrollTo(0, true);
+                window.vScrollOutter.enable();
             }, 2000);
         }, false);
     })();
