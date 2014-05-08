@@ -75,6 +75,16 @@ function getTranslate(x, y) {
     }
 }
 
+var panning = false;
+document.addEventListener('touchmove', function(e){
+    if (panning) {
+        console.log('fffff');
+        e.preventDefault();
+        return false;
+    }
+    return true;
+}, false);
+
 function Scroll(element, options){
     var that = this;
 
@@ -111,9 +121,14 @@ function Scroll(element, options){
     }, 0);
 
     if (options.isPrevent) {
-        this.viewport.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-            return false;
+        var d = this.axis === 'y'?'vertical':'horizontal';
+        this.viewport.addEventListener(d + 'panstart', function(e) {
+            console.log(1);
+            panning = true;
+        }, false);
+        that.viewport.addEventListener('panend', function(e){
+            console.log(2);
+            panning = false;
         }, false);
     }
 
