@@ -78,7 +78,6 @@ function getTranslate(x, y) {
 var panning = false;
 document.addEventListener('touchmove', function(e){
     if (panning) {
-        console.log('fffff');
         e.preventDefault();
         return false;
     }
@@ -123,11 +122,9 @@ function Scroll(element, options){
     if (options.isPrevent) {
         var d = this.axis === 'y'?'vertical':'horizontal';
         this.viewport.addEventListener(d + 'panstart', function(e) {
-            console.log(1);
             panning = true;
         }, false);
         that.viewport.addEventListener('panend', function(e){
-            console.log(2);
             panning = false;
         }, false);
     }
