@@ -161,7 +161,7 @@ function Scroll(element, options){
         var isBounce = !!options.bounceOffset;
         var boundaryOffset = getBoundaryOffset(that, s0);
         var p1 = that.options[that.axis + 'Padding1'];
-        var p2 = that.options[that.axis + 'Padding1'];
+        var p2 = that.options[that.axis + 'Padding2'];
         if(element.style.webkitTransition === '' && element.style.webkitAnimation === '' && boundaryOffset) {
             var s1;
             if (isBounce && boundaryOffset > 0 && p1 && boundaryOffset > p1 / 2) {
