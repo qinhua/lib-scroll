@@ -511,7 +511,6 @@ var proto = {
             that.disable();
             handler(e, function() {
                 that.enable();
-                that.refresh();
             });
         }, false);
     },
@@ -524,7 +523,6 @@ var proto = {
             that.disable();
             handler(e, function() {
                 that.enable();
-                that.refresh();
             });
         }, false);
     }
