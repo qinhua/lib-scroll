@@ -2,7 +2,7 @@
 
 ## 最新版本
 
-**2.1.5**
+**2.1.6**
 
 ## 安装依赖
 
@@ -102,6 +102,14 @@
 * @return {Number} height
 
 获得区域的可见高度（方向为y时有效）。
+
+### scroll.addPulldownHandler(handler)
+
+增加处理下拉的处理函数
+
+### scroll.addPullupHandler(handler)
+
+增加处理上拉的处理函数
 
 ### 事件
 

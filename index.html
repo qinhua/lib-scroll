@@ -221,14 +221,13 @@ body > div {
             }
         }, false);
 
-        vScrollOutter.addEventListener('pullupend', function() {
+        window.vScrollOutter.addPullupHandler(function(e, done) {
             console.log('pullupend');
-            window.vScrollOutter.disable();
             setTimeout(function() {
                 window.vScrollOutter.scrollTo(window.vScrollOutter.getScrollHeight(), true);
-                window.vScrollOutter.enable();
+                done();
             }, 2000);
-        }, false);
+        });
 
         vScrollOutter.addEventListener('pulldown', function(e) {
             console.log('pulldown', e.boundaryOffset);
@@ -240,14 +239,13 @@ body > div {
             }
         }, false);
 
-        vScrollOutter.addEventListener('pulldownend', function() {
+        window.vScrollOutter.addPulldownHandler(function(e, done) {
             console.log('pulldownend');
-            window.vScrollOutter.disable();
             setTimeout(function() {
                 window.vScrollOutter.scrollTo(0, true);
-                window.vScrollOutter.enable();
+                done();
             }, 2000);
-        }, false);
+        });
     })();
 </script>
 

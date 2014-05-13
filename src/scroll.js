@@ -501,6 +501,30 @@ var proto = {
 
     getViewHeight: function() {
         return this.viewport.getBoundingClientRect().height;
+    },
+
+    addPulldownHandler: function(handler) {
+        var that = this;
+        var element = this.element;
+
+        element.addEventListener('pulldownend', function(e) {
+            that.disable();
+            handler(e, function() {
+                that.enable();
+            });
+        }, false);
+    },
+
+    addPullupHandler: function(handler) {
+        var that = this;
+        var element = this.element;
+
+        element.addEventListener('pullupend', function(e) {
+            that.disable();
+            handler(e, function() {
+                that.enable();
+            });
+        }, false);
     }
 }
 

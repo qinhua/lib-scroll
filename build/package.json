@@ -1,7 +1,7 @@
 {
   "name": "lib.scroll",
   "description": "dom scroll",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "homepage": "http://gitlab.alibaba-inc.com/mtb/lib-scroll",
   "author": {
     "name": "zhuxun.jb",
