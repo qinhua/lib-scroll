@@ -78,7 +78,6 @@ function getTranslate(x, y) {
 var panning = false;
 document.addEventListener('touchmove', function(e){
     if (panning) {
-        console.log('fffff');
         e.preventDefault();
         return false;
     }
@@ -123,11 +122,9 @@ function Scroll(element, options){
     if (options.isPrevent) {
         var d = this.axis === 'y'?'vertical':'horizontal';
         this.viewport.addEventListener(d + 'panstart', function(e) {
-            console.log(1);
             panning = true;
         }, false);
         that.viewport.addEventListener('panend', function(e){
-            console.log(2);
             panning = false;
         }, false);
     }
@@ -164,7 +161,7 @@ function Scroll(element, options){
         var isBounce = !!options.bounceOffset;
         var boundaryOffset = getBoundaryOffset(that, s0);
         var p1 = that.options[that.axis + 'Padding1'];
-        var p2 = that.options[that.axis + 'Padding1'];
+        var p2 = that.options[that.axis + 'Padding2'];
         if(element.style.webkitTransition === '' && element.style.webkitAnimation === '' && boundaryOffset) {
             var s1;
             if (isBounce && boundaryOffset > 0 && p1 && boundaryOffset > p1 / 2) {
