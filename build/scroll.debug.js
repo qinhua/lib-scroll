@@ -429,13 +429,13 @@ var proto = {
     },
 
     offset: function(childEl) {
-        var elRect = this.element.getBoundingClientRect();
+        var viewRect = this.viewport.getBoundingClientRect();
         var childRect = childEl.getBoundingClientRect();
         if (this.axis === 'y') {
             var offsetRect = {
-                    top: childRect.top - ((this.options.yPadding1 || 0) + elRect.top),
-                    left: childRect.left - elRect.left,
-                    right: elRect.right - childRect.right,
+                    top: childRect.top - ((this.options.yPadding1 || 0) + viewRect.top),
+                    left: childRect.left - viewRect.left,
+                    right: viewRect.right - childRect.right,
                     width: childRect.width,
                     height: childRect.height
                 };
@@ -443,9 +443,9 @@ var proto = {
             offsetRect.bottom = offsetRect.top + offsetRect.height;
         } else {
             var offsetRect = {
-                    top: childRect.top - elRect.top,
-                    bottom: elRect.bottom - childRect.bottom,
-                    left: childRect.left - ((this.options.xPadding1 || 0) + elRect.left),
+                    top: childRect.top - viewRect.top,
+                    bottom: viewRect.bottom - childRect.bottom,
+                    left: childRect.left - ((this.options.xPadding1 || 0) + viewRect.left),
                     width: childRect.width,
                     height: childRect.height
                 };
