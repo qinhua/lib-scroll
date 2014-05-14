@@ -429,6 +429,33 @@ var proto = {
     },
 
     offset: function(childEl) {
+        var elRect = this.element.getBoundingClientRect();
+        var childRect = childEl.getBoundingClientRect();
+        if (this.axis === 'y') {
+            var offsetRect = {
+                    top: childRect.top - ((this.options.yPadding1 || 0) + elRect.top),
+                    left: childRect.left - elRect.left,
+                    right: elRect.right - childRect.right,
+                    width: childRect.width,
+                    height: childRect.height
+                };
+
+            offsetRect.bottom = offsetRect.top + offsetRect.height;
+        } else {
+            var offsetRect = {
+                    top: childRect.top - elRect.top,
+                    bottom: elRect.bottom - childRect.bottom,
+                    left: childRect.left - ((this.options.xPadding1 || 0) + elRect.left),
+                    width: childRect.width,
+                    height: childRect.height
+                };
+
+            offsetRect.right = offsetRect.left + offsetRect.width;
+        }
+        return offsetRect;
+    },
+
+    getRect: function(childEl) {
         var viewRect = this.viewport.getBoundingClientRect();
         var childRect = childEl.getBoundingClientRect();
         if (this.axis === 'y') {

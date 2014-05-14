@@ -68,7 +68,14 @@
 * @param {HTMLElement} childEl 滚动区域内的元素
 * @return {object} a rectangle object
 
-返回区域内某元素的矩阵数据，包括`top/bottom/width/height/left/right`。
+返回某元素相对滚动区域的偏移，包括`top/bottom/left/right/width/height`。
+
+### scroll.getRect(childEl)
+
+* @param {HTMLElement} childEl 滚动区域内的元素
+* @return {object} a rectangle object
+
+返回某元素相对视觉区域的矩阵数据，包括`top/bottom/left/right/width/height`。
 
 ### scroll.isInView(childEl)
 
