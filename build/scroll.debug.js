@@ -139,8 +139,6 @@ function Scroll(element, options){
     }, false);
 
     var cancelScrollEnd;
-    var cancelScrolling;
-    var scrolling;
     function touchstartHandler(e) {
         if (!that.enabled) {
             return;
@@ -151,7 +149,7 @@ function Scroll(element, options){
         element.style.webkitTransform = getComputedStyle(element).webkitTransform;
         element.style.webkitTransition = '';
         webkitTransitionEndHandler = null;
-        scrolling = false;
+        that.isScrolling = false;
     }
 
     function touchendHandler(e) {
@@ -182,7 +180,7 @@ function Scroll(element, options){
             }
             element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
             element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
-        } else if (scrolling) {
+        } else if (that.isScrolling) {
             scrollEnd();
         }
     }
@@ -198,8 +196,7 @@ function Scroll(element, options){
         that.maxScrollOffset = getMaxScrollOffset(that);
         that.panFixRatio = 2.5;
         cancelScrollEnd = false;
-        cancelScrolling = false;
-        scrolling = true;
+        that.isScrolling = true;
         fireEvent(that, 'scrollstart');
     }
 
@@ -271,13 +268,13 @@ function Scroll(element, options){
             //不作处理，让touchend handler处理
             //手指离开屏幕时，在滚动范围内，做一下惯性计算
             v0 = e['velocity' + that.axis.toUpperCase()];
-            if (v0 > 2) { 
-                v0 = 2;
+            if (v0 > 3) {
+                v0 = 3;
             }
-            if (v0 < -2) {
-                v0 = -2;
+            if (v0 < -3) {
+                v0 = -3;
             }
-            a0 = 0.0015 * ( v0 / Math.abs(v0));
+            a0 = 0.001 * ( v0 / Math.abs(v0));
             motion0 = motion({
                 v: v0,
                 a: -a0
@@ -312,7 +309,7 @@ function Scroll(element, options){
                     t1 = motion1.t;
 
                     v2 = v1 - a1 * t1;
-                    a2 = 0.01 * (v2 / Math.abs(v2));
+                    a2 = 0.03 * (v2 / Math.abs(v2));
                     motion2 = motion({
                         v: v2,
                         a: -a2
@@ -337,9 +334,8 @@ function Scroll(element, options){
             }
 
             if (options.fireScrollingEvent) {
-                cancelScrolling = false;
                 setTimeout(function(){
-                    if (!cancelScrolling) {
+                    if (that.isScrolling) {
                         fireEvent(that, 'scrolling');
                         setTimeout(arguments.callee, 10);
                     }
@@ -357,7 +353,7 @@ function Scroll(element, options){
 
         setTimeout(function() {
             if (!cancelScrollEnd) {
-                cancelScrolling = true;
+                that.isScrolling = false;
                 element.style.webkitTransition = '';
                 element.style.webkitAnimation = '';
                 fireEvent(that, 'scrollend');
