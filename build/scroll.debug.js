@@ -140,6 +140,7 @@ function Scroll(element, options){
 
     var cancelScrollEnd;
     var cancelScrolling;
+    var scrolling;
     function touchstartHandler(e) {
         if (!that.enabled) {
             return;
@@ -150,6 +151,7 @@ function Scroll(element, options){
         element.style.webkitTransform = getComputedStyle(element).webkitTransform;
         element.style.webkitTransition = '';
         webkitTransitionEndHandler = null;
+        scrolling = false;
     }
 
     function touchendHandler(e) {
@@ -180,7 +182,7 @@ function Scroll(element, options){
             }
             element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
             element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
-        } else {
+        } else if (scrolling) {
             scrollEnd();
         }
     }
@@ -197,6 +199,7 @@ function Scroll(element, options){
         that.panFixRatio = 2.5;
         cancelScrollEnd = false;
         cancelScrolling = false;
+        scrolling = true;
         fireEvent(that, 'scrollstart');
     }
 
