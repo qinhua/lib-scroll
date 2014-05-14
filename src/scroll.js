@@ -268,13 +268,13 @@ function Scroll(element, options){
             //不作处理，让touchend handler处理
             //手指离开屏幕时，在滚动范围内，做一下惯性计算
             v0 = e['velocity' + that.axis.toUpperCase()];
-            if (v0 > 2) { 
-                v0 = 2;
+            if (v0 > 3) {
+                v0 = 3;
             }
-            if (v0 < -2) {
-                v0 = -2;
+            if (v0 < -3) {
+                v0 = -3;
             }
-            a0 = 0.0015 * ( v0 / Math.abs(v0));
+            a0 = 0.001 * ( v0 / Math.abs(v0));
             motion0 = motion({
                 v: v0,
                 a: -a0
@@ -309,7 +309,7 @@ function Scroll(element, options){
                     t1 = motion1.t;
 
                     v2 = v1 - a1 * t1;
-                    a2 = 0.01 * (v2 / Math.abs(v2));
+                    a2 = 0.03 * (v2 / Math.abs(v2));
                     motion2 = motion({
                         v: v2,
                         a: -a2
