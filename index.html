@@ -142,7 +142,7 @@ body > div {
         vScroll2.style.color = 'white';
 
         var html = '';
-        for (var i = 0; i < 20; i++) {
+        for (var i = 0; i < 100; i++) {
             html += '<div><span>' + i + '</span></div>';
         }
         hScroll.querySelector('section').innerHTML = html;
@@ -172,7 +172,6 @@ body > div {
         window['hScroller'] = lib.scroll(hScroller, {
             noBounce: true,
             isPrevent: true,
-            fireScrollingEvent: true,
             direction: 'x'
         }).init();
         window['vScroller'] = lib.scroll(vScroller, {
@@ -203,13 +202,13 @@ body > div {
             console.log('scrollstart');
         }, false);
 
-        hScroller.addEventListener('scrolling', function(e){
-            console.log('scrolling');
-        }, false);
-
         hScroller.addEventListener('scrollend', function() {
             console.log('scrollend');
         }, false);
+
+        window.hScroller.addScrollingHandler(function(){
+            console.log('scrolling');
+        });
 
         vScrollOutter.addEventListener('pullup', function(e) {
             console.log('pullup', e.boundaryOffset);

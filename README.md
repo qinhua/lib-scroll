@@ -24,7 +24,6 @@
 	- bounceOffset[top/bottom/left/right] - 边缘回弹距离
 	- noBounce - 是否取消边缘回弹效果
 	- isPrevent - 阻止默认滑动
-	- fireScrollingEvent - 开启scrolling事件
 
 
 ### scroll.enable()
@@ -118,12 +117,15 @@
 
 增加处理上拉的处理函数
 
+### scroll.addScrollingHandler(handler)
+
+增加处理滚动中的处理函数
+
 ### 事件
 
 在滚动的元素上，可以监听如下这些事件：
 
 - scrollstart - 滚动开始
-- scrolling - 滚动中（须开启fireScrollingEvent开关）
 - scrollend - 滚动结束
 - pullleft - 往左拉（方向为x时有效）
 - pullleftend - 往左拉结束（方向为x时有效）
