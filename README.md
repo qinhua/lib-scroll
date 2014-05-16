@@ -20,10 +20,10 @@
 - el - 需要滚动的元素
 - options - 选项
 	- direction - 方向x/y
-	- padding[top/bottom/left/right] - 边缘空白
-	- bounceOffset[top/bottom/left/right] - 边缘回弹距离
+	- padding[top/bottom/left/right] - 边缘空白（和bounceOffset互斥）
+	- bounceOffset[top/bottom/left/right] - 边缘回弹距离（和bounceOffset互斥）
 	- noBounce - 是否取消边缘回弹效果
-	- isPrevent - 阻止默认滑动
+	- isPrevent - 阻止默认滑动，默认为true
 
 
 ### scroll.enable()
@@ -111,15 +111,15 @@
 
 ### scroll.addPulldownHandler(handler)
 
-增加处理下拉的处理函数
+增加处理下拉的处理函数，第二个参数为完成后的回调。
 
 ### scroll.addPullupHandler(handler)
 
-增加处理上拉的处理函数
+增加处理上拉的处理函数，第二个参数为完成后的回调。
 
 ### scroll.addScrollingHandler(handler)
 
-增加处理滚动中的处理函数
+增加处理滚动中的处理函数，回调函数中，第一个参数为true正在滚动，为false表示滚动停止了。
 
 ### 事件
 

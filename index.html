@@ -171,12 +171,9 @@ body > div {
 
         window['hScroller'] = lib.scroll(hScroller, {
             noBounce: true,
-            isPrevent: true,
             direction: 'x'
         }).init();
-        window['vScroller'] = lib.scroll(vScroller, {
-            isPrevent: true
-        }).init();
+        window['vScroller'] = lib.scroll(vScroller).init();
         window['vScrollOutter'] = lib.scroll(vScrollOutter, {
             bounceOffset:{
                 top: 50, 

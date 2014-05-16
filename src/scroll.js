@@ -89,7 +89,11 @@ function Scroll(element, options){
 
     options = options || {};
     options.noBounce = !!options.noBounce;
-    options.isPrevent = !!options.isPrevent;
+    if (options.isPrevent == null) {
+        options.isPrevent = true;
+    } else {
+        options.isPrevent = !!options.isPrevent;
+    }
 
     if (options.padding) {
         options.yPadding1 = -options.padding.top || 0;
@@ -192,8 +196,6 @@ function Scroll(element, options){
 
         if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
             e.stopPropagation();    
-        } else {
-            return;
         }
         
         that.transformOffset = getTransformOffset(that);
@@ -255,8 +257,6 @@ function Scroll(element, options){
 
         if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
             e.stopPropagation();    
-        } else {
-            return;
         }
     }
 
@@ -596,6 +596,30 @@ var proto = {
                         setTimeout(arguments.callee, 16);
                     }
                 }, 16);
+            }, false);
+        }
+    },
+
+    addScrollendHandler: function(handler) {
+        var that = this;
+        that.scrollendHandlers = that.scrollendHandlers || [];
+        that.scrollendHandlers.push(handler);
+
+        if (!that.fireScrollendEvent) {
+            that.fireScrollendEvent = true;
+            that.element.addEventListener('scrollstart', function(e){
+                var top = 0;
+                setTimeout(function(){
+                    if (top !== that.getScrollTop()) {
+                        top = that.getScrollTop();
+                        setTimeout(arguments.callee, 150);
+                    } else {
+                        top = 0;
+                        that.scrollendHandlers.forEach(function(h){
+                            setTimeout(h, 1);
+                        });
+                    }
+                }, 150);
             }, false);
         }
     }
