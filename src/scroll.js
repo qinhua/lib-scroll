@@ -192,6 +192,8 @@ function Scroll(element, options){
 
         if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
             e.stopPropagation();    
+        } else {
+            return;
         }
         
         that.transformOffset = getTransformOffset(that);
@@ -210,6 +212,8 @@ function Scroll(element, options){
 
         if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
             e.stopPropagation();    
+        } else {
+            return;
         }
 
         var offset = that.transformOffset[that.axis] + e['displacement' + that.axis.toUpperCase()];
@@ -251,6 +255,8 @@ function Scroll(element, options){
 
         if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
             e.stopPropagation();    
+        } else {
+            return;
         }
     }
 
@@ -261,6 +267,8 @@ function Scroll(element, options){
 
         if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
             e.stopPropagation();    
+        } else {
+            return;
         }
 
         cancelScrollEnd = true;
