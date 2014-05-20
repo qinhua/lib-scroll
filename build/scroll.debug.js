@@ -284,13 +284,13 @@ function Scroll(element, options){
             //不作处理，让touchend handler处理
             //手指离开屏幕时，在滚动范围内，做一下惯性计算
             v0 = e['velocity' + that.axis.toUpperCase()];
-            if (v0 > 3) {
-                v0 = 3;
+            if (v0 > 2) {
+                v0 = 2;
             }
-            if (v0 < -3) {
-                v0 = -3;
+            if (v0 < -2) {
+                v0 = -2;
             }
-            a0 = 0.001 * ( v0 / Math.abs(v0));
+            a0 = 0.0015 * ( v0 / Math.abs(v0));
             motion0 = motion({
                 v: v0,
                 a: -a0
@@ -421,29 +421,29 @@ var proto = {
         if (this.axis === 'y') {
             el.style.height = 'auto';
             var firstEl = el.firstElementChild;
-            while (!firstEl.getBoundingClientRect().height) {
+            while (firstEl && !firstEl.getBoundingClientRect().height) {
                 firstEl = firstEl.nextElementSibling;
             }
             var lastEl = el.lastElementChild;
-            while (!lastEl.getBoundingClientRect().height) {
+            while (lastEl && !lastEl.getBoundingClientRect().height) {
                 lastEl = lastEl.previousElementSibling;
             }
             el.style.height = (this.options.height || 
-                (lastEl.getBoundingClientRect().bottom - 
-                    firstEl.getBoundingClientRect().top)) + 'px';
+                ((lastEl && lastEl.getBoundingClientRect().bottom || 0) - 
+                    (firstEl && firstEl.getBoundingClientRect().top || 0))) + 'px';
         } else {
             el.style.width = 'auto';
             var firstEl = el.firstElementChild;
-            while (!firstEl.getBoundingClientRect().width) {
+            while (firstEl && !firstEl.getBoundingClientRect().width) {
                 firstEl = firstEl.nextElementSibling;
             }
             var lastEl = el.lastElementChild;
-            while (!lastEl.getBoundingClientRect().width) {
+            while (lastEl && !lastEl.getBoundingClientRect().width) {
                 lastEl = lastEl.previousElementSibling;
             }
             el.style.width = (this.options.width || 
-                (lastEl.getBoundingClientRect().right - 
-                    firstEl.getBoundingClientRect().left)) + 'px';
+                ((lastEl && lastEl.getBoundingClientRect().right || 0) - 
+                    (firstEl && firstEl.getBoundingClientRect().left || 0))) + 'px';
         }
 
         this.transformOffset = getTransformOffset(this);
