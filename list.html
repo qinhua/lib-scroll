@@ -14,6 +14,9 @@
         height: 100%;
         overflow: hidden;
     }
+    #J_FilterBarContainer {
+        height:36px;
+    }
     </style>
 </head>
 
@@ -88,7 +91,8 @@
 <script src="build/scroll.debug.js" type="text/javascript"></script>
 <script>
 var scrollObj = lib.scroll(document.getElementById('tbh5v0'), {
-    isPrevent: true
+    isPrevent: true,
+    useLazyload: true
 });
 scrollObj.init();
 
@@ -104,6 +108,9 @@ list.addEventListener('click', function(e) {
         }
     }
 }, false)
+
+scrollObj.makeSticky(document.querySelector(".filter-bar"))
+
 </script>
 </body>
 </html>

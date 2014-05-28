@@ -108,6 +108,7 @@ function Scroll(element, options){
         options.xPadding2 = options.bounceOffset.right || 0;
     }
 
+
     this.options = options;
     that.axis = options.direction || 'y';
     this.element = element;
@@ -122,7 +123,17 @@ function Scroll(element, options){
     this.viewport.scrollId = setTimeout(function(){
         scrollObjs[that.viewport.scrollId + ''] = that;
     }, 0);
-
+    if (options.useLazyload) {
+        if(options.realtimeLazyload) {
+            that.addScrollingHandler(function(){
+                that.checkLazyload();
+            })
+        } else {
+            that.addScrollendHandler(function(){
+                that.checkLazyload();
+            })
+        }
+    }
     if (options.isPrevent) {
         var d = this.axis === 'y'?'vertical':'horizontal';
         this.viewport.addEventListener(d + 'panstart', function(e) {
@@ -622,7 +633,38 @@ var proto = {
                 }, 150);
             }, false);
         }
-    }
+    },
+
+    checkLazyload:function(){
+        var that = this;
+        var imgs = Array.prototype.slice.call(this.element.querySelectorAll("img.lazy")).filter(function(img){
+            return that.isInView(img);
+        }).forEach(function(img){
+            //console.log(img);
+            img.src = img.getAttribute("dataimg");
+            img.className = img.className.split(" ").filter(function(e){ 
+                return e != "lazy";
+            });
+        });
+    },
+
+    makeSticky: function(stickyElement){
+        var placeHolder = stickyElement.parentNode;
+        var that = this;
+        that.addScrollingHandler(function(){
+            if(placeHolder.getBoundingClientRect().top < 0 && (placeHolder==stickyElement.parentNode) ) {
+                that.element.parentNode.appendChild(stickyElement);
+                stickyElement.style.position = "absolute";
+                stickyElement.style.top = "0";
+            }
+            if(placeHolder.getBoundingClientRect().top > 0 && (placeHolder!=stickyElement.parentNode) ) {
+                placeHolder.appendChild(stickyElement);
+                stickyElement.style.position = "";
+                stickyElement.style.top = "";
+            }
+        })
+    
+    },
 }
 
 for (var k in proto) {
