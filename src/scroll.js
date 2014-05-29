@@ -656,8 +656,7 @@ var proto = {
                 that.element.parentNode.appendChild(stickyElement);
                 stickyElement.style.position = "absolute";
                 stickyElement.style.top = "0";
-            }
-            if((placeHolder!=stickyElement.parentNode) && that.getRect(placeHolder).top > 0) {
+            } else if((placeHolder!=stickyElement.parentNode) && that.getRect(placeHolder).top > 0) {
                 placeHolder.appendChild(stickyElement);
                 stickyElement.style.position = "";
                 stickyElement.style.top = "";
