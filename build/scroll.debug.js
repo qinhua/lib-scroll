@@ -644,7 +644,7 @@ var proto = {
             img.src = img.getAttribute("dataimg");
             img.className = img.className.split(" ").filter(function(e){ 
                 return e != "lazy";
-            });
+            }).join(" ");
         });
     },
 
@@ -652,12 +652,12 @@ var proto = {
         var placeHolder = stickyElement.parentNode;
         var that = this;
         that.addScrollingHandler(function(){
-            if(placeHolder.getBoundingClientRect().top < 0 && (placeHolder==stickyElement.parentNode) ) {
+            if((placeHolder==stickyElement.parentNode) && that.getRect(placeHolder).top < 0 ) {
                 that.element.parentNode.appendChild(stickyElement);
                 stickyElement.style.position = "absolute";
                 stickyElement.style.top = "0";
             }
-            if(placeHolder.getBoundingClientRect().top > 0 && (placeHolder!=stickyElement.parentNode) ) {
+            if((placeHolder!=stickyElement.parentNode) && that.getRect(placeHolder).top > 0) {
                 placeHolder.appendChild(stickyElement);
                 stickyElement.style.position = "";
                 stickyElement.style.top = "";
