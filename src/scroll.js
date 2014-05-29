@@ -644,7 +644,7 @@ var proto = {
             img.src = img.getAttribute("dataimg");
             img.className = img.className.split(" ").filter(function(e){ 
                 return e != "lazy";
-            });
+            }).join(" ");
         });
     },
 
