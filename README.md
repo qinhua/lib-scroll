@@ -24,6 +24,8 @@
 	- bounceOffset[top/bottom/left/right] - 边缘回弹距离（和bounceOffset互斥）
 	- noBounce - 是否取消边缘回弹效果
 	- isPrevent - 阻止默认滑动，默认为true
+	- useLazyload - 是否检查懒加载图片
+	- realtimeLazyload - 在useLazyload为true的前提下，是否实时检查懒加载（会比较吃性能）
 
 
 ### scroll.enable()
@@ -124,6 +126,16 @@
 ### scroll.addScrollendHandler(handler)
 
 增加处理滚动结束的处理函数。
+
+### scroll.makeSticky(stickyElement)
+
+使得scroll区域内一个元素stickyElement变成sticky的：即当元素位置在滚动区域上方时，元素会吸附于滚动区域顶部。
+
+**一般来说stickyElement的父元素应该指定固定高度，避免元素sticky行为触发时页面重排版。**
+
+### scroll.checkLazyload()
+
+检查当前可见区域内是否有需要懒加载的图片，如有则触发加载。
 
 ### 事件
 
