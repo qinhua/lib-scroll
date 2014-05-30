@@ -2,7 +2,7 @@
 
 ## 最新版本
 
-**2.1.6**
+**2.1.8**
 
 ## 安装依赖
 
@@ -26,15 +26,36 @@
 	- isPrevent - 阻止默认滑动，默认为true
 	- useLazyload - 是否检查懒加载图片
 	- realtimeLazyload - 在useLazyload为true的前提下，是否实时检查懒加载（会比较吃性能）
+	- useSticky - 是否对拥有sticky类名的子元素采用吸顶功能
 
+## 如何使用懒加载
+
+* options中，设置useLazyload为true。
+* 需要懒加载的元素拥有lazy类名，且有dataimg属性配置图片地址。
+* 需要懒加载的元素必须有初始高度，不要让图片加载后来撑开。
+* 在第一次dom加载完后，需要手动调用checkLazyLoad来显示当前屏的图片。
+
+
+## 如何使用吸顶功能
+
+### 单独使用吸顶
+
+* 调用makeSticky，传入需要被吸顶的元素，必须保证被吸顶的元素，拥有作为占位符的父元素且定高。
+
+### 初始化吸顶
+
+* 在options中，设置useSticky为true
+* 需要吸顶的元素拥有sticky类名
+
+## 实例方法
 
 ### scroll.enable()
 
-启用滚动（Y轴）。
+启用滚动。
 
 ### scroll.disable()
 
-停用滚动（Y轴）。
+停用滚动。
 
 ### scroll.getScrollWidth()
 
@@ -127,22 +148,22 @@
 
 增加处理滚动结束的处理函数。
 
+### scroll.checkLazyload()
+
+检查当前可见区域内是否有需要懒加载的图片，如有则触发加载。
+
 ### scroll.makeSticky(stickyElement)
 
 使得scroll区域内一个元素stickyElement变成sticky的：即当元素位置在滚动区域上方时，元素会吸附于滚动区域顶部。
 
 **一般来说stickyElement的父元素应该指定固定高度，避免元素sticky行为触发时页面重排版。**
 
-### scroll.checkLazyload()
-
-检查当前可见区域内是否有需要懒加载的图片，如有则触发加载。
-
-### 事件
+## 事件
 
 在滚动的元素上，可以监听如下这些事件：
 
 - scrollstart - 滚动开始
-- scrollend - 滚动结束
+- scrollend - 滚动结束（建议使用addScrollendHandler来处理）
 - pullleft - 往左拉（方向为x时有效）
 - pullleftend - 往左拉结束（方向为x时有效）
 - pullright - 往右拉（方向为x时有效）
