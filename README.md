@@ -119,7 +119,11 @@
 
 ### scroll.addScrollingHandler(handler)
 
-增加处理滚动中的处理函数，回调函数中，第一个参数为true正在滚动，为false表示滚动停止了。
+增加处理滚动中的处理函数。
+
+### scroll.addScrollendHandler(handler)
+
+增加处理滚动结束的处理函数。
 
 ### 事件
 
