@@ -419,34 +419,39 @@ var proto = {
         var el = this.element;
 
         if (this.axis === 'y') {
-            el.style.height =el.offsetHeight;
+            el.style.height = 'auto';
             var firstEl = el.firstElementChild;
-            while (firstEl && !firstEl.getBoundingClientRect().height) {
-                firstEl = firstEl.nextElementSibling;
-            }
-            var lastEl = el.lastElementChild;
-            while (lastEl && !lastEl.getBoundingClientRect().height) {
-                lastEl = lastEl.previousElementSibling;
-            }
-            if(lastEl){
+            if(firstEl){
+                while (firstEl && !firstEl.getBoundingClientRect().height) {
+                    firstEl = firstEl.nextElementSibling;
+                }
+                var lastEl = el.lastElementChild;
+                while (lastEl && !lastEl.getBoundingClientRect().height) {
+                    lastEl = lastEl.previousElementSibling;
+                }
                 el.style.height = (this.options.height ||
                     ((lastEl && lastEl.getBoundingClientRect().bottom || 0) -
                         (firstEl && firstEl.getBoundingClientRect().top || 0))) + 'px';
+            }else{
+                el.style.height=el.offsetHeight;
             }
+
         } else {
-            el.style.width =el.offsetWidth;
+            el.style.width = 'auto';
             var firstEl = el.firstElementChild;
-            while (firstEl && !firstEl.getBoundingClientRect().width) {
-                firstEl = firstEl.nextElementSibling;
-            }
-            var lastEl = el.lastElementChild;
-            while (lastEl && !lastEl.getBoundingClientRect().width) {
-                lastEl = lastEl.previousElementSibling;
-            }
-            if(lastEl){
+            if(firstEl){
+                while (firstEl && !firstEl.getBoundingClientRect().width) {
+                    firstEl = firstEl.nextElementSibling;
+                }
+                var lastEl = el.lastElementChild;
+                while (lastEl && !lastEl.getBoundingClientRect().width) {
+                    lastEl = lastEl.previousElementSibling;
+                }
                 el.style.width = (this.options.width ||
                     ((lastEl && lastEl.getBoundingClientRect().right || 0) -
                         (firstEl && firstEl.getBoundingClientRect().left || 0))) + 'px';
+            }else{
+                el.style.width=el.offsetWidth;
             }
         }
 
