@@ -419,7 +419,7 @@ var proto = {
         var el = this.element;
 
         if (this.axis === 'y') {
-            el.style.height = 'auto';
+            el.style.height =el.offsetHeight;
             var firstEl = el.firstElementChild;
             while (firstEl && !firstEl.getBoundingClientRect().height) {
                 firstEl = firstEl.nextElementSibling;
@@ -428,11 +428,13 @@ var proto = {
             while (lastEl && !lastEl.getBoundingClientRect().height) {
                 lastEl = lastEl.previousElementSibling;
             }
-            el.style.height = (this.options.height || 
-                ((lastEl && lastEl.getBoundingClientRect().bottom || 0) - 
-                    (firstEl && firstEl.getBoundingClientRect().top || 0))) + 'px';
+            if(lastEl){
+                el.style.height = (this.options.height ||
+                    ((lastEl && lastEl.getBoundingClientRect().bottom || 0) -
+                        (firstEl && firstEl.getBoundingClientRect().top || 0))) + 'px';
+            }
         } else {
-            el.style.width = 'auto';
+            el.style.width =el.offsetWidth;
             var firstEl = el.firstElementChild;
             while (firstEl && !firstEl.getBoundingClientRect().width) {
                 firstEl = firstEl.nextElementSibling;
@@ -441,9 +443,11 @@ var proto = {
             while (lastEl && !lastEl.getBoundingClientRect().width) {
                 lastEl = lastEl.previousElementSibling;
             }
-            el.style.width = (this.options.width || 
-                ((lastEl && lastEl.getBoundingClientRect().right || 0) - 
-                    (firstEl && firstEl.getBoundingClientRect().left || 0))) + 'px';
+            if(lastEl){
+                el.style.width = (this.options.width ||
+                    ((lastEl && lastEl.getBoundingClientRect().right || 0) -
+                        (firstEl && firstEl.getBoundingClientRect().left || 0))) + 'px';
+            }
         }
 
         this.transformOffset = getTransformOffset(this);
