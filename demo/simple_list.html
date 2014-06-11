@@ -1,0 +1,300 @@
+c<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+
+<title>Feele list scroll Demo</title>
+
+
+<style type="text/css">
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+html {
+	-ms-touch-action: none;
+}
+
+body,ul,li {
+	padding: 0;
+	margin: 0;
+	border: 0;
+}
+
+body {
+	font-size: 12px;
+	font-family: ubuntu, helvetica, arial;
+	overflow: hidden; /* this is important to prevent the whole page to bounce */
+}
+
+#header {
+	position: absolute;
+	z-index: 2;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 45px;
+	line-height: 45px;
+	background: #F40;
+	padding: 0;
+	color: #eee;
+	font-size: 20px;
+	text-align: center;
+	font-weight: bold;
+}
+
+#footer {
+	position: absolute;
+	z-index: 2;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 48px;
+	background: #444;
+	padding: 0;
+	border-top: 1px solid #444;
+}
+
+#wrapper {
+	position: absolute;
+	z-index: 1;
+	top: 45px;
+	bottom: 48px;
+	left: 0;
+	width: 100%;
+	background: #ccc;
+	overflow: hidden;
+}
+
+#scroller {
+	position: absolute;
+	z-index: 1;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	width: 100%;
+	-webkit-transform: translateZ(0);
+	-moz-transform: translateZ(0);
+	-ms-transform: translateZ(0);
+	-o-transform: translateZ(0);
+	transform: translateZ(0);
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	-webkit-text-size-adjust: none;
+	-moz-text-size-adjust: none;
+	-ms-text-size-adjust: none;
+	-o-text-size-adjust: none;
+	text-size-adjust: none;
+}
+
+#scroller ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	text-align: left;
+}
+
+#scroller li {
+	padding: 0 10px;
+	height: 40px;
+	line-height: 40px;
+	border-bottom: 1px solid #ccc;
+	border-top: 1px solid #fff;
+	background-color: #fafafa;
+	font-size: 14px;
+}
+
+#wrapper a {
+   padding: 0 0px;
+   font-size: 20px;
+   line-height: 20px;
+   height: 20px;
+}
+
+
+</style>
+
+
+</head>
+<body >
+<div id="header">Feele List Scroll Demo</div>
+
+<div id="wrapper">
+	<div id="scroller" style="-webkit-transition: 0ms cubic-bezier(0.1, 0.57, 0.1, 1); transition: 0ms cubic-bezier(0.1, 0.57, 0.1, 1); -webkit-transform: translate(0px, 0px) translateZ(0px);">
+		<ul>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 1</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 2</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 3</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 4</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 5</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 6</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 7</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 8</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 9</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 10</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 11</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 12</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 13</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 14</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 15</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 16</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 17</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 18</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 19</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 20</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 21</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 22</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 23</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 24</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 25</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 26</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 27</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 28</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 29</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 30</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 31</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 32</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 33</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 34</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 35</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 36</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 37</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 38</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 39</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 40</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 41</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 42</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 43</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 44</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 45</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 46</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 47</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 48</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 49</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 50</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 1</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 2</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 3</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 4</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 5</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 6</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 7</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 8</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 9</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 10</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 11</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 12</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 13</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 14</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 15</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 16</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 17</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 18</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 19</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 20</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 21</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 22</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 23</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 24</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 25</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 26</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 27</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 28</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 29</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 30</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 31</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 32</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 33</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 34</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 35</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 36</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 37</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 38</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 39</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 40</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 41</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 42</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 43</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 44</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 45</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 46</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 47</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 48</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 49</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 50</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 1</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 2</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 3</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 4</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 5</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 6</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 7</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 8</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 9</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 10</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 11</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 12</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 13</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 14</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 15</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 16</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 17</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 18</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 19</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 20</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 21</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 22</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 23</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 24</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 25</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 26</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 27</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 28</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 29</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 30</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 31</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 32</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 33</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 34</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 35</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 36</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 37</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 38</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 39</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 40</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 41</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 42</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 43</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 44</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 45</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 46</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 47</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 48</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 49</a><br>
+			<a target="taobao" href="http://m.taobao.com" >Pretty row 50</a><br>
+
+
+		</ul>
+	</div>
+</div>
+
+<div id="footer"></div>
+</body>
+
+<script src="../build/combo.debug.js" type="text/javascript"></script>
+<!-- <script src="../build/scroll.debug.js" type="text/javascript"></script> -->
+<script src="../src/scroll.js" type="text/javascript"></script> 
+<script>
+var scrollObj = lib.scroll(document.getElementById('scroller'), {
+    isPrevent: true,
+    isEnableNoClickScroll:true
+});
+scrollObj.init();
+
+</script>
+
+</html>

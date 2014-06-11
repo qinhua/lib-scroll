@@ -153,7 +153,15 @@ function Scroll(element, options){
         element.style.webkitTransform = getComputedStyle(element).webkitTransform;
         element.style.webkitTransition = '';
         webkitTransitionEndHandler = null;
-        that.isScrolling = false;
+
+	if (this.options.isEnableNoClickScroll){
+	    clearTimeout(this.scrollingTimeoutId);
+	    this.scrollingTimeoutId = setTimeout(function(){
+		that.isScrolling = false;
+	    },1000);
+	}else{
+	    that.isScrolling = false;
+	}
     }
 
     function touchendHandler(e) {
@@ -203,6 +211,9 @@ function Scroll(element, options){
         that.maxScrollOffset = getMaxScrollOffset(that);
         that.panFixRatio = 2.5;
         cancelScrollEnd = false;
+	if (that.options.isEnableNoClickScroll){
+	    clearTimeout(that.scrollingTimeoutId);
+	}
         that.isScrolling = true;
         fireEvent(that, 'scrollstart');
     }
@@ -371,6 +382,18 @@ function Scroll(element, options){
             }
         }, 10);
     }
+    
+    if (options.isEnableNoClickScroll){
+	this.scrollingTimeoutId = null;
+	element.addEventListener("click", function(e){
+	    console.log("isScrolling status is " + that.isScrolling);
+	    if ( that.isScrolling  && e.target.tagName.toLowerCase() === "a"){
+		e.preventDefault();
+		e.stopPropagation();
+	    }
+	},true)
+    }
+    
 }
 
 var proto = {
