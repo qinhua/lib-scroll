@@ -154,11 +154,11 @@ function Scroll(element, options){
         element.style.webkitTransition = '';
         webkitTransitionEndHandler = null;
 
-	if (this.options.isEnableNoClickScroll){
-	    clearTimeout(this.scrollingTimeoutId);
-	    this.scrollingTimeoutId = setTimeout(function(){
+	if (that.options.isEnableNoClickScroll){
+	    clearTimeout(that.scrollingTimeoutId);
+	    that.scrollingTimeoutId = setTimeout(function(){
 		that.isScrolling = false;
-	    },1000);
+	    },700);
 	}else{
 	    that.isScrolling = false;
 	}
@@ -384,9 +384,8 @@ function Scroll(element, options){
     }
     
     if (options.isEnableNoClickScroll){
-	this.scrollingTimeoutId = null;
+	that.scrollingTimeoutId = null;
 	element.addEventListener("click", function(e){
-	    console.log("isScrolling status is " + that.isScrolling);
 	    if ( that.isScrolling  && e.target.tagName.toLowerCase() === "a"){
 		e.preventDefault();
 		e.stopPropagation();
