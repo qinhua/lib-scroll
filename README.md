@@ -24,6 +24,7 @@
 	- bounceOffset[top/bottom/left/right] - 边缘回弹距离（和bounceOffset互斥）
 	- noBounce - 是否取消边缘回弹效果
 	- isPrevent - 阻止默认滑动，默认为true
+	- isEnableNoClickScroll - 是否开启滚动过程中对a标签的误点击防御，默认位False
 
 
 ### scroll.enable()
