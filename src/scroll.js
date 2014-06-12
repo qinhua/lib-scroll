@@ -391,6 +391,14 @@ function Scroll(element, options){
 		e.stopPropagation();
 	    }
 	},true)
+
+	element.addEventListener("tap", function(e){
+	    if ( that.isScrolling  && e.target.tagName.toLowerCase() === "a"){
+		e.preventDefault();
+		e.stopPropagation();
+	    }
+	},true)
+
     }
     
 }
