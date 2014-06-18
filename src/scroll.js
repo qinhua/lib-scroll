@@ -440,9 +440,9 @@ var proto = {
         var el = this.element;
 
         if (this.axis === 'y') {
-            el.style.height = 'auto';
             var firstEl = el.firstElementChild;
             if (firstEl) {
+                el.style.height = 'auto';
                 while (firstEl && !firstEl.getBoundingClientRect().height) {
                     firstEl = firstEl.nextElementSibling;
                 }
@@ -458,9 +458,9 @@ var proto = {
             }
 
         } else {
-            el.style.width = 'auto';
             var firstEl = el.firstElementChild;
             if (firstEl) {
+                el.style.width = 'auto';
                 while (firstEl && !firstEl.getBoundingClientRect().width) {
                     firstEl = firstEl.nextElementSibling;
                 }
