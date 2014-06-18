@@ -165,12 +165,12 @@ function Scroll(element, options){
             return;
         }
 
+        that.isScrolling = false;
         element.style.webkitBackfaceVisibility = 'hidden';
         element.style.webkitTransformStyle = 'preserve-3d';
         element.style.webkitTransform = getComputedStyle(element).webkitTransform;
         element.style.webkitTransition = '';
         webkitTransitionEndHandler = null;
-        that.isScrolling = false;
     }
 
     function touchendHandler(e) {
@@ -617,7 +617,13 @@ var proto = {
 
         if (!that.fireScrollingEvent) {
             that.firstScrollingEvent = true;
-            that.element.addEventListener('scrollstart', function(e){
+            that.element.addEventListener('pan', function(e){
+                that.scrollingHandlers.forEach(function(h){
+                    setTimeout(h, 1);
+                });
+            }, false);
+
+            that.element.addEventListener('panend', function() {
                 setTimeout(function(){
                     if (that.isScrolling) {
                         that.scrollingHandlers.forEach(function(h){
@@ -625,8 +631,8 @@ var proto = {
                         });
                         setTimeout(arguments.callee, 50);
                     }
-                }, 50);
-            }, false);
+                }, 16);
+            });
         }
     },
 
@@ -637,14 +643,14 @@ var proto = {
 
         if (!that.fireScrollendEvent) {
             that.fireScrollendEvent = true;
-            that.element.addEventListener('scrollstart', function(e){
-                var top = 0;
+            that.element.addEventListener('panend', function(e){
+                var top = that.getScrollTop();
                 setTimeout(function(){
-                    if (top !== that.getScrollTop()) {
-                        top = that.getScrollTop();
+                    var _top = that.getScrollTop();
+                    if (top !== _top) {
+                        top = _top;
                         setTimeout(arguments.callee, 150);
                     } else {
-                        top = 0;
                         that.scrollendHandlers.forEach(function(h){
                             setTimeout(h, 1);
                         });
@@ -742,7 +748,7 @@ lib.scroll.plugin('sticky', function(scroller) {
             that.addScrollingHandler(function(){
                 var parentTop = that.getRect(parentEl).top;
                 //console.log(parentTop);
-                if((parentEl === childEl.parentNode) && parentTop <= 0 ) {
+                if((parentEl === childEl.parentNode) && parentTop < 0 ) {
                     that.element.parentNode.appendChild(childEl);
                     childEl.style.top = '0';
                 } else if((parentEl !== childEl.parentNode) && parentTop > 0) {

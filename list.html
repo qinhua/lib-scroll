@@ -29,11 +29,19 @@
         width: 80px;
         box-sizing: border-box;
     }
+    #refresh {
+        height: 60px;
+        line-height: 60px;
+        text-align: center;
+        font-style: 12px;
+        color: #ccc;
+    }
     </style>
 </head>
 <body scroll="none" class="">
 <div id="wrap">
     <div id="tbh5v0" class="mytaobao">
+        <div id="refresh">下拉刷新</div>
         <div id="bodyCont" class="screen-wrap fullscreen searchlist">
             <header class="top-bar" id="J_Header">
                 <div class="top-bar-w">
@@ -1807,11 +1815,6 @@
                                 </li>
                             </div>
                         </ul>
-                        <div class="J_BottomLoading loading" style="">
-                            <span>
-                            </span>
-                            努力加载中
-                        </div>
                     </div>
                 </div>
             </section>
@@ -1889,9 +1892,19 @@
     var listScroll = lib.scroll(document.getElementById('tbh5v0'), {
         isPrevent: true,
         useLazyload: true,
-        useSticky: true,
-        realtimeLazyload: true
-    }).init().checkLazyload();
+        realtimeLazyload: true,
+        bounceOffset: {
+            top: 60
+        }
+    }).init()
+
+    listScroll.checkLazyload();
+    listScroll.addPulldownHandler(function(e, done) {
+        setTimeout(function(){
+            done();
+            listScroll.refresh();
+        }, 1000);
+    });
 
     var tapScroll = lib.scroll(document.querySelector('.J_sortTab'), {
         isPrevent: true,

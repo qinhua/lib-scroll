@@ -21,7 +21,7 @@
 - options - 选项
 	- direction - 方向x/y
 	- padding[top/bottom/left/right] - 边缘空白（和bounceOffset互斥）
-	- bounceOffset[top/bottom/left/right] - 边缘回弹距离（和bounceOffset互斥）
+	- bounceOffset[top/bottom/left/right] - 边缘回弹距离（和padding互斥）
 	- noBounce - 是否取消边缘回弹效果
 	- isPrevent - 阻止默认滑动，默认为true
 	- useLazyload - 是否检查懒加载图片
