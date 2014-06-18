@@ -90,6 +90,7 @@ function Scroll(element, options){
 
     options = options || {};
     options.noBounce = !!options.noBounce;
+
     if (options.isPrevent == null) {
         options.isPrevent = true;
     } else {
@@ -147,6 +148,16 @@ function Scroll(element, options){
             handler(e); 
         }
     }, false);
+
+    
+    function noClickHandler(e) {
+        if (that.isScrolling && e.target.tagName.toUpperCase() === 'a'){
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }
+    element.addEventListener('click', noClickHandler, true);
+    element.addEventListener('tap', noClickHandler, true);
 
     var cancelScrollEnd;
     function touchstartHandler(e) {
@@ -209,6 +220,11 @@ function Scroll(element, options){
         that.maxScrollOffset = getMaxScrollOffset(that);
         that.panFixRatio = 2.5;
         cancelScrollEnd = false;
+
+        if (that.options.isEnableNoClickScroll){
+            clearTimeout(that.scrollingTimeoutId);
+        }
+
         that.isScrolling = true;
         fireEvent(that, 'scrollstart');
     }
@@ -349,7 +365,6 @@ function Scroll(element, options){
                 }
             } else {
                 var timeFunction = motion0.generateCubicBezier();
-
                 element.style.webkitTransition = '-webkit-transform ' + (t0 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction + ') 0';
                 element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s.toFixed(0) + 'px)';
                 webkitTransitionEndHandler = scrollEnd;
@@ -683,8 +698,8 @@ lib.scroll.plugin('lazyload', function(scroller) {
         Array.prototype.slice.call(this.element.querySelectorAll('img.lazy')).filter(function(img){
             return that.isInView(img);
         }).forEach(function(img){
-            img.src = img.getAttribute('dataimg');
-            img.removeAttribute('dataimg');
+            img.src = img.getAttribute('dataimg') || img.getAttribute('data-img');
+            img.removeAttribute('dataimg') || img.removeAttribute('data-img');
             img.className = img.className.split(/\s+/).filter(function(c){ 
                 return c != 'lazy';
             }).join(' ');
@@ -739,7 +754,5 @@ lib.scroll.plugin('sticky', function(scroller) {
         scroller.makeSticky();
     }
 });
-
-
 
 })(window, window['lib']||(window['lib']={}));
