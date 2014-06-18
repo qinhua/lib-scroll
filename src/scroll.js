@@ -150,14 +150,14 @@ function Scroll(element, options){
     }, false);
 
     
-    function noClickHandler(e) {
-        if (that.isScrolling && e.target.tagName.toUpperCase() === 'a'){
-            e.preventDefault();
-            e.stopPropagation();
-        }
-    }
-    element.addEventListener('click', noClickHandler, true);
-    element.addEventListener('tap', noClickHandler, true);
+    // function noClickHandler(e) {
+    //     if (that.isScrolling && e.target.tagName.toUpperCase() === 'a'){
+    //         e.preventDefault();
+    //         e.stopPropagation();
+    //     }
+    // }
+    // element.addEventListener('click', noClickHandler, true);
+    // element.addEventListener('tap', noClickHandler, true);
 
     var cancelScrollEnd;
     function touchstartHandler(e) {
@@ -623,9 +623,9 @@ var proto = {
                         that.scrollingHandlers.forEach(function(h){
                             setTimeout(h, 1);
                         });
-                        setTimeout(arguments.callee, 16);
+                        setTimeout(arguments.callee, 50);
                     }
-                }, 16);
+                }, 50);
             }, false);
         }
     },
@@ -731,19 +731,22 @@ lib.scroll.plugin('sticky', function(scroller) {
             });
         } else {
             if (childEl.className.indexOf('sticky-able') >= 0) return;
+
             childEl.className = childEl.className.split(/\s+/).filter(function(c){ 
                 return c != 'sticky';
             }).join(' ') + ' sticky-able';
 
+            childEl.style.position = 'absolute';
+
             var parentEl = childEl.parentNode;
             that.addScrollingHandler(function(){
-                if((parentEl === childEl.parentNode) && that.getRect(parentEl).top < 0 ) {
+                var parentTop = that.getRect(parentEl).top;
+                //console.log(parentTop);
+                if((parentEl === childEl.parentNode) && parentTop <= 0 ) {
                     that.element.parentNode.appendChild(childEl);
-                    childEl.style.position = 'absolute';
                     childEl.style.top = '0';
-                } else if((parentEl !== childEl.parentNode) && that.getRect(parentEl).top > 0) {
+                } else if((parentEl !== childEl.parentNode) && parentTop > 0) {
                     parentEl.appendChild(childEl);
-                    childEl.style.position = '';
                     childEl.style.top = '';
                 }
             });
