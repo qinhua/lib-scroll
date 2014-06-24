@@ -172,3 +172,8 @@
 - pulldownend - 往下拉结束（方向为y时有效）
 - pullup - 往上拉（方向为y时有效）
 - pullupend - 往上拉结束（方向为y时有效）
+
+## 开发流程
+- 创建功能或bugfix分枝
+- 往dev分枝发merge request
+- 等待lib-scroll维护者从dev分枝merge到master
