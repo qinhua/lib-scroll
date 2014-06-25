@@ -140,6 +140,16 @@ function Scroll(element, options){
     }
 
     var webkitTransitionEndHandler;
+    function setTransitionEndHandler(h, t) {
+        webkitTransitionEndHandler = h;
+        setTimeout(function() {
+            if (webkitTransitionEndHandler) {
+                webkitTransitionEndHandler = null;
+                h();
+            }
+        }, t || 400);
+    }
+
     element.addEventListener('webkitTransitionEnd', function(e) {
         if (webkitTransitionEndHandler) {
             var handler = webkitTransitionEndHandler;
@@ -176,17 +186,17 @@ function Scroll(element, options){
             var s1;
             if (isBounce && boundaryOffset > 0 && p1 && boundaryOffset > p1 / 2) {
                 s1 = that.minScrollOffset + p1;
-                webkitTransitionEndHandler = function() {
+                setTransitionEndHandler(function() {
                     fireEvent(that, that.axis === 'y'?'pulldownend':'pullrightend');
-                }
+                });
             } else if (isBounce && boundaryOffset < 0 && p2 && Math.abs(boundaryOffset) > p2 / 2) {
                 s1 = that.maxScrollOffset - p2;
-                webkitTransitionEndHandler = function() {
+                setTransitionEndHandler(function() {
                     fireEvent(that, that.axis === 'y'?'pullupend':'pullleftend');
-                }
+                });
             } else {
                 s1 = touchBoundary(that, s0);
-                webkitTransitionEndHandler = scrollEnd;
+                setTransitionEndHandler(scrollEnd);
             }
             element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
             element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
@@ -250,9 +260,13 @@ function Scroll(element, options){
         element.style.webkitAnimation = '';
         element.style.webkitTransition = '';
         if (that.axis === 'y') {
-            element.style.webkitTransform = getTranslate(that.transformOffset.x, offset);    
+            element.style.webkitTransform = getTranslate(that.transformOffset.x, offset);  
         } else {
             element.style.webkitTransform = getTranslate(offset, that.transformOffset.y);
+        }
+
+        if (this.fireScrollingEvent) {
+            fireEvent(that, 'scrolling');
         }
     }
 
@@ -311,7 +325,7 @@ function Scroll(element, options){
                     s1 = touchBoundary(that, s);
                     element.style.webkitTransition = '-webkit-transform 0.4s ease-out 0';
                     element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
-                    webkitTransitionEndHandler = scrollEnd;
+                    setTransitionEndHandler(scrollEnd);
                 } else {
                     //惯性运动足够滑出屏幕边缘
                     v1 = v0;
@@ -341,18 +355,28 @@ function Scroll(element, options){
 
                     element.style.webkitTransition = '-webkit-transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0';                
                     element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s2.toFixed(0) + 'px)';
-                    webkitTransitionEndHandler = function(e) {
+                    setTransitionEndHandler(function(e) {
                         element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
                         element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
-                        webkitTransitionEndHandler = scrollEnd;
-                    }
+                        setTransitionEndHandler(scrollEnd);
+                    });
                 }
             } else {
                 var timeFunction = motion0.generateCubicBezier();
 
                 element.style.webkitTransition = '-webkit-transform ' + (t0 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction + ') 0';
                 element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s.toFixed(0) + 'px)';
-                webkitTransitionEndHandler = scrollEnd;
+                setTransitionEndHandler(scrollEnd);
+            }
+
+
+            if (this.fireScrollingEvent) {
+                setTimeout(function() {
+                    if (that.isScrolling) {
+                        fireEvent('scrolling');
+                        setTimeout(arguments.callee, 25);
+                    }
+                }, 25);
             }
         }
     }
@@ -541,10 +565,10 @@ var proto = {
 
         if (isSmooth === true) {
             element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-            webkitTransitionEndHandler = function(){
+            setTransitionEndHandler(function(){
                 element.style.webkitTransition = '';
                 element.style.webkitAnimation = '';
-            }
+            });
         } else {
             element.style.webkitTransition = '';
             element.style.webkitAnimation = '';
@@ -596,47 +620,16 @@ var proto = {
     },
 
     addScrollingHandler: function(handler) {
-        var that = this;
-        that.scrollingHandlers = that.scrollingHandlers || [];
-        that.scrollingHandlers.push(handler);
-
-        if (!that.fireScrollingEvent) {
-            that.firstScrollingEvent = true;
-            that.element.addEventListener('scrollstart', function(e){
-                setTimeout(function(){
-                    if (that.isScrolling) {
-                        that.scrollingHandlers.forEach(function(h){
-                            setTimeout(h, 1);
-                        });
-                        setTimeout(arguments.callee, 16);
-                    }
-                }, 16);
-            }, false);
-        }
+        this.firstScrollingEvent = true;
+        this.element.addEventListener('scrolling', function(e){
+            handler(e);
+        }, false);
     },
 
     addScrollendHandler: function(handler) {
-        var that = this;
-        that.scrollendHandlers = that.scrollendHandlers || [];
-        that.scrollendHandlers.push(handler);
-
-        if (!that.fireScrollendEvent) {
-            that.fireScrollendEvent = true;
-            that.element.addEventListener('scrollstart', function(e){
-                var top = 0;
-                setTimeout(function(){
-                    if (top !== that.getScrollTop()) {
-                        top = that.getScrollTop();
-                        setTimeout(arguments.callee, 150);
-                    } else {
-                        top = 0;
-                        that.scrollendHandlers.forEach(function(h){
-                            setTimeout(h, 1);
-                        });
-                    }
-                }, 150);
-            }, false);
-        }
+        this.element.addEventListener('scrollend', function(e){
+            handler(e);
+        }, false);
     }
 }
 
