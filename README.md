@@ -24,6 +24,7 @@
 	- bounceOffset[top/bottom/left/right] - 边缘回弹距离（和bounceOffset互斥）
 	- noBounce - 是否取消边缘回弹效果
 	- isPrevent - 阻止默认滑动，默认为true
+	- inertia - 惯性的类型，可取值normal/slow/veryslow，默认为normal
 	- useLazyload - 是否检查懒加载图片
 	- realtimeLazyload - 在useLazyload为true的前提下，是否实时检查懒加载（会比较吃性能）
 	- useSticky - 是否对拥有sticky类名的子元素采用吸顶功能

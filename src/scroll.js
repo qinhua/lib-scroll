@@ -1,10 +1,19 @@
 ;(function(win, lib, undef) {
 var doc = win.document;
-var docEl = doc.documentElement;
 var motion = lib.motion;
-var prevented = false;
 var scrollObjs = {};
 var plugins = {};
+var inertiaCoefficient = {
+    'normal': [2, 0.0015],
+    'slow': [1.5, 0.003],
+    'veryslow': [1.5, 0.005]
+}
+
+function debugLog() {
+    if (lib.scroll.outputDebugLog) {
+        console.debug.apply(console, arguments);
+    }
+}
 
 function getMinScrollOffset(scrollObj) {
     return 0 - (scrollObj.options[scrollObj.axis + 'Padding1'] || 0);
@@ -12,7 +21,7 @@ function getMinScrollOffset(scrollObj) {
 
 function getMaxScrollOffset(scrollObj) {
     var rect = scrollObj.element.getBoundingClientRect();
-    var pRect = scrollObj.element.parentNode.getBoundingClientRect();
+    var pRect = scrollObj.viewport.getBoundingClientRect();
     var min = getMinScrollOffset(scrollObj);
     if (scrollObj.axis === 'y') {
         var max = 0 - rect.height + pRect.height;
@@ -40,6 +49,8 @@ function touchBoundary(scrollObj, offset) {
 }
 
 function fireEvent(scrollObj, eventName, extra) {
+    debugLog(eventName, extra);
+
     var event = doc.createEvent('HTMLEvents');
     event.initEvent(eventName, false, true);
     event.scrollObj = scrollObj;
@@ -76,8 +87,16 @@ function getTranslate(x, y) {
     }
 }
 
+var requestAnimationFrame = (function() {
+    return  window.requestAnimationFrame || 
+                window.webkitRequestAnimationFrame || 
+            function(cb) {
+                setTimeout(cb, 16);
+            }
+})();
+
 var panning = false;
-document.addEventListener('touchmove', function(e){
+doc.addEventListener('touchmove', function(e){
     if (panning) {
         e.preventDefault();
         return false;
@@ -109,11 +128,15 @@ function Scroll(element, options){
         options.xPadding2 = options.bounceOffset.right || 0;
     }
 
+    options.direction = options.direction || 'y';
+    options.inertia = options.inertia || 'normal';
+
 
     this.options = options;
-    that.axis = options.direction || 'y';
+    that.axis = options.direction;
     this.element = element;
     this.viewport = element.parentNode;
+
     this.viewport.addEventListener('touchstart', touchstartHandler, false);
     this.viewport.addEventListener('touchend', touchendHandler, false);
     this.viewport.addEventListener('touchcancel', touchendHandler, false);
@@ -121,9 +144,10 @@ function Scroll(element, options){
     this.viewport.addEventListener('pan', panHandler, false);
     this.viewport.addEventListener('panend', panendHandler, false);
     this.viewport.addEventListener('flick', flickHandler, false);
-    this.viewport.scrollId = setTimeout(function(){
-        scrollObjs[that.viewport.scrollId + ''] = that;
-    }, 0);
+
+    this.element.scrollId = setTimeout(function(){
+        scrollObjs[that.element.scrollId + ''] = that;
+    }, 1);
 
     if (options.isPrevent) {
         var d = this.axis === 'y'?'vertical':'horizontal';
@@ -140,21 +164,31 @@ function Scroll(element, options){
     }
 
     var webkitTransitionEndHandler;
+    var transitionEndTimeoutId = 0;
     function setTransitionEndHandler(h, t) {
-        webkitTransitionEndHandler = h;
-        setTimeout(function() {
+        webkitTransitionEndHandler = null;
+        clearTimeout(transitionEndTimeoutId);
+        
+        transitionEndTimeoutId = setTimeout(function() {
             if (webkitTransitionEndHandler) {
                 webkitTransitionEndHandler = null;
-                h();
+                requestAnimationFrame(h);
             }
-        }, t || 400);
+        }, (t || 400));
+
+        webkitTransitionEndHandler = h;   
     }
 
     element.addEventListener('webkitTransitionEnd', function(e) {
         if (webkitTransitionEndHandler) {
             var handler = webkitTransitionEndHandler;
+
             webkitTransitionEndHandler = null;
-            handler(e); 
+            clearTimeout(transitionEndTimeoutId);
+
+            requestAnimationFrame(function(){
+                handler(e);
+            });
         }
     }, false);
 
@@ -169,6 +203,7 @@ function Scroll(element, options){
         element.style.webkitTransform = getComputedStyle(element).webkitTransform;
         element.style.webkitTransition = '';
         webkitTransitionEndHandler = null;
+        clearTimeout(transitionEndTimeoutId);
         that.isScrolling = false;
     }
 
@@ -182,21 +217,21 @@ function Scroll(element, options){
         var boundaryOffset = getBoundaryOffset(that, s0);
         var p1 = that.options[that.axis + 'Padding1'];
         var p2 = that.options[that.axis + 'Padding2'];
-        if(element.style.webkitTransition === '' && element.style.webkitAnimation === '' && boundaryOffset) {
+        if(element.style.webkitTransition === '' && boundaryOffset) {
             var s1;
-            if (isBounce && boundaryOffset > 0 && p1 && boundaryOffset > p1 / 2) {
+            if (isBounce && boundaryOffset > 0 && p1 && Math.abs(boundaryOffset) > p1 / 2) {
                 s1 = that.minScrollOffset + p1;
                 setTransitionEndHandler(function() {
                     fireEvent(that, that.axis === 'y'?'pulldownend':'pullrightend');
-                });
+                }, 400);
             } else if (isBounce && boundaryOffset < 0 && p2 && Math.abs(boundaryOffset) > p2 / 2) {
                 s1 = that.maxScrollOffset - p2;
                 setTransitionEndHandler(function() {
                     fireEvent(that, that.axis === 'y'?'pullupend':'pullleftend');
-                });
+                }, 400);
             } else {
                 s1 = touchBoundary(that, s0);
-                setTransitionEndHandler(scrollEnd);
+                setTransitionEndHandler(scrollEnd, 400);
             }
             element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
             element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
@@ -257,7 +292,6 @@ function Scroll(element, options){
             }
         }
 
-        element.style.webkitAnimation = '';
         element.style.webkitTransition = '';
         if (that.axis === 'y') {
             element.style.webkitTransform = getTranslate(that.transformOffset.x, offset);  
@@ -265,7 +299,7 @@ function Scroll(element, options){
             element.style.webkitTransform = getTranslate(offset, that.transformOffset.y);
         }
 
-        if (this.fireScrollingEvent) {
+        if (that.fireScrollingEvent) {
             fireEvent(that, 'scrolling');
         }
     }
@@ -300,17 +334,24 @@ function Scroll(element, options){
         s0 = getTransformOffset(that)[that.axis];
         var boundaryOffset0 = getBoundaryOffset(that, s0);
         if(!boundaryOffset0) {
-            //手指离开屏幕时，已经超出滚动范围
-            //不作处理，让touchend handler处理
+            //手指离开屏幕时，已经超出滚动范围，不作处理，让touchend handler处理
             //手指离开屏幕时，在滚动范围内，做一下惯性计算
             v0 = e['velocity' + that.axis.toUpperCase()];
-            if (v0 > 2) {
-                v0 = 2;
+
+            var maxV = 2;
+            var friction = 0.0015;
+            if (options.inertia && inertiaCoefficient[options.inertia]) {
+                maxV = inertiaCoefficient[options.inertia][0];
+                friction = inertiaCoefficient[options.inertia][1];
             }
-            if (v0 < -2) {
-                v0 = -2;
+
+            if (v0 > maxV) {
+                v0 = maxV;
             }
-            a0 = 0.0015 * ( v0 / Math.abs(v0));
+            if (v0 < -maxV) {
+                v0 = -maxV;
+            }
+            a0 = friction * ( v0 / Math.abs(v0));
             motion0 = motion({
                 v: v0,
                 a: -a0
@@ -320,12 +361,16 @@ function Scroll(element, options){
 
             var boundaryOffset1 = getBoundaryOffset(that, s);
             if (boundaryOffset1) {
+                debugLog('惯性计算超出了边缘', boundaryOffset1);
+
                 if (options.noBounce) {
                     // 没有边缘回弹效果，直接平顺滑到边缘
+                    debugLog('没有回弹效果');
+
                     s1 = touchBoundary(that, s);
                     element.style.webkitTransition = '-webkit-transform 0.4s ease-out 0';
                     element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
-                    setTransitionEndHandler(scrollEnd);
+                    setTransitionEndHandler(scrollEnd, 400);
                 } else {
                     //惯性运动足够滑出屏幕边缘
                     v1 = v0;
@@ -355,28 +400,35 @@ function Scroll(element, options){
 
                     element.style.webkitTransition = '-webkit-transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0';                
                     element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s2.toFixed(0) + 'px)';
+
+                    debugLog('惯性滚动', 's=' + s2.toFixed(0), 't=' + ((t1 + t2) / 1000).toFixed(2));
+
                     setTransitionEndHandler(function(e) {
                         element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
                         element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
-                        setTransitionEndHandler(scrollEnd);
-                    });
+
+                        debugLog('惯性回弹', 's=' + s1.toFixed(0), 't=400');
+                        setTransitionEndHandler(scrollEnd, 400);
+
+                    }, ((t1 + t2) / 1000).toFixed(2) * 1000);
                 }
             } else {
-                var timeFunction = motion0.generateCubicBezier();
+                debugLog('惯性计算没有超出了边缘');
 
+                var timeFunction = motion0.generateCubicBezier();
                 element.style.webkitTransition = '-webkit-transform ' + (t0 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction + ') 0';
                 element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s.toFixed(0) + 'px)';
-                setTransitionEndHandler(scrollEnd);
+                setTransitionEndHandler(scrollEnd, (t0 / 1000).toFixed(2) * 1000);
             }
 
 
-            if (this.fireScrollingEvent) {
-                setTimeout(function() {
+            if (that.fireScrollingEvent) {
+                requestAnimationFrame(function() {
                     if (that.isScrolling) {
-                        fireEvent('scrolling');
-                        setTimeout(arguments.callee, 25);
+                        fireEvent(that, 'scrolling');
+                        requestAnimationFrame(arguments.callee);
                     }
-                }, 25);
+                });
             }
         }
     }
@@ -392,14 +444,13 @@ function Scroll(element, options){
 
         cancelScrollEnd = false;
 
-        setTimeout(function() {
+        requestAnimationFrame(function() {
             if (!cancelScrollEnd) {
                 that.isScrolling = false;
                 element.style.webkitTransition = '';
-                element.style.webkitAnimation = '';
                 fireEvent(that, 'scrollend');
             }
-        }, 10);
+        });
     }
 }
 
@@ -421,10 +472,9 @@ var proto = {
         var el = this.element;
         this.enabled = false;
 
-        setTimeout(function() {
+        requestAnimationFrame(function() {
             el.style.webkitTransform = getComputedStyle(el).webkitTransform;
-            el.style.webkitAnimation = '';
-        }, 50);
+        });
 
         return this;
     },
@@ -565,13 +615,11 @@ var proto = {
 
         if (isSmooth === true) {
             element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-            setTransitionEndHandler(function(){
+            element.addEventListener('webkitTransitionEnd', function(e) {
                 element.style.webkitTransition = '';
-                element.style.webkitAnimation = '';
-            });
+            }, false);
         } else {
             element.style.webkitTransition = '';
-            element.style.webkitAnimation = '';
         }
         if (this.axis === 'y') {
             element.style.webkitTransform = getTranslate(getTransformOffset(this).x, offset);
@@ -597,9 +645,7 @@ var proto = {
 
     addPulldownHandler: function(handler) {
         var that = this;
-        var element = this.element;
-
-        element.addEventListener('pulldownend', function(e) {
+        this.element.addEventListener('pulldownend', function(e) {
             that.disable();
             handler(e, function() {
                 that.enable();
@@ -609,9 +655,8 @@ var proto = {
 
     addPullupHandler: function(handler) {
         var that = this;
-        var element = this.element;
 
-        element.addEventListener('pullupend', function(e) {
+        this.element.addEventListener('pullupend', function(e) {
             that.disable();
             handler(e, function() {
                 that.enable();
@@ -619,8 +664,25 @@ var proto = {
         }, false);
     },
 
+    addScrollstartHandler: function(handler) {
+        this.element.addEventListener('scrollstart', function(e){
+            handler(e);
+        }, false);
+    },
+
     addScrollingHandler: function(handler) {
-        this.firstScrollingEvent = true;
+        if (!this.fireScrollingEvent) {
+            this.fireScrollingEvent = true;
+            var forceRefreshEl = doc.createElement('div');
+            forceRefreshEl.className = 'force-refresh';
+            forceRefreshEl.style.cssText = 'position: absolute; top: 0; left: 0; width: 0; height: 0; font-size: 0; opacity: 1;';
+            this.viewport.appendChild(forceRefreshEl);
+
+            this.element.addEventListener('scrolling', function(e) {
+                forceRefreshEl.style.opacity = Math.abs(parseInt(forceRefreshEl.style.opacity) - 1) + '';
+            }, false);
+        }
+        
         this.element.addEventListener('scrolling', function(e){
             handler(e);
         }, false);
@@ -638,6 +700,17 @@ for (var k in proto) {
 }
 
 lib.scroll = function(el, options) {
+    if (arguments.length === 1 && !(arguments[0] instanceof HTMLElement)) {
+        options = arguments[0];
+        if (options.scrollElement) {
+            el = options.scrollElement;    
+        } else if (options.scrollWrap) {
+            el = options.scrollWrap.firstElementChild;
+        } else {
+            throw new Error('no scroll element');
+        }
+    }
+
     if (!el.parentNode) {
         throw new Error('wrong dom tree');
     }
@@ -646,8 +719,8 @@ lib.scroll = function(el, options) {
     }
 
     var scroll;
-    if (el.parentNode.scrollId) {
-        scroll = scrollObjs[el.parentNode.scrollId];
+    if (el.scrollId) {
+        scroll = scrollObjs[el.scrollId];
     } else {
         scroll = new Scroll(el, options);
     }
@@ -667,20 +740,66 @@ lib.scroll.plugin = function(name, plugin) {
     }
 }
 
+lib.scroll.plugin('addFixedlement', function(scroller) {
+    var options = scroller.options;
+    var isAdded = false;
+
+    scroller.addFixedElement = function() {
+        if (isAdded) return;
+        isAdded = true;
+
+        if (!getComputedStyle(this.viewport).position.match(/^relative|absolute$/)) {
+            this.viewport.style.position = 'relative';
+        }
+
+        var fragment = doc.createDocumentFragment();
+
+        if (this.axis === 'y') {
+            var topFixedElement = this.topFixedElement = doc.createElement('div');
+            topFixedElement.className = 'top-fixed';
+            topFixedElement.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%;';
+
+            var bottomFixedElement = this.bottomFixedElement = doc.createElement('div');
+            bottomFixedElement.className = 'bottom-fxied';
+            bottomFixedElement.style.cssText = 'position: absolute; bottom: 0; left: 0; width: 100%';
+
+            fragment.appendChild(topFixedElement);
+            fragment.appendChild(bottomFixedElement);
+        } else {
+            var leftFixedElement = this.leftFixedElement = doc.createElement('div');
+            leftFixedElement.className = 'left-fixed';
+            leftFixedElement.style.cssText = 'position: absolute; top: 0; left: 0; height: 100%;';
+
+            var rightFixedElement = this.rightFixedElement = doc.createElement('div');
+            rightFixedElement.className = 'right-fxied';
+            rightFixedElement.style.cssText = 'position: absolute; top: 0; right: 0; height: 100%;';
+
+            fragment.appendChild(leftFixedElement);
+            fragment.appendChild(rightFixedElement);
+        }
+
+        this.viewport.appendChild(fragment);
+    }
+
+    if (options.addFixedlement) {
+        scroller.addFixedElement();
+    }
+});
+
 lib.scroll.plugin('lazyload', function(scroller) {
     var options = scroller.options;
 
     scroller.checkLazyload = function(){
         var that = this;
+        var elements = Array.prototype.slice.call(this.element.querySelectorAll('img[data-img]'))
+                            .concat(Array.prototype.slice.call(this.element.querySelectorAll('img[dataimg]')));
 
-        Array.prototype.slice.call(this.element.querySelectorAll('img.lazy')).filter(function(img){
+        elements.filter(function(img){
             return that.isInView(img);
         }).forEach(function(img){
-            img.src = img.getAttribute('dataimg');
+            img.src = img.getAttribute('data-img') || img.getAttribute('dataimg');
+            img.removeAttribute('data-img');
             img.removeAttribute('dataimg');
-            img.className = img.className.split(/\s+/).filter(function(c){ 
-                return c != 'lazy';
-            }).join(' ');
         });
     }
 
@@ -694,14 +813,17 @@ lib.scroll.plugin('lazyload', function(scroller) {
                 scroller.checkLazyload();
             });
         }
+
+        setTimeout(function(){
+            scroller.checkLazyload();
+        }, 50);
     }
 });
 
 lib.scroll.plugin('sticky', function(scroller) {
     var options = scroller.options;
 
-
-    scroller.makeSticky =  function(childEl){
+    scroller.makeSticky = function(childEl){
         var that = this;
         if (!childEl) {
             Array.prototype.slice.call(this.element.querySelectorAll('.sticky')).forEach(function(el) {
@@ -709,26 +831,38 @@ lib.scroll.plugin('sticky', function(scroller) {
             });
         } else {
             if (childEl.className.indexOf('sticky-able') >= 0) return;
+
+            childEl.style.position = 'absolute';
             childEl.className = childEl.className.split(/\s+/).filter(function(c){ 
                 return c != 'sticky';
             }).join(' ') + ' sticky-able';
 
             var parentEl = childEl.parentNode;
-            that.addScrollingHandler(function(){
-                if((parentEl === childEl.parentNode) && that.getRect(parentEl).top < 0 ) {
-                    that.element.parentNode.appendChild(childEl);
-                    childEl.style.position = 'absolute';
-                    childEl.style.top = '0';
-                } else if((parentEl !== childEl.parentNode) && that.getRect(parentEl).top > 0) {
-                    parentEl.appendChild(childEl);
-                    childEl.style.position = '';
-                    childEl.style.top = '';
-                }
+
+            this.addScrollingHandler(function(){
+                that.checkSticky(childEl, parentEl);
+            });
+
+            this.addScrollendHandler(function() {
+               that.checkSticky(childEl, parentEl); 
             });
         }
     }
 
+    scroller.checkSticky = function(childEl, parentEl) {
+        if(this.getRect(parentEl).top < 0 ) {
+            this.topFixedElement.appendChild(childEl);
+            //this.topFixedElement.style.opacity = '0';
+            //this.topFixedElement.style.opacity = '1';
+        } else if(this.getRect(parentEl).top > 0) {
+            parentEl.appendChild(childEl);
+            //this.topFixedElement.style.opacity = '0';
+            //this.topFixedElement.style.opacity = '1';
+        }
+    }
+
     if (options.useSticky) {
+        scroller.addFixedElement();
         scroller.makeSticky();
     }
 });
