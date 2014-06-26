@@ -196,7 +196,6 @@ body > div {
 
         window.vScrollOutter.addPullupHandler(function(e, done) {
             setTimeout(function() {
-                window.vScrollOutter.scrollTo(window.vScrollOutter.getScrollHeight(), true);
                 done();
             }, 2000);
         });
@@ -212,7 +211,6 @@ body > div {
 
         window.vScrollOutter.addPulldownHandler(function(e, done) {
             setTimeout(function() {
-                window.vScrollOutter.scrollTo(0, true);
                 done();
             }, 2000);
         });

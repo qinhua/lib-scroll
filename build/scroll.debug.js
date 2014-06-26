@@ -128,12 +128,6 @@ function Scroll(element, options){
         options.xPadding1 = -options.padding.left || 0;
         options.xPadding2 = -options.padding.right || 0;
     }
-    if (options.bounceOffset) {
-        options.yPadding1 = options.bounceOffset.top || 0;
-        options.yPadding2 = options.bounceOffset.bottom || 0;
-        options.xPadding1 = options.bounceOffset.left || 0;
-        options.xPadding2 = options.bounceOffset.right || 0;
-    }
 
     options.direction = options.direction || 'y';
     options.inertia = options.inertia || 'normal';
@@ -249,33 +243,23 @@ function Scroll(element, options){
         }
 
         var s0 = getTransformOffset(that)[that.axis];
-        var isBounce = !!options.bounceOffset;
         var boundaryOffset = getBoundaryOffset(that, s0);
-        var p1 = that.options[that.axis + 'Padding1'];
-        var p2 = that.options[that.axis + 'Padding2'];
         if (element.style.webkitTransition === '' && boundaryOffset) {
-            var s1;
-            if (isBounce && boundaryOffset > 0 && p1 && Math.abs(boundaryOffset) > p1 / 2) {
-                s1 = that.minScrollOffset + p1;
-                setTransitionEndHandler(function() {
-                    fireEvent(that, that.axis === 'y'?'pulldownend':'pullrightend');
-                }, 400);
-            } else if (isBounce && boundaryOffset < 0 && p2 && Math.abs(boundaryOffset) > p2 / 2) {
-                s1 = that.maxScrollOffset - p2;
-                setTransitionEndHandler(function() {
-                    fireEvent(that, that.axis === 'y'?'pullupend':'pullleftend');
-                }, 400);
-            } else {
-                s1 = touchBoundary(that, s0);
-                setTransitionEndHandler(scrollEnd, 400);
+            var s1 = touchBoundary(that, s0);
+            if (boundaryOffset > 0) {
+                fireEvent(that, that.axis === 'y'?'pulldownend':'pullrightend');
+            } else if (boundaryOffset < 0) {
+                fireEvent(that, that.axis === 'y'?'pullupend':'pullleftend');
             }
             element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
             element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
+            setTransitionEndHandler(scrollEnd, 400);
         } else if (that.isScrolling) {
             scrollEnd();
         }
     }
 
+    var lastDisplacement;
     function panstartHandler(e) {
         if (!that.enabled) {
             return;
@@ -292,12 +276,20 @@ function Scroll(element, options){
         cancelScrollEnd = true;
         that.isScrolling = true;
         fireEvent(that, 'scrollstart');
+
+        lastDisplacement = e['displacement' + that.axis.toUpperCase()];
     }
+
 
     function panHandler(e) {
         if (!that.enabled) {
             return;
         }
+
+        var displacement = e['displacement' + that.axis.toUpperCase()];
+
+        if (Math.abs(displacement - lastDisplacement) < 5) return;
+        lastDisplacement = displacement;
 
         if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
             e.stopPropagation();    
@@ -305,7 +297,7 @@ function Scroll(element, options){
             return;
         }
 
-        var offset = that.transformOffset[that.axis] + e['displacement' + that.axis.toUpperCase()];
+        var offset = that.transformOffset[that.axis] + displacement;
 
         if(offset > that.minScrollOffset) {
             offset = that.minScrollOffset + (offset - that.minScrollOffset) / that.panFixRatio;
@@ -440,12 +432,15 @@ function Scroll(element, options){
                     debugLog('惯性滚动', 's=' + s2.toFixed(0), 't=' + ((t1 + t2) / 1000).toFixed(2));
 
                     setTransitionEndHandler(function(e) {
+                        if (!that.enabled) {
+                            return;
+                        }
+
                         element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
                         element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
 
                         debugLog('惯性回弹', 's=' + s1.toFixed(0), 't=400');
                         setTransitionEndHandler(scrollEnd, 400);
-
                     }, ((t1 + t2) / 1000).toFixed(2) * 1000);
                 }
             } else {
@@ -460,8 +455,10 @@ function Scroll(element, options){
 
             if (that.fireScrollingEvent) {
                 requestAnimationFrame(function() {
-                    if (that.isScrolling) {
-                        fireEvent(that, 'scrolling');
+                    if (that.isScrolling && that.enabled) {
+                        fireEvent(that, 'scrolling', {
+                            afterFlick: true
+                        });
                         requestAnimationFrame(arguments.callee);
                     }
                 });
@@ -474,287 +471,289 @@ function Scroll(element, options){
             return;
         }
 
-        // if (that.axis === 'y' && e && e.isVertical || that.axis === 'x' && e && !e.isVertical) {
-        //     e.stopPropagation();    
-        // }
-
         cancelScrollEnd = false;
 
         setTimeout(function() {
-            if (!cancelScrollEnd) {
+            if (!cancelScrollEnd && that.enabled) {
                 that.isScrolling = false;
                 element.style.webkitTransition = '';
                 fireEvent(that, 'scrollend');
             }
         }, 50);
     }
-}
 
-var proto = {
-    init: function() {
-        this.enable();
-        this.refresh();
-        this.scrollTo(0);
-        return this;
-    },
 
-    enable: function() {
-        this.enabled = true;
-        return this;
-    },
+    var proto = {
+        init: function() {
+            this.enable();
+            this.refresh();
+            this.scrollTo(0);
+            return this;
+        },
 
-    disable: function() {
-        var el = this.element;
-        this.enabled = false;
+        enable: function() {
+            this.enabled = true;
+            return this;
+        },
 
-        requestAnimationFrame(function() {
-            el.style.webkitTransform = getComputedStyle(el).webkitTransform;
-        });
+        disable: function() {
+            var el = this.element;
+            this.enabled = false;
+            that.isScrolling = false;
 
-        return this;
-    },
+            requestAnimationFrame(function() {
+                el.style.webkitTransform = getComputedStyle(el).webkitTransform;
+            });
 
-    getScrollWidth: function() {
-        return this.element.getBoundingClientRect().width - (this.options.xPadding1||0) - (this.options.xPadding2||0);
-    },
+            return this;
+        },
 
-    getScrollHeight: function() {
-        return this.element.getBoundingClientRect().height - (this.options.yPadding1||0) - (this.options.yPadding2||0);
-    },
+        getScrollWidth: function() {
+            return this.element.getBoundingClientRect().width - (this.options.xPadding1||0) - (this.options.xPadding2||0);
+        },
 
-    getScrollLeft: function() {
-        return -getTransformOffset(this).x - (this.options.xPadding1 || 0);
-    },
+        getScrollHeight: function() {
+            return this.element.getBoundingClientRect().height - (this.options.yPadding1||0) - (this.options.yPadding2||0);
+        },
 
-    getScrollTop: function() {
-        return -getTransformOffset(this).y - (this.options.yPadding1 || 0);
-    },
+        getScrollLeft: function() {
+            return -getTransformOffset(this).x - (this.options.xPadding1 || 0);
+        },
 
-    refresh: function() {
-        var el = this.element;
+        getScrollTop: function() {
+            return -getTransformOffset(this).y - (this.options.yPadding1 || 0);
+        },
 
-        if (this.axis === 'y') {
-            var firstEl = el.firstElementChild;
-            if (firstEl) {
-                el.style.height = 'auto';
-                while (firstEl && !firstEl.getBoundingClientRect().height) {
-                    firstEl = firstEl.nextElementSibling;
+        getBoundaryOffset: function() {
+            return Math.abs(getBoundaryOffset(this, getTransformOffset(this)[this.axis]) || 0);
+        },
+
+        refresh: function() {
+            var el = this.element;
+
+            if (this.axis === 'y') {
+                var firstEl = el.firstElementChild;
+                if (firstEl) {
+                    el.style.height = 'auto';
+                    while (firstEl && !firstEl.getBoundingClientRect().height) {
+                        firstEl = firstEl.nextElementSibling;
+                    }
+                    var lastEl = el.lastElementChild;
+                    while (lastEl && !lastEl.getBoundingClientRect().height) {
+                        lastEl = lastEl.previousElementSibling;
+                    }
+                    el.style.height = (this.options.height ||
+                        ((lastEl && lastEl.getBoundingClientRect().bottom || 0) -
+                            (firstEl && firstEl.getBoundingClientRect().top || 0))) + 'px';
+                } else {
+                    el.style.height = el.getBoundingClientRect().height;
                 }
-                var lastEl = el.lastElementChild;
-                while (lastEl && !lastEl.getBoundingClientRect().height) {
-                    lastEl = lastEl.previousElementSibling;
-                }
-                el.style.height = (this.options.height ||
-                    ((lastEl && lastEl.getBoundingClientRect().bottom || 0) -
-                        (firstEl && firstEl.getBoundingClientRect().top || 0))) + 'px';
+
             } else {
-                el.style.height = el.getBoundingClientRect().height;
+                var firstEl = el.firstElementChild;
+                if (firstEl) {
+                    el.style.width = 'auto';
+                    while (firstEl && !firstEl.getBoundingClientRect().width) {
+                        firstEl = firstEl.nextElementSibling;
+                    }
+                    var lastEl = el.lastElementChild;
+                    while (lastEl && !lastEl.getBoundingClientRect().width) {
+                        lastEl = lastEl.previousElementSibling;
+                    }
+                    el.style.width = (this.options.width ||
+                        ((lastEl && lastEl.getBoundingClientRect().right || 0) -
+                            (firstEl && firstEl.getBoundingClientRect().left || 0))) + 'px';
+                } else {
+                    el.style.width = el.getBoundingClientRect().width;
+                }
             }
 
-        } else {
-            var firstEl = el.firstElementChild;
-            if (firstEl) {
-                el.style.width = 'auto';
-                while (firstEl && !firstEl.getBoundingClientRect().width) {
-                    firstEl = firstEl.nextElementSibling;
-                }
-                var lastEl = el.lastElementChild;
-                while (lastEl && !lastEl.getBoundingClientRect().width) {
-                    lastEl = lastEl.previousElementSibling;
-                }
-                el.style.width = (this.options.width ||
-                    ((lastEl && lastEl.getBoundingClientRect().right || 0) -
-                        (firstEl && firstEl.getBoundingClientRect().left || 0))) + 'px';
+            this.transformOffset = getTransformOffset(this);
+            this.minScrollOffset = getMinScrollOffset(this);
+            this.maxScrollOffset = getMaxScrollOffset(this);
+            this.scrollTo(-this.transformOffset[this.axis] - (this.options[this.axis + 'Padding1'] || 0));
+
+            fireEvent(this, 'refresh');
+
+            return this;
+        },
+
+        offset: function(childEl) {
+            var elRect = this.element.getBoundingClientRect();
+            var childRect = childEl.getBoundingClientRect();
+            if (this.axis === 'y') {
+                var offsetRect = {
+                        top: childRect.top - ((this.options.yPadding1 || 0) + elRect.top),
+                        left: childRect.left - elRect.left,
+                        right: elRect.right - childRect.right,
+                        width: childRect.width,
+                        height: childRect.height
+                    };
+
+                offsetRect.bottom = offsetRect.top + offsetRect.height;
             } else {
-                el.style.width = el.getBoundingClientRect().width;
+                var offsetRect = {
+                        top: childRect.top - elRect.top,
+                        bottom: elRect.bottom - childRect.bottom,
+                        left: childRect.left - ((this.options.xPadding1 || 0) + elRect.left),
+                        width: childRect.width,
+                        height: childRect.height
+                    };
+
+                offsetRect.right = offsetRect.left + offsetRect.width;
             }
-        }
+            return offsetRect;
+        },
 
-        this.transformOffset = getTransformOffset(this);
-        this.minScrollOffset = getMinScrollOffset(this);
-        this.maxScrollOffset = getMaxScrollOffset(this);
-        this.scrollTo(-this.transformOffset[this.axis] - (this.options[this.axis + 'Padding1'] || 0));
+        getRect: function(childEl) {
+            var viewRect = this.viewport.getBoundingClientRect();
+            var childRect = childEl.getBoundingClientRect();
+            if (this.axis === 'y') {
+                var offsetRect = {
+                        top: childRect.top - ((this.options.yPadding1 || 0) + viewRect.top),
+                        left: childRect.left - viewRect.left,
+                        right: viewRect.right - childRect.right,
+                        width: childRect.width,
+                        height: childRect.height
+                    };
 
-        return this;
-    },
+                offsetRect.bottom = offsetRect.top + offsetRect.height;
+            } else {
+                var offsetRect = {
+                        top: childRect.top - viewRect.top,
+                        bottom: viewRect.bottom - childRect.bottom,
+                        left: childRect.left - ((this.options.xPadding1 || 0) + viewRect.left),
+                        width: childRect.width,
+                        height: childRect.height
+                    };
 
-    offset: function(childEl) {
-        var elRect = this.element.getBoundingClientRect();
-        var childRect = childEl.getBoundingClientRect();
-        if (this.axis === 'y') {
-            var offsetRect = {
-                    top: childRect.top - ((this.options.yPadding1 || 0) + elRect.top),
-                    left: childRect.left - elRect.left,
-                    right: elRect.right - childRect.right,
-                    width: childRect.width,
-                    height: childRect.height
-                };
+                offsetRect.right = offsetRect.left + offsetRect.width;
+            }
+            return offsetRect;
+        },
 
-            offsetRect.bottom = offsetRect.top + offsetRect.height;
-        } else {
-            var offsetRect = {
-                    top: childRect.top - elRect.top,
-                    bottom: elRect.bottom - childRect.bottom,
-                    left: childRect.left - ((this.options.xPadding1 || 0) + elRect.left),
-                    width: childRect.width,
-                    height: childRect.height
-                };
+        isInView: function(childEl) {
+            var viewRect = this.viewport.getBoundingClientRect();
+            var childRect = this.getRect(childEl);
+            if (this.axis === 'y') {
+                return viewRect.top < childRect.bottom && viewRect.bottom > childRect.top;
+            } else {
+                return viewRect.left < childRect.right && viewRect.right > childRect.left;
+            }
+        },
 
-            offsetRect.right = offsetRect.left + offsetRect.width;
-        }
-        return offsetRect;
-    },
+        scrollTo: function(offset, isSmooth) {
+            var that = this;
+            var element = this.element;
 
-    getRect: function(childEl) {
-        var viewRect = this.viewport.getBoundingClientRect();
-        var childRect = childEl.getBoundingClientRect();
-        if (this.axis === 'y') {
-            var offsetRect = {
-                    top: childRect.top - ((this.options.yPadding1 || 0) + viewRect.top),
-                    left: childRect.left - viewRect.left,
-                    right: viewRect.right - childRect.right,
-                    width: childRect.width,
-                    height: childRect.height
-                };
+            offset = -offset - (this.options[this.axis + 'Padding1'] || 0);
+            offset = touchBoundary(this, offset);
 
-            offsetRect.bottom = offsetRect.top + offsetRect.height;
-        } else {
-            var offsetRect = {
-                    top: childRect.top - viewRect.top,
-                    bottom: viewRect.bottom - childRect.bottom,
-                    left: childRect.left - ((this.options.xPadding1 || 0) + viewRect.left),
-                    width: childRect.width,
-                    height: childRect.height
-                };
-
-            offsetRect.right = offsetRect.left + offsetRect.width;
-        }
-        return offsetRect;
-    },
-
-    isInView: function(childEl) {
-        var viewRect = this.viewport.getBoundingClientRect();
-        var childRect = this.getRect(childEl);
-        if (this.axis === 'y') {
-            return viewRect.top < childRect.bottom && viewRect.bottom > childRect.top;
-        } else {
-            return viewRect.left < childRect.right && viewRect.right > childRect.left;
-        }
-    },
-
-    scrollTo: function(offset, isSmooth) {
-        var element = this.element;
-
-        offset = -offset - (this.options[this.axis + 'Padding1'] || 0);
-        offset = touchBoundary(this, offset);
-
-        if (isSmooth === true) {
-            element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-            element.addEventListener('webkitTransitionEnd', function(e) {
+            if (isSmooth === true) {
+                element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
+                setTransitionEndHandler(scrollEnd, 400);
+            } else {
                 element.style.webkitTransition = '';
-            }, false);
-        } else {
-            element.style.webkitTransition = '';
-        }
-        if (this.axis === 'y') {
-            element.style.webkitTransform = getTranslate(getTransformOffset(this).x, offset);
-        } else {
-            element.style.webkitTransform = getTranslate(offset, getTransformOffset(this).y);
-        }
-
-        return this;
-    },
-
-    scrollToElement: function(childEl, isSmooth) {
-        var offset = this.offset(childEl);
-        return this.scrollTo(this.axis === 'y'?offset.top:offset.left, isSmooth);
-    },
-
-    getViewWidth: function() {
-        return this.viewport.getBoundingClientRect().width;
-    },
-
-    getViewHeight: function() {
-        return this.viewport.getBoundingClientRect().height;
-    },
-
-    addPulldownHandler: function(handler) {
-        var that = this;
-        this.element.addEventListener('pulldownend', function(e) {
-            that.disable();
-            handler(e, function() {
-                that.enable();
-            });
-        }, false);
-
-        return this;
-    },
-
-    addPullupHandler: function(handler) {
-        var that = this;
-
-        this.element.addEventListener('pullupend', function(e) {
-            that.disable();
-            handler(e, function() {
-                that.enable();
-            });
-        }, false);
-
-        return this;
-    },
-
-    addScrollstartHandler: function(handler) {
-        this.element.addEventListener('scrollstart', function(e){
-            handler(e);
-        }, false);
-
-        return this;
-    },
-
-    addScrollingHandler: function(handler) {
-        if (!this.fireScrollingEvent) {
-            this.fireScrollingEvent = true;
-            var forceRefreshEl = doc.createElement('div');
-            forceRefreshEl.className = 'force-refresh';
-            forceRefreshEl.style.cssText = 'position: absolute; top: 0; left: 0; width: 0; height: 0; font-size: 0; opacity: 1;';
-            this.viewport.appendChild(forceRefreshEl);
-
-            this.element.addEventListener('scrolling', function(e) {
-                forceRefreshEl.style.opacity = Math.abs(parseInt(forceRefreshEl.style.opacity) - 1) + '';
-            }, false);
-        }
-        
-        this.element.addEventListener('scrolling', function(e){
-            handler(e);
-        }, false);
-
-        return this;
-    },
-
-    addScrollendHandler: function(handler) {
-        this.element.addEventListener('scrollend', function(e){
-            handler(e);
-        }, false);
-
-        return this;
-    },
-
-    enablePlugin: function(name, options) {
-        var plugin = plugins[name];
-        if (plugin && !this.plugins[name]) {
-            options = options || {};
-            for (var k in options) {
-                this.options[k] = options[k];
+            }
+            if (this.axis === 'y') {
+                element.style.webkitTransform = getTranslate(getTransformOffset(this).x, offset);
+            } else {
+                element.style.webkitTransform = getTranslate(offset, getTransformOffset(this).y);
             }
 
-            this.plugins[name] = plugin.apply(this);
-        }
-        return this;
-    }
-}
+            return this;
+        },
 
-for (var k in proto) {
-    Scroll.prototype[k] = proto[k];
+        scrollToElement: function(childEl, isSmooth) {
+            var offset = this.offset(childEl);
+            return this.scrollTo(this.axis === 'y'?offset.top:offset.left, isSmooth);
+        },
+
+        getViewWidth: function() {
+            return this.viewport.getBoundingClientRect().width;
+        },
+
+        getViewHeight: function() {
+            return this.viewport.getBoundingClientRect().height;
+        },
+
+        addPulldownHandler: function(handler) {
+            var that = this;
+            this.element.addEventListener('pulldownend', function(e) {
+                that.disable();
+                handler(e, function() {
+                    that.scrollTo(0, true);
+                    that.enable();
+                });
+            }, false);
+
+            return this;
+        },
+
+        addPullupHandler: function(handler) {
+            var that = this;
+
+            this.element.addEventListener('pullupend', function(e) {
+                that.disable();
+                handler(e, function() {
+                    that.scrollTo(that.getScrollHeight(), true);
+                    that.enable();
+                });
+            }, false);
+
+            return this;
+        },
+
+        addScrollstartHandler: function(handler) {
+            this.element.addEventListener('scrollstart', function(e){
+                handler(e);
+            }, false);
+
+            return this;
+        },
+
+        addScrollingHandler: function(handler) {
+            if (!this.fireScrollingEvent) {
+                this.fireScrollingEvent = true;
+                var forceRefreshEl = doc.createElement('div');
+                forceRefreshEl.className = 'force-refresh';
+                forceRefreshEl.style.cssText = 'position: absolute; top: 0; left: 0; width: 0; height: 0; font-size: 0; opacity: 1;';
+                this.viewport.appendChild(forceRefreshEl);
+
+                this.element.addEventListener('scrolling', function(e) {
+                    forceRefreshEl.style.opacity = Math.abs(parseInt(forceRefreshEl.style.opacity) - 1) + '';
+                }, false);
+            }
+            
+            this.element.addEventListener('scrolling', function(e){
+                handler(e);
+            }, false);
+
+            return this;
+        },
+
+        addScrollendHandler: function(handler) {
+            this.element.addEventListener('scrollend', function(e){
+                handler(e);
+            }, false);
+
+            return this;
+        },
+
+        enablePlugin: function(name, options) {
+            var plugin = plugins[name];
+            if (plugin && !this.plugins[name]) {
+                options = options || {};
+                this.plugins[name] = plugin.apply(this, [name, options]);
+            }
+            return this;
+        }
+    }
+
+    for (var k in proto) {
+        this[k] = proto[k];
+    }
+    delete proto;
 }
 
 lib.scroll = function(el, options) {
@@ -787,7 +786,10 @@ lib.scroll = function(el, options) {
 
 lib.scroll.plugin = function(name, constructor) {
     if (constructor) {
-        plugins[name] = constructor;
+        name = name.split(',');
+        name.forEach(function(n) {
+            plugins[n] = constructor;
+        });
     } else {
         return plugins[name];
     }
