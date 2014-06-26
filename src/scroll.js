@@ -109,10 +109,17 @@ function Scroll(element, options){
 
     options = options || {};
     options.noBounce = !!options.noBounce;
+
     if (options.isPrevent == null) {
         options.isPrevent = true;
     } else {
         options.isPrevent = !!options.isPrevent;
+    }
+
+    if (options.isFixScrollendClick == null) {
+        options.isFixScrollendClick = true;
+    } else {
+        options.isFixScrollendClick = !!options.isFixScrollendClick;
     }
 
     if (options.padding) {
@@ -136,6 +143,7 @@ function Scroll(element, options){
     that.axis = options.direction;
     this.element = element;
     this.viewport = element.parentNode;
+    this.plugins = {};
 
     this.viewport.addEventListener('touchstart', touchstartHandler, false);
     this.viewport.addEventListener('touchend', touchendHandler, false);
@@ -159,8 +167,33 @@ function Scroll(element, options){
         }, false);
     }
 
-    for (var name in plugins) {
-        plugins[name].init(this);
+    if (options.isFixScrollendClick) {
+        var preventScrollendClick;
+        this.viewport.addEventListener('touchstart', function() {
+            if (that.isScrolling) {
+                preventScrollendClick = true;
+            }
+        }, false);
+
+        this.viewport.addEventListener('scrollend', function() {
+            setTimeout(function(e){
+                preventScrollendClick = false;
+            }, 400);
+        }, false);
+
+        function preventScrollendClickHandler(e) {
+            e.preventScrollendClick = preventScrollendClick;
+            if (preventScrollendClick) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        this.viewport.addEventListener('click', preventScrollendClickHandler, false);
+        this.viewport.addEventListener('tap', preventScrollendClickHandler, false);
     }
 
     var webkitTransitionEndHandler;
@@ -198,13 +231,16 @@ function Scroll(element, options){
             return;
         }
 
+        if (that.isScrolling) {
+            scrollEnd();
+        }
+
         element.style.webkitBackfaceVisibility = 'hidden';
         element.style.webkitTransformStyle = 'preserve-3d';
         element.style.webkitTransform = getComputedStyle(element).webkitTransform;
         element.style.webkitTransition = '';
         webkitTransitionEndHandler = null;
         clearTimeout(transitionEndTimeoutId);
-        that.isScrolling = false;
     }
 
     function touchendHandler(e) {
@@ -217,7 +253,7 @@ function Scroll(element, options){
         var boundaryOffset = getBoundaryOffset(that, s0);
         var p1 = that.options[that.axis + 'Padding1'];
         var p2 = that.options[that.axis + 'Padding2'];
-        if(element.style.webkitTransition === '' && boundaryOffset) {
+        if (element.style.webkitTransition === '' && boundaryOffset) {
             var s1;
             if (isBounce && boundaryOffset > 0 && p1 && Math.abs(boundaryOffset) > p1 / 2) {
                 s1 = that.minScrollOffset + p1;
@@ -253,7 +289,7 @@ function Scroll(element, options){
         that.minScrollOffset = getMinScrollOffset(that);
         that.maxScrollOffset = getMaxScrollOffset(that);
         that.panFixRatio = 2.5;
-        cancelScrollEnd = false;
+        cancelScrollEnd = true;
         that.isScrolling = true;
         fireEvent(that, 'scrollstart');
     }
@@ -438,19 +474,19 @@ function Scroll(element, options){
             return;
         }
 
-        if (that.axis === 'y' && e && e.isVertical || that.axis === 'x' && e && !e.isVertical) {
-            e.stopPropagation();    
-        }
+        // if (that.axis === 'y' && e && e.isVertical || that.axis === 'x' && e && !e.isVertical) {
+        //     e.stopPropagation();    
+        // }
 
         cancelScrollEnd = false;
 
-        requestAnimationFrame(function() {
+        setTimeout(function() {
             if (!cancelScrollEnd) {
                 that.isScrolling = false;
                 element.style.webkitTransition = '';
                 fireEvent(that, 'scrollend');
             }
-        });
+        }, 50);
     }
 }
 
@@ -459,7 +495,6 @@ var proto = {
         this.enable();
         this.refresh();
         this.scrollTo(0);
-
         return this;
     },
 
@@ -651,6 +686,8 @@ var proto = {
                 that.enable();
             });
         }, false);
+
+        return this;
     },
 
     addPullupHandler: function(handler) {
@@ -662,12 +699,16 @@ var proto = {
                 that.enable();
             });
         }, false);
+
+        return this;
     },
 
     addScrollstartHandler: function(handler) {
         this.element.addEventListener('scrollstart', function(e){
             handler(e);
         }, false);
+
+        return this;
     },
 
     addScrollingHandler: function(handler) {
@@ -686,12 +727,29 @@ var proto = {
         this.element.addEventListener('scrolling', function(e){
             handler(e);
         }, false);
+
+        return this;
     },
 
     addScrollendHandler: function(handler) {
         this.element.addEventListener('scrollend', function(e){
             handler(e);
         }, false);
+
+        return this;
+    },
+
+    enablePlugin: function(name, options) {
+        var plugin = plugins[name];
+        if (plugin && !this.plugins[name]) {
+            options = options || {};
+            for (var k in options) {
+                this.options[k] = options[k];
+            }
+
+            this.plugins[name] = plugin.apply(this);
+        }
+        return this;
     }
 }
 
@@ -727,14 +785,9 @@ lib.scroll = function(el, options) {
     return scroll;
 }
 
-lib.scroll.plugin = function(name, plugin) {
-    if (plugin) {
-        if (typeof plugin === 'function') {
-            plugin = {
-                init: plugin
-            }
-        }
-        plugins[name] = plugin;
+lib.scroll.plugin = function(name, constructor) {
+    if (constructor) {
+        plugins[name] = constructor;
     } else {
         return plugins[name];
     }
