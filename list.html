@@ -146,7 +146,7 @@ var tpl = document.getElementById('itemTpl').innerHTML;
 var listUl = document.getElementById('list-wrap');
 
 function genItems() {
-    var html = new Array(10).join(tpl);
+    var html = new Array(40).join(tpl);
     var wrap = document.createElement('div');
     wrap.innerHTML = html;
     var fragment = document.createDocumentFragment();
@@ -159,7 +159,7 @@ function genItems() {
 }
 listUl.appendChild(genItems());
 
-lib.scroll.outputDebugLog = true;
+//lib.scroll.outputDebugLog = true;
 
 var listScroller = lib.scroll({
     scrollElement: document.getElementById('tbh5v0'),
@@ -168,7 +168,7 @@ var listScroller = lib.scroll({
 }).init();
 
 listScroller.enablePlugin('lazyload', {
-    realTimeLoad: true
+    realTimeLoad: false
 });
 
 listScroller.enablePlugin('sticky');
@@ -183,15 +183,15 @@ listScroller.enablePlugin('refresh', {
     }
 });
 
-listScroller.enablePlugin('update', {
-    //element: '<div class="J_BottomLoading loading" style=""><span></span>努力加载中</div>',
-    onupdate: function(element, done) {
-        setTimeout(function() {
-            listUl.appendChild(genItems());
-            done();
-        }, 1000);
-    }
-});
+// listScroller.enablePlugin('update', {
+//     //element: '<div class="J_BottomLoading loading" style=""><span></span>努力加载中</div>',
+//     onupdate: function(element, done) {
+//         setTimeout(function() {
+//             listUl.appendChild(genItems());
+//             done();
+//         }, 1000);
+//     }
+// });
 
 var barScroller = lib.scroll({
     scrollWrap: document.querySelector('.filter-bar'),
