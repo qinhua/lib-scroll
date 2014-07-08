@@ -144,13 +144,15 @@ lib.scroll.plugin('sticky', function(name, pluginOptions) {
 lib.scroll.plugin('update', function(name, pluginOptions) {
     var that = this;
     var scrollOptions = this.options;
+    var offset = pluginOptions.offset;
+
 
     var updateElement = doc.createElement('div');
     updateElement.className = 'update';
-    updateElement.style.cssText = 'position: absolute; bottom: 0; left: 0; width: 100%; background: #FFF;';
+    updateElement.style.cssText = 'position: absolute; bottom: ' + (offset || 0) + 'px; left: 0; width: 100%;';
 
-    pluginOptions.height = pluginOptions.height || (this.viewport.getBoundingClientRect().height * 0.05 + 'px');
-    updateElement.style.webkitTransform = 'translateY(' + pluginOptions.height + ')';
+    pluginOptions.height = pluginOptions.height || this.viewport.getBoundingClientRect().height * 0.05;
+    updateElement.style.webkitTransform = 'translateY(' + pluginOptions.height + 'px)';
     updateElement.style.height = pluginOptions.height;
 
     var isDefaultHTML = false;
@@ -162,6 +164,7 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
         var normalText = '上拉即可加载';
         var alterText = '加载中...';
         isDefaultHTML = true;
+        updateElement.style.backgroundColor = '#FFF';
         updateElement.innerHTML = '<div style="height:' + pluginOptions.height + ';line-height:' + pluginOptions.height + ';text-align:center;"><span>' + normalText + '</span></div>';
     }
 
@@ -265,12 +268,17 @@ lib.scroll.plugin('refresh', function(name, pluginOptions) {
     var that = this;
     var scrollOptions = this.options;
 
+    var offset = pluginOptions.offset;
+    if (offset == null) {
+        offset = this.element.getBoundingClientRect().top - this.viewport.getBoundingClientRect().top
+    }
+
     var refreshElement = doc.createElement('div');
     refreshElement.className = 'refresh';
-    refreshElement.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; background: #FFF;';
+    refreshElement.style.cssText = 'position: absolute; top: ' + (offset || 0) + 'px; left: 0; width: 100%;';
 
-    pluginOptions.height = pluginOptions.height || (this.viewport.getBoundingClientRect().height * 0.05 + 'px');
-    refreshElement.style.webkitTransform = 'translateY(-' + pluginOptions.height + ')';
+    pluginOptions.height = pluginOptions.height || this.viewport.getBoundingClientRect().height * 0.05;
+    refreshElement.style.webkitTransform = 'translateY(-' + pluginOptions.height + 'px)';
     refreshElement.style.height = pluginOptions.height;
 
     var isDefaultHTML = false;
@@ -282,6 +290,7 @@ lib.scroll.plugin('refresh', function(name, pluginOptions) {
         var normalText = '下拉即可刷新';
         var alterText = '刷新中...';
         isDefaultHTML = true;
+        refreshElement.style.backgroundColor = '#FFF';
         refreshElement.innerHTML = '<div style="height:' + pluginOptions.height + ';line-height:' + pluginOptions.height + ';text-align:center;"><span>' + normalText + '</span></div>';
     }
 

@@ -201,15 +201,15 @@ listScroller.enablePlugin('refresh', {
     }
 });
 
-// listScroller.enablePlugin('update', {
-//     //element: '<div class="J_BottomLoading loading" style=""><span></span>努力加载中</div>',
-//     onupdate: function(element, done) {
-//         setTimeout(function() {
-//             listUl.appendChild(genItems());
-//             done();
-//         }, 1000);
-//     }
-// });
+listScroller.enablePlugin('update', {
+    //element: '<div class="J_BottomLoading loading" style=""><span></span>努力加载中</div>',
+    onupdate: function(element, done) {
+        setTimeout(function() {
+            listUl.appendChild(genItems());
+            done();
+        }, 1000);
+    }
+});
 
 var barScroller = lib.scroll({
     scrollWrap: document.querySelector('.filter-bar'),
