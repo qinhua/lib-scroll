@@ -127,13 +127,11 @@ body > div {
 </div>
 <section style="height:1000px"></section>
 <script src="build/combo.debug.js" type="text/javascript"></script>
-<!--
-<script src="../motion/build/motion.debug.js" type="text/javascript"></script>
-<script src="../gesture/build/gesture.debug.js" type="text/javascript"></script>
--->
 <script src="build/scroll.debug.js" type="text/javascript"></script>
 <script type="text/javascript">
     (function () {
+        lib.scroll.outputDebugLog = true;
+
         var hScroll = document.querySelector('.h-scroll');
         var vScroll1 = document.querySelector('.v-scroll > div:first-child');
         var vScroll2 = document.querySelector('.v-scroll > div:last-child');
@@ -183,32 +181,11 @@ body > div {
         window['vScrollInner'] = lib.scroll(vScrollInner, {
             padding: {
                 top: 20,
-                bottom: 50
+                bottom: 20
             }
         }).init();
 
-        hScroller.addEventListener('pullright', function(e) {
-            console.log('pullright', e.boundaryOffset);
-        });
-
-        hScroller.addEventListener('pullleft', function(e) {
-            console.log('pullleft', e.boundaryOffset);
-        });
-
-        hScroller.addEventListener('scrollstart', function() {
-            console.log('scrollstart');
-        }, false);
-
-        hScroller.addEventListener('scrollend', function() {
-            console.log('scrollend');
-        }, false);
-
-        window.hScroller.addScrollingHandler(function(){
-            console.log('scrolling');
-        });
-
         vScrollOutter.addEventListener('pullup', function(e) {
-            console.log('pullup', e.boundaryOffset);
             var boundaryBottom = vScrollOutter.querySelector('#boundaryBottom');
             if (e.boundaryOffset > 25 && boundaryBottom.innerHTML === '上拉加载更多') {
                 boundaryBottom.innerHTML = '松开即加载';
@@ -218,15 +195,12 @@ body > div {
         }, false);
 
         window.vScrollOutter.addPullupHandler(function(e, done) {
-            console.log('pullupend');
             setTimeout(function() {
-                window.vScrollOutter.scrollTo(window.vScrollOutter.getScrollHeight(), true);
                 done();
             }, 2000);
         });
 
         vScrollOutter.addEventListener('pulldown', function(e) {
-            console.log('pulldown', e.boundaryOffset);
             var boundaryTop = vScrollOutter.querySelector('#boundaryTop');
             if (e.boundaryOffset > 25 && boundaryTop.innerHTML === '下拉刷新') {
                 boundaryTop.innerHTML = '松开即刷新';
@@ -236,9 +210,7 @@ body > div {
         }, false);
 
         window.vScrollOutter.addPulldownHandler(function(e, done) {
-            console.log('pulldownend');
             setTimeout(function() {
-                window.vScrollOutter.scrollTo(0, true);
                 done();
             }, 2000);
         });

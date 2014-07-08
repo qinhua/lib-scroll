@@ -2,7 +2,7 @@
 
 ## 最新版本
 
-**2.1.8**
+**2.2.0**
 
 ## 安装依赖
 
@@ -14,38 +14,77 @@
 
 ## 如何使用
 
-	var scroll = lib.scroll(el, options);
-	scrll.init();
+    var scroller = lib.scroll({
+        scrollElement: document.getElementById('search-list'),
+        isPrevent: true
+    });
+    scrller.init();
 
-- el - 需要滚动的元素
-- options - 选项
-	- direction - 方向x/y
-	- padding[top/bottom/left/right] - 边缘空白（和bounceOffset互斥）
-	- bounceOffset[top/bottom/left/right] - 边缘回弹距离（和padding互斥）
-	- noBounce - 是否取消边缘回弹效果
-	- isPrevent - 阻止默认滑动，默认为true
-	- useLazyload - 是否检查懒加载图片
-	- realtimeLazyload - 在useLazyload为true的前提下，是否实时检查懒加载（会比较吃性能）
-	- useSticky - 是否对拥有sticky类名的子元素采用吸顶功能
+### 初始化参数
 
-## 如何使用懒加载
+**scrollWrap**
+
+滚动元素的父级，如果用了这个属性，那么scrollElement会设置为该元素的第一个子元素
+
+**scrollElement**
+
+滚动的元素
+
+**direction**
+
+方向x/y，可省略，默认为y
+
+**padding**
+
+可以设置边缘空白，对象的key分别为top/bottom/left/right，可省略，默认都为0
+
+**noBounce**
+
+是否取消边缘回弹效果，可省略，默认为false
+
+**isPrevent**
+
+阻止默认滑动，可省略，默认为true
+
+**inertia**
+
+惯性的类型，取值为normal/slow/veryslow，可省略，默认为normal
+
+**isFixScrollendClick**
+
+点停滚动时，触发点击事件的问题，可省略，默认为true
+
+
+## 使用增强插件
+
+### 懒加载
+
+    - useLazyload - 是否检查懒加载图片
+    - realtimeLazyload - 在useLazyload为true的前提下，是否实时检查懒加载（会比较吃性能）
 
 * options中，设置useLazyload为true。
 * 需要懒加载的元素拥有lazy类名，且有dataimg属性配置图片地址。
 * 需要懒加载的元素必须有初始高度，不要让图片加载后来撑开。
 * 在第一次dom加载完后，需要手动调用checkLazyLoad来显示当前屏的图片。
 
-
-## 如何使用吸顶功能
+### 元素吸顶（fixed）
 
 ### 单独使用吸顶
 
+    - useSticky - 是否对拥有sticky类名的子元素采用吸顶功能
+    
 * 调用makeSticky，传入需要被吸顶的元素，必须保证被吸顶的元素，拥有作为占位符的父元素且定高。
 
 ### 初始化吸顶
 
 * 在options中，设置useSticky为true
 * 需要吸顶的元素拥有sticky类名
+
+### 下拉刷新
+
+
+### 上拉加载
+
 
 ## 实例方法
 
@@ -132,13 +171,9 @@
 
 获得区域的可见高度（方向为y时有效）。
 
-### scroll.addPulldownHandler(handler)
+### scroll.addScrollstartHandler(handler)
 
-增加处理下拉的处理函数，第二个参数为完成后的回调。
-
-### scroll.addPullupHandler(handler)
-
-增加处理上拉的处理函数，第二个参数为完成后的回调。
+增加处理滚动开始的处理函数。
 
 ### scroll.addScrollingHandler(handler)
 
@@ -163,6 +198,7 @@
 在滚动的元素上，可以监听如下这些事件：
 
 - scrollstart - 滚动开始
+- scrolling - 滚动中（建议使用addScrollingHandler来处理）
 - scrollend - 滚动结束（建议使用addScrollendHandler来处理）
 - pullleft - 往左拉（方向为x时有效）
 - pullleftend - 往左拉结束（方向为x时有效）
