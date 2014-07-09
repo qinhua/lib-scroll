@@ -417,33 +417,29 @@ var proto = {
 
     refresh: function() {
         var el = this.element;
+        var isVertical = (this.axis === 'y');
+        var type = isVertical?'height':'width';
+        var Type = isVertical?'Height':'Width';
 
-        if (this.axis === 'y') {
-            el.style.height = 'auto';
-            var firstEl = el.firstElementChild;
-            while (firstEl && !firstEl.getBoundingClientRect().height) {
-                firstEl = firstEl.nextElementSibling;
-            }
-            var lastEl = el.lastElementChild;
-            while (lastEl && !lastEl.getBoundingClientRect().height) {
-                lastEl = lastEl.previousElementSibling;
-            }
-            el.style.height = (this.options.height || 
-                ((lastEl && lastEl.getBoundingClientRect().bottom || 0) - 
-                    (firstEl && firstEl.getBoundingClientRect().top || 0))) + 'px';
+        if (this.options.height || this.options.width) {
+            // use options
+            el.style[type] = this.options[type] + 'px';
+        } else if (document.createRange) {
+            // use range
+            //el.style[type] = 'auto';
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            el.style[type] = range.getBoundingClientRect()[type] + 'px';
+        } else if (el.childElementCount > 0){
+            // use child offsets
+            //el.style[type] = 'auto';
+            for (var firstEl = el.firstElementChild; firstEl && !firstEl.getBoundingClientRect()[type]; firstEl = firstEl.nextElementSibling);
+            for (var lastEl = el.lastElementChild; lastEl && !lastEl.getBoundingClientRect()[type] && lastEl !== firstEl; lastEl = lastEl.previousElementSibling);
+            el.style[type] = (lastEl.getBoundingClientRect()[isVertical?'bottom':'right'] -
+                    firstEl.getBoundingClientRect()[isVertical?'top':'left']) + 'px'; 
         } else {
-            el.style.width = 'auto';
-            var firstEl = el.firstElementChild;
-            while (firstEl && !firstEl.getBoundingClientRect().width) {
-                firstEl = firstEl.nextElementSibling;
-            }
-            var lastEl = el.lastElementChild;
-            while (lastEl && !lastEl.getBoundingClientRect().width) {
-                lastEl = lastEl.previousElementSibling;
-            }
-            el.style.width = (this.options.width || 
-                ((lastEl && lastEl.getBoundingClientRect().right || 0) - 
-                    (firstEl && firstEl.getBoundingClientRect().left || 0))) + 'px';
+            el.style[type] = 'auto';
+            el.style[type] = el.getBoundingClientRect()[type] + 'px';
         }
 
         this.transformOffset = getTransformOffset(this);
