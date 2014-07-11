@@ -14,7 +14,7 @@
 
 ## 如何使用
 
-    var scroller = lib.scroll({
+    var scroller = lib.scroll(element, {
         scrollElement: document.getElementById('search-list'),
         isPrevent: true
     });

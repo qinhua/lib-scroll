@@ -1,222 +1,219 @@
-<!DOCTYPE HTML>
 <html>
 <head>
-<meta charset="utf-8" />
-<!--允许全屏-->
-<meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="yes" name="apple-touch-fullscreen"/>
-<meta content="telephone=no,email=no" name="format-detection"/>
-<link rel="apple-touch-icon" href="favicon.png"/>
-<link rel="Shortcut Icon" href="favicon.png" type="image/x-icon" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
-<title>lib.scroll demo</title>
-<style>
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
+	<meta charset="utf-8">
+	<title>搜索宝贝</title>
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+	<meta content="yes" name="apple-mobile-web-app-capable">
+	<meta content="black" name="apple-mobile-web-app-status-bar-style">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1" media="(device-height: 568px)">
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <style>
+    html,body,#wrap {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #FFF;
+    }
+    header {
+        position: absolute;
+        top: 0;
+    }
 
-ul, ol {
-    -webkit-margin-before: 0;
-    -webkit-margin-after: 0;
-    -webkit-margin-start: 0;
-    -webkit-margin-end: 0;
-    -webkit-padding-before: 0;
-    -webkit-padding-after: 0;
-    -webkit-padding-start: 0;
-    -webkit-padding-end: 0;
-}
+    .J_FilterBarContainer {
+        width: 100%;
+        height:32px;
+    }
+    .filter-bar {
+        width: 100%;
+        height: 32px;
+        overflow: hidden;
+    }
+    .filter-bar .sort-tab {
+        display: -webkit-box;
+    }
+    .filter-bar .sort-tab li {
+        display: block;
+        width: 80px;
+        box-sizing: border-box;
+    }
+    .filter-bar .sort-tab {
+        overflow: hidden;
+        display: -webkit-box;
+    }
 
-body * {
-    -webkit-text-size-adjust:none;
-    /*-webkit-user-select: none;*/
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-}
-
-body > div {
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    position:absolute;
-    top:0;
-    left:0;
-}
-
-.h-scroll {
-    overflow:hidden; 
-    height:50px; 
-    width:100%;
-    position:relative;
-    z-index: 2;
-}
-
-.h-scroll section {
-    display:-webkit-box;
-    height:100%;
-}
-
-.h-scroll div {
-    width:40px;
-    text-align:center;
-    line-height:50px;
-    padding:0 10px;
-}
-
-.v-scroll {
-    position:relative;
-    z-index: 1;
-    width:100%;
-    height:100%;
-    box-sizing:border-box;
-    background-color:#000; 
-    padding-top: 50px; 
-    margin-top:-50px; 
-    overflow:hidden; 
-    display: -webkit-box;
-}
-
-.v-scroll > div {
-    border:1px solid #ccc; 
-    box-sizing: border-box; 
-    width:50%; height:100%; 
-    -webkit-flex:1; 
-    overflow:hidden;
-}
-
-.v-scroll > div:first-child span, #outter span {
-    height:25px;
-}
-
-#inner {
-    border:1px solid red;
-    margin:10px auto; 
-    width:60%; 
-    height:250px; 
-    overflow:hidden;
-}
-
-#inner div {
-    height:25px;
-}
-
-#boundaryTop, #boundaryBottom {
-    height:50px;
-    text-align:center;
-    line-height:50px;
-}
-
-</style>
+    .filter-bar .sort-tab li {
+        width: 80px;
+        display: block;
+    }
+    </style>
 </head>
-<body>
-<div>
-    <div class="h-scroll"><section></section></div>
-    <div class="v-scroll">
-        <div><section></section></div>
-        <div>
-            <section>
-                <div id="boundaryTop">下拉刷新</div>
-                <div id="outter"></div>
-                <div id="inner"><section></section></div>
-                <div id="boundaryBottom">上拉加载更多</div>
-            </section>
+<body scroll="none">
+<header class="top-bar" id="J_Header">
+    <div class="top-bar-w">
+        <a class="logo" href="http://m.taobao.com">
+            <div class="icons-taobao-logo"></div>
+        </a>
+        <div class="top-bar-c">
+            <div class="s-input-select">
+                <div class="s-input-tab">
+                    <div class="s-input-tab-txt">宝贝</div>
+                    <div class="s-input-tab-nav off" id="J_TabNav">
+                        <ul>
+                            <li class="all">宝贝</li>
+                            <li class="shop">店铺</li>
+                            <li class="tmall">天猫</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="top-bar-e">
+            <span class="s-tab-btn sub" id="J_selt">分类</span>
+            <span class="s-tab-btn sort" id="J_sift">筛选</span>
+        </div>
+        <div class="top-bar-btn closed">取消</div>
+    </div>
+</header>
+<div id="wrap">
+    <div id="tbh5v0" class="mytaobao">
+        <div class="toolbar">
+            <div class="J_RellkeyContainer">
+                <div class="rellkey">
+                    <ul>
+                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E6%B8%AF%E7%89%88&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">港版</li>
+                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E6%97%A5%E7%89%88&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">日版</li>
+                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E8%8B%B9%E6%9E%9C&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">苹果</li>
+                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E7%94%B5%E4%BF%A1&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">电信</li>
+                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E7%BE%8E%E7%89%88&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">美版</li>
+                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E5%9B%BD%E8%A1%8C&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">国行</li>
+                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E4%B8%89%E7%BD%91&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">三网</li>
+                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E6%89%8B%E6%9C%BA&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">手机</li>
+                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E6%97%A0%E9%94%81&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">无锁</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="J_FilterBarContainer">
+                <div class="filter-bar sticky">
+                    <ul class="sort-tab J_sortTab">
+                        <li data-value="" class="selected">默认</li>
+                        <li data-value="_sale">销量</li>
+                        <li data-value="bid">价格</li>
+                        <li data-value="">信用</li>
+                        <li data-value="_sale">相关</li>
+                        <li data-value="bid">最近</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="bodyCont" class="screen-wrap fullscreen searchlist">
+            <div class="search-content">
+                <div class="search-list list-view" id="J_SearchList">
+                    <ul id="list-wrap"></ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<section style="height:1000px"></section>
+<script type="text/template" id="itemTpl">
+    <li>
+        <div class="list-item">
+            <div class="p">
+                <a href="http://mclick.simba.taobao.com/cc_im?p=iphone5s&amp;s=384300457&amp;k=269&amp;e=Bf52Czfzg4zEzEYXHF1ZrjhZAekQJJP1K4M14jql2z%2F1lYR6JgolkyoCZbepooNsYHcE2byB58uPEB5nyzmdRlFplfhdyusoNBrETXawvQ6BF7KUbKK962nsBJEbCRNEQA7w4cN%2F10pIouaYhvJponIUuKyCq5k8UWTc1rhquXcHnpuCFIjDVpsXMwjxx%2BxkzeiRu%2Bi0WaRELmURVnaN47Cr9H8IhjN4YT2aULWczh7FPRTaiMoo3quVwCSMOmdelXji%2B%2BqulpI%3D" title=""><img class="p-pic lazy" data-src="http://gma.alicdn.com/tfscom/i2/11031028964676638/T1WMPDFlVbXXXXXXXX_!!0-item_pic.jpg_210x210.jpg" style="visibility: visible;"></a>
+            </div>
+            <div class="d">
+                <a href="http://mclick.simba.taobao.com/cc_im?p=iphone5s&amp;s=384300457&amp;k=269&amp;e=Bf52Czfzg4zEzEYXHF1ZrjhZAekQJJP1K4M14jql2z%2F1lYR6JgolkyoCZbepooNsYHcE2byB58uPEB5nyzmdRlFplfhdyusoNBrETXawvQ6BF7KUbKK962nsBJEbCRNEQA7w4cN%2F10pIouaYhvJponIUuKyCq5k8UWTc1rhquXcHnpuCFIjDVpsXMwjxx%2BxkzeiRu%2Bi0WaRELmURVnaN47Cr9H8IhjN4YT2aULWczh7FPRTaiMoo3quVwCSMOmdelXji%2B%2BqulpI%3D" title="">
+                    <h3 class="d-title"> iPhone 5s 香港商家 原封未激活 百分百原装</h3>
+                </a>
+                <p class="d-price">
+                    <em class="h">￥4198</em><del>￥4498</del>
+                </p>
+                <div class="d-main">
+                    <p class="d-freight">免运费</p>
+                    <p class="d-num">828人购买</p>
+                    <p class="d-area">香港</p>
+                </div>
+            </div>
+        </div>
+    </li>
+</script>
 <script src="build/combo.debug.js" type="text/javascript"></script>
 <script src="build/scroll.debug.js" type="text/javascript"></script>
-<script type="text/javascript">
-    (function () {
-        lib.scroll.outputDebugLog = true;
+<script src="build/plugin.debug.js" type="text/javascript"></script>
+<script>
+var tpl = document.getElementById('itemTpl').innerHTML;
+var listUl = document.getElementById('list-wrap');
 
-        var hScroll = document.querySelector('.h-scroll');
-        var vScroll1 = document.querySelector('.v-scroll > div:first-child');
-        var vScroll2 = document.querySelector('.v-scroll > div:last-child');
-        var html1 = [], html2 = [], html3 = [];
-        vScroll1.style.color = 'black';
-        vScroll2.style.color = 'white';
+function genItems() {
+    var html = new Array(10).join(tpl);
+    var wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    var fragment = document.createDocumentFragment();
 
-        var html = '';
-        for (var i = 0; i < 100; i++) {
-            html += '<div><span>' + i + '</span></div>';
-        }
-        hScroll.querySelector('section').innerHTML = html;
+    while (wrap.children.length) {
+        fragment.appendChild(wrap.firstElementChild);
+    }
 
-        html = '';
-        for (var i = 0; i < 50; i++) {
-            html += '<span>' + i + '</span><br />';
-        }
-        vScroll1.querySelector('section').innerHTML = html;
-        vScroll2.querySelector('#outter').innerHTML = html;
+    return fragment;
+}
+listUl.appendChild(genItems());
 
-        html = '';
-        for (var i = 0; i < 20; i++) {
-            html += '<div><input type="text" value="' + i + '" /></div>';
-        }
-        vScroll2.querySelector('#inner section').innerHTML = html;
+//lib.scroll.outputDebugLog = true;
 
-        var hScroller = hScroll.querySelector('section');
-        var vScroller = vScroll1.querySelector('section');
-        var vScrollOutter = vScroll2.querySelector('section');
-        var vScrollInner = vScrollOutter.querySelector('section');
-        hScroller.style.backgroundColor = '#FFF';
-        vScroller.style.backgroundColor = '#CCC';
-        vScrollOutter.style.backgroundColor = '#999';
-        vScrollInner.style.backgroundColor = '#333';
+var listScroller = lib.scroll({
+    scrollElement: document.getElementById('tbh5v0'),
+    padding: {
+        top: 48,
+        bottom: 20
+    },
+    isPrevent: true,
+    inertia: 'slow'
+}).init();
 
-        window['hScroller'] = lib.scroll(hScroller, {
-            noBounce: true,
-            direction: 'x'
-        }).init();
-        window['vScroller'] = lib.scroll(vScroller).init();
-        window['vScrollOutter'] = lib.scroll(vScrollOutter, {
-            bounceOffset:{
-                top: 50, 
-                bottom: 50
-            }
-        }).init();
-        window['vScrollInner'] = lib.scroll(vScrollInner, {
-            padding: {
-                top: 20,
-                bottom: 20
-            }
-        }).init();
+listScroller.enablePlugin('lazyload', {
+    realTimeLoad: false
+});
 
-        vScrollOutter.addEventListener('pullup', function(e) {
-            var boundaryBottom = vScrollOutter.querySelector('#boundaryBottom');
-            if (e.boundaryOffset > 25 && boundaryBottom.innerHTML === '上拉加载更多') {
-                boundaryBottom.innerHTML = '松开即加载';
-            } else if (e.boundaryOffset <=25 && boundaryBottom.innerHTML === '松开即加载'){
-                boundaryBottom.innerHTML = '上拉加载更多'
-            }
-        }, false);
+listScroller.enablePlugin('sticky');
 
-        window.vScrollOutter.addPullupHandler(function(e, done) {
-            setTimeout(function() {
-                done();
-            }, 2000);
-        });
+listScroller.enablePlugin('refresh', {
+    html: '<div style="height: 30px;line-height: 30px; text-align:center; background: #FFF;"><span>下拉即可刷新</span></div>',
+    onrefresh: function(wrap, done) {
+        wrap.querySelector('span').innerHTML = '加载中...';
+        setTimeout(function() {
+            listUl.innerHTML = '';
+            listUl.appendChild(genItems());
+            wrap.querySelector('span').innerHTML = '下拉即可刷新';
+            done();
+        }, 1000);
+    }
+});
 
-        vScrollOutter.addEventListener('pulldown', function(e) {
-            var boundaryTop = vScrollOutter.querySelector('#boundaryTop');
-            if (e.boundaryOffset > 25 && boundaryTop.innerHTML === '下拉刷新') {
-                boundaryTop.innerHTML = '松开即刷新';
-            } else if (e.boundaryOffset <= 25 && boundaryTop.innerHTML === '松开即刷新'){
-                boundaryTop.innerHTML = '下拉刷新'
-            }
-        }, false);
+var el = document.createElement('div');
+el.className = 'J_BottomLoading loading'
+el.innerHTML = '<span></span>努力加载中';
 
-        window.vScrollOutter.addPulldownHandler(function(e, done) {
-            setTimeout(function() {
-                done();
-            }, 2000);
-        });
-    })();
+listScroller.enablePlugin('update', {
+    element: el,
+    onupdate: function(element, done) {
+        el.innerHTML = 'aaaaa';
+        setTimeout(function() {
+            listUl.appendChild(genItems());
+            el.innerHTML = 'bbbb';
+            done();
+        }, 1000);
+    }
+});
+
+var barScroller = lib.scroll({
+    scrollWrap: document.querySelector('.filter-bar'),
+    direction: 'x',
+    noBounce: false,
+    isPrevent: true
+}).init();
 </script>
-
 </body>
 </html>
-
