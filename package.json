@@ -1,12 +1,9 @@
 {
   "name": "lib.scroll",
   "description": "用Transform来模拟原生的滚动，并提供丰富的API和插件",
-  "version": "2.1.8",
+  "version": "2.2.0",
   "homepage": "http://gitlab.alibaba-inc.com/mtb/lib-scroll",
-  "author": {
-    "name": "zhuxun.jb",
-    "email": "zhuxun.jb@taobao.com"
-  },
+  "author":["渚薰"],
   "repository": {
     "type": "git",
     "url": "git@gitlab.alibaba-inc.com:mtb/lib-scroll.git"
@@ -36,6 +33,7 @@
   },
   "keywords": [
     "lib",
-    "gesture"
+    "scroll",
+    "滚动"
   ]
 }

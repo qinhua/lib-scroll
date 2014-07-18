@@ -1,9 +1,19 @@
 ;(function(win, lib, undef) {
 var doc = win.document;
-var docEl = doc.documentElement;
 var motion = lib.motion;
-var prevented = false;
 var scrollObjs = {};
+var plugins = {};
+var inertiaCoefficient = {
+    'normal': [2, 0.0015],
+    'slow': [1.5, 0.003],
+    'veryslow': [1.5, 0.005]
+}
+
+function debugLog() {
+    if (lib.scroll.outputDebugLog) {
+        console.debug.apply(console, arguments);
+    }
+}
 
 function getMinScrollOffset(scrollObj) {
     return 0 - (scrollObj.options[scrollObj.axis + 'Padding1'] || 0);
@@ -11,7 +21,7 @@ function getMinScrollOffset(scrollObj) {
 
 function getMaxScrollOffset(scrollObj) {
     var rect = scrollObj.element.getBoundingClientRect();
-    var pRect = scrollObj.element.parentNode.getBoundingClientRect();
+    var pRect = scrollObj.viewport.getBoundingClientRect();
     var min = getMinScrollOffset(scrollObj);
     if (scrollObj.axis === 'y') {
         var max = 0 - rect.height + pRect.height;
@@ -39,6 +49,8 @@ function touchBoundary(scrollObj, offset) {
 }
 
 function fireEvent(scrollObj, eventName, extra) {
+    debugLog(eventName, extra);
+
     var event = doc.createEvent('HTMLEvents');
     event.initEvent(eventName, false, true);
     event.scrollObj = scrollObj;
@@ -75,8 +87,16 @@ function getTranslate(x, y) {
     }
 }
 
+var requestAnimationFrame = (function() {
+    return  window.requestAnimationFrame || 
+                window.webkitRequestAnimationFrame || 
+            function(cb) {
+                setTimeout(cb, 16);
+            }
+})();
+
 var panning = false;
-document.addEventListener('touchmove', function(e){
+doc.addEventListener('touchmove', function(e){
     if (panning) {
         e.preventDefault();
         return false;
@@ -89,10 +109,18 @@ function Scroll(element, options){
 
     options = options || {};
     options.noBounce = !!options.noBounce;
+    options.padding = options.padding || {};
+
     if (options.isPrevent == null) {
         options.isPrevent = true;
     } else {
         options.isPrevent = !!options.isPrevent;
+    }
+
+    if (options.isFixScrollendClick == null) {
+        options.isFixScrollendClick = true;
+    } else {
+        options.isFixScrollendClick = !!options.isFixScrollendClick;
     }
 
     if (options.padding) {
@@ -101,17 +129,17 @@ function Scroll(element, options){
         options.xPadding1 = -options.padding.left || 0;
         options.xPadding2 = -options.padding.right || 0;
     }
-    if (options.bounceOffset) {
-        options.yPadding1 = options.bounceOffset.top || 0;
-        options.yPadding2 = options.bounceOffset.bottom || 0;
-        options.xPadding1 = options.bounceOffset.left || 0;
-        options.xPadding2 = options.bounceOffset.right || 0;
-    }
+
+    options.direction = options.direction || 'y';
+    options.inertia = options.inertia || 'normal';
+
 
     this.options = options;
-    that.axis = options.direction || 'y';
+    that.axis = options.direction;
     this.element = element;
     this.viewport = element.parentNode;
+    this.plugins = {};
+
     this.viewport.addEventListener('touchstart', touchstartHandler, false);
     this.viewport.addEventListener('touchend', touchendHandler, false);
     this.viewport.addEventListener('touchcancel', touchendHandler, false);
@@ -119,28 +147,88 @@ function Scroll(element, options){
     this.viewport.addEventListener('pan', panHandler, false);
     this.viewport.addEventListener('panend', panendHandler, false);
     this.viewport.addEventListener('flick', flickHandler, false);
-    this.viewport.scrollId = setTimeout(function(){
-        scrollObjs[that.viewport.scrollId + ''] = that;
-    }, 0);
+
+    this.element.scrollId = setTimeout(function(){
+        scrollObjs[that.element.scrollId + ''] = that;
+    }, 1);
 
     if (options.isPrevent) {
         var d = this.axis === 'y'?'vertical':'horizontal';
         this.viewport.addEventListener(d + 'panstart', function(e) {
             panning = true;
         }, false);
-        that.viewport.addEventListener('panend', function(e){
+        that.viewport.addEventListener('panend', function(e){  
             panning = false;
         }, false);
     }
 
+    if (options.isFixScrollendClick) {
+        var preventScrollendClick;
+        this.viewport.addEventListener('touchstart', function() {
+            if (that.isScrolling) {
+                preventScrollendClick = true;
+            }
+        }, false);
+
+        this.viewport.addEventListener('scrollend', function() {
+            setTimeout(function(e){
+                preventScrollendClick = false;
+            }, 400);
+        }, false);
+
+        function preventScrollendClickHandler(e) {
+            e.preventScrollendClick = preventScrollendClick;
+            if (preventScrollendClick) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        this.viewport.addEventListener('click', preventScrollendClickHandler, false);
+        this.viewport.addEventListener('tap', preventScrollendClickHandler, false);
+    }
+
     var webkitTransitionEndHandler;
+    var transitionEndTimeoutId = 0;
+    function setTransitionEndHandler(h, t) {
+        webkitTransitionEndHandler = null;
+        clearTimeout(transitionEndTimeoutId);
+        
+        transitionEndTimeoutId = setTimeout(function() {
+            if (webkitTransitionEndHandler) {
+                webkitTransitionEndHandler = null;
+                requestAnimationFrame(h);
+            }
+        }, (t || 400));
+
+        webkitTransitionEndHandler = h;   
+    }
+
     element.addEventListener('webkitTransitionEnd', function(e) {
         if (webkitTransitionEndHandler) {
             var handler = webkitTransitionEndHandler;
+
             webkitTransitionEndHandler = null;
-            handler(e); 
+            clearTimeout(transitionEndTimeoutId);
+
+            requestAnimationFrame(function(){
+                handler(e);
+            });
         }
     }, false);
+
+    
+    // function noClickHandler(e) {
+    //     if (that.isScrolling && e.target.tagName.toUpperCase() === 'a'){
+    //         e.preventDefault();
+    //         e.stopPropagation();
+    //     }
+    // }
+    // element.addEventListener('click', noClickHandler, true);
+    // element.addEventListener('tap', noClickHandler, true);
 
     var cancelScrollEnd;
     function touchstartHandler(e) {
@@ -148,12 +236,16 @@ function Scroll(element, options){
             return;
         }
 
+        if (that.isScrolling) {
+            scrollEnd();
+        }
+
         element.style.webkitBackfaceVisibility = 'hidden';
         element.style.webkitTransformStyle = 'preserve-3d';
         element.style.webkitTransform = getComputedStyle(element).webkitTransform;
         element.style.webkitTransition = '';
         webkitTransitionEndHandler = null;
-        that.isScrolling = false;
+        clearTimeout(transitionEndTimeoutId);
     }
 
     function touchendHandler(e) {
@@ -162,33 +254,32 @@ function Scroll(element, options){
         }
 
         var s0 = getTransformOffset(that)[that.axis];
-        var isBounce = !!options.bounceOffset;
         var boundaryOffset = getBoundaryOffset(that, s0);
-        var p1 = that.options[that.axis + 'Padding1'];
-        var p2 = that.options[that.axis + 'Padding2'];
-        if(element.style.webkitTransition === '' && element.style.webkitAnimation === '' && boundaryOffset) {
-            var s1;
-            if (isBounce && boundaryOffset > 0 && p1 && boundaryOffset > p1 / 2) {
-                s1 = that.minScrollOffset + p1;
-                webkitTransitionEndHandler = function() {
-                    fireEvent(that, that.axis === 'y'?'pulldownend':'pullrightend');
-                }
-            } else if (isBounce && boundaryOffset < 0 && p2 && Math.abs(boundaryOffset) > p2 / 2) {
-                s1 = that.maxScrollOffset - p2;
-                webkitTransitionEndHandler = function() {
-                    fireEvent(that, that.axis === 'y'?'pullupend':'pullleftend');
-                }
-            } else {
-                s1 = touchBoundary(that, s0);
-                webkitTransitionEndHandler = scrollEnd;
+        if (element.style.webkitTransition === '' && boundaryOffset) {
+            var s1 = touchBoundary(that, s0);
+            if (boundaryOffset > 0) {
+                fireEvent(that, that.axis === 'y'?'pulldownend':'pullrightend');
+            } else if (boundaryOffset < 0) {
+                fireEvent(that, that.axis === 'y'?'pullupend':'pullleftend');
             }
             element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
             element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
+            setTransitionEndHandler(scrollEnd, 400);
+
+            if (that.fireScrollingEvent) {
+                requestAnimationFrame(function() {
+                    if (that.isScrolling && that.enabled) {
+                        fireEvent(that, 'scrolling');
+                        requestAnimationFrame(arguments.callee);
+                    }
+                });
+            }
         } else if (that.isScrolling) {
             scrollEnd();
         }
     }
 
+    var lastDisplacement;
     function panstartHandler(e) {
         if (!that.enabled) {
             return;
@@ -202,15 +293,23 @@ function Scroll(element, options){
         that.minScrollOffset = getMinScrollOffset(that);
         that.maxScrollOffset = getMaxScrollOffset(that);
         that.panFixRatio = 2.5;
-        cancelScrollEnd = false;
+        cancelScrollEnd = true;
         that.isScrolling = true;
         fireEvent(that, 'scrollstart');
+
+        lastDisplacement = e['displacement' + that.axis.toUpperCase()];
     }
+
 
     function panHandler(e) {
         if (!that.enabled) {
             return;
         }
+
+        var displacement = e['displacement' + that.axis.toUpperCase()];
+
+        if (Math.abs(displacement - lastDisplacement) < 5) return;
+        lastDisplacement = displacement;
 
         if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
             e.stopPropagation();    
@@ -218,7 +317,7 @@ function Scroll(element, options){
             return;
         }
 
-        var offset = that.transformOffset[that.axis] + e['displacement' + that.axis.toUpperCase()];
+        var offset = that.transformOffset[that.axis] + displacement;
 
         if(offset > that.minScrollOffset) {
             offset = that.minScrollOffset + (offset - that.minScrollOffset) / that.panFixRatio;
@@ -241,12 +340,15 @@ function Scroll(element, options){
             }
         }
 
-        element.style.webkitAnimation = '';
         element.style.webkitTransition = '';
         if (that.axis === 'y') {
-            element.style.webkitTransform = getTranslate(that.transformOffset.x, offset);    
+            element.style.webkitTransform = getTranslate(that.transformOffset.x, offset);  
         } else {
             element.style.webkitTransform = getTranslate(offset, that.transformOffset.y);
+        }
+
+        if (that.fireScrollingEvent) {
+            fireEvent(that, 'scrolling');
         }
     }
 
@@ -280,17 +382,24 @@ function Scroll(element, options){
         s0 = getTransformOffset(that)[that.axis];
         var boundaryOffset0 = getBoundaryOffset(that, s0);
         if(!boundaryOffset0) {
-            //手指离开屏幕时，已经超出滚动范围
-            //不作处理，让touchend handler处理
+            //手指离开屏幕时，已经超出滚动范围，不作处理，让touchend handler处理
             //手指离开屏幕时，在滚动范围内，做一下惯性计算
             v0 = e['velocity' + that.axis.toUpperCase()];
-            if (v0 > 2) {
-                v0 = 2;
+
+            var maxV = 2;
+            var friction = 0.0015;
+            if (options.inertia && inertiaCoefficient[options.inertia]) {
+                maxV = inertiaCoefficient[options.inertia][0];
+                friction = inertiaCoefficient[options.inertia][1];
             }
-            if (v0 < -2) {
-                v0 = -2;
+
+            if (v0 > maxV) {
+                v0 = maxV;
             }
-            a0 = 0.0015 * ( v0 / Math.abs(v0));
+            if (v0 < -maxV) {
+                v0 = -maxV;
+            }
+            a0 = friction * ( v0 / Math.abs(v0));
             motion0 = motion({
                 v: v0,
                 a: -a0
@@ -300,12 +409,16 @@ function Scroll(element, options){
 
             var boundaryOffset1 = getBoundaryOffset(that, s);
             if (boundaryOffset1) {
+                debugLog('惯性计算超出了边缘', boundaryOffset1);
+
                 if (options.noBounce) {
                     // 没有边缘回弹效果，直接平顺滑到边缘
+                    debugLog('没有回弹效果');
+
                     s1 = touchBoundary(that, s);
                     element.style.webkitTransition = '-webkit-transform 0.4s ease-out 0';
                     element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
-                    webkitTransitionEndHandler = scrollEnd;
+                    setTransitionEndHandler(scrollEnd, 400);
                 } else {
                     //惯性运动足够滑出屏幕边缘
                     v1 = v0;
@@ -335,18 +448,39 @@ function Scroll(element, options){
 
                     element.style.webkitTransition = '-webkit-transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0';                
                     element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s2.toFixed(0) + 'px)';
-                    webkitTransitionEndHandler = function(e) {
+
+                    debugLog('惯性滚动', 's=' + s2.toFixed(0), 't=' + ((t1 + t2) / 1000).toFixed(2));
+
+                    setTransitionEndHandler(function(e) {
+                        if (!that.enabled) {
+                            return;
+                        }
+
                         element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
                         element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
-                        webkitTransitionEndHandler = scrollEnd;
-                    }
+
+                        debugLog('惯性回弹', 's=' + s1.toFixed(0), 't=400');
+                        setTransitionEndHandler(scrollEnd, 400);
+                    }, ((t1 + t2) / 1000).toFixed(2) * 1000);
                 }
             } else {
+                debugLog('惯性计算没有超出了边缘');
                 var timeFunction = motion0.generateCubicBezier();
-
                 element.style.webkitTransition = '-webkit-transform ' + (t0 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction + ') 0';
                 element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s.toFixed(0) + 'px)';
-                webkitTransitionEndHandler = scrollEnd;
+                setTransitionEndHandler(scrollEnd, (t0 / 1000).toFixed(2) * 1000);
+            }
+
+
+            if (that.fireScrollingEvent) {
+                requestAnimationFrame(function() {
+                    if (that.isScrolling && that.enabled) {
+                        fireEvent(that, 'scrolling', {
+                            afterFlick: true
+                        });
+                        requestAnimationFrame(arguments.callee);
+                    }
+                });
             }
         }
     }
@@ -356,276 +490,296 @@ function Scroll(element, options){
             return;
         }
 
-        if (that.axis === 'y' && e && e.isVertical || that.axis === 'x' && e && !e.isVertical) {
-            e.stopPropagation();    
-        }
-
         cancelScrollEnd = false;
 
         setTimeout(function() {
-            if (!cancelScrollEnd) {
+            if (!cancelScrollEnd && that.enabled) {
                 that.isScrolling = false;
                 element.style.webkitTransition = '';
-                element.style.webkitAnimation = '';
                 fireEvent(that, 'scrollend');
             }
-        }, 10);
-    }
-}
-
-var proto = {
-    init: function() {
-        this.enable();
-        this.refresh();
-        this.scrollTo(0);
-
-        return this;
-    },
-
-    enable: function() {
-        this.enabled = true;
-        return this;
-    },
-
-    disable: function() {
-        var el = this.element;
-        this.enabled = false;
-
-        setTimeout(function() {
-            el.style.webkitTransform = getComputedStyle(el).webkitTransform;
-            el.style.webkitAnimation = '';
         }, 50);
+    }
 
-        return this;
-    },
 
-    getScrollWidth: function() {
-        return this.element.getBoundingClientRect().width - (this.options.xPadding1||0) - (this.options.xPadding2||0);
-    },
+    var proto = {
+        init: function() {
+            this.enable();
+            this.refresh();
+            this.scrollTo(0);
+            return this;
+        },
 
-    getScrollHeight: function() {
-        return this.element.getBoundingClientRect().height - (this.options.yPadding1||0) - (this.options.yPadding2||0);
-    },
+        enable: function() {
+            this.enabled = true;
+            return this;
+        },
 
-    getScrollLeft: function() {
-        return -getTransformOffset(this).x - (this.options.xPadding1 || 0);
-    },
+        disable: function() {
+            var el = this.element;
+            this.enabled = false;
+            that.isScrolling = false;
 
-    getScrollTop: function() {
-        return -getTransformOffset(this).y - (this.options.yPadding1 || 0);
-    },
+            requestAnimationFrame(function() {
+                el.style.webkitTransform = getComputedStyle(el).webkitTransform;
+            });
 
-    refresh: function() {
-        var el = this.element;
-        var isVertical = (this.axis === 'y');
-        var type = isVertical?'height':'width';
-        var Type = isVertical?'Height':'Width';
+            return this;
+        },
 
-        if (this.options.height || this.options.width) {
-            // use options
-            el.style[type] = this.options[type] + 'px';
-        } else if (document.createRange) {
-            // use range
-            //el.style[type] = 'auto';
-            var range = document.createRange();
-            range.selectNodeContents(el);
-            el.style[type] = range.getBoundingClientRect()[type] + 'px';
-        } else if (el.childElementCount > 0){
-            // use child offsets
-            //el.style[type] = 'auto';
-            for (var firstEl = el.firstElementChild; firstEl && !firstEl.getBoundingClientRect()[type]; firstEl = firstEl.nextElementSibling);
-            for (var lastEl = el.lastElementChild; lastEl && !lastEl.getBoundingClientRect()[type] && lastEl !== firstEl; lastEl = lastEl.previousElementSibling);
-            el.style[type] = (lastEl.getBoundingClientRect()[isVertical?'bottom':'right'] -
-                    firstEl.getBoundingClientRect()[isVertical?'top':'left']) + 'px'; 
-        } else {
-            el.style[type] = 'auto';
-            el.style[type] = el.getBoundingClientRect()[type] + 'px';
-        }
+        getScrollWidth: function() {
+            return this.element.getBoundingClientRect().width - (this.options.xPadding1||0) - (this.options.xPadding2||0);
+        },
 
-        this.transformOffset = getTransformOffset(this);
-        this.minScrollOffset = getMinScrollOffset(this);
-        this.maxScrollOffset = getMaxScrollOffset(this);
-        this.scrollTo(-this.transformOffset[this.axis] - (this.options[this.axis + 'Padding1'] || 0));
+        getScrollHeight: function() {
+            return this.element.getBoundingClientRect().height - (this.options.yPadding1||0) - (this.options.yPadding2||0);
+        },
 
-        return this;
-    },
+        getScrollLeft: function() {
+            return -getTransformOffset(this).x - (this.options.xPadding1 || 0);
+        },
 
-    offset: function(childEl) {
-        var elRect = this.element.getBoundingClientRect();
-        var childRect = childEl.getBoundingClientRect();
-        if (this.axis === 'y') {
-            var offsetRect = {
-                    top: childRect.top - ((this.options.yPadding1 || 0) + elRect.top),
-                    left: childRect.left - elRect.left,
-                    right: elRect.right - childRect.right,
-                    width: childRect.width,
-                    height: childRect.height
-                };
+        getScrollTop: function() {
+            return -getTransformOffset(this).y - (this.options.yPadding1 || 0);
+        },
 
-            offsetRect.bottom = offsetRect.top + offsetRect.height;
-        } else {
-            var offsetRect = {
-                    top: childRect.top - elRect.top,
-                    bottom: elRect.bottom - childRect.bottom,
-                    left: childRect.left - ((this.options.xPadding1 || 0) + elRect.left),
-                    width: childRect.width,
-                    height: childRect.height
-                };
+        getMaxScrollLeft: function() {
+            return -that.maxScrollOffset - (this.options.xPadding1 || 0);
+        },
 
-            offsetRect.right = offsetRect.left + offsetRect.width;
-        }
-        return offsetRect;
-    },
+        getMaxScrollTop: function() {
+            return -that.maxScrollOffset - (this.options.yPadding1 || 0);
+        },
 
-    getRect: function(childEl) {
-        var viewRect = this.viewport.getBoundingClientRect();
-        var childRect = childEl.getBoundingClientRect();
-        if (this.axis === 'y') {
-            var offsetRect = {
-                    top: childRect.top - ((this.options.yPadding1 || 0) + viewRect.top),
-                    left: childRect.left - viewRect.left,
-                    right: viewRect.right - childRect.right,
-                    width: childRect.width,
-                    height: childRect.height
-                };
+        getBoundaryOffset: function() {
+            return Math.abs(getBoundaryOffset(this, getTransformOffset(this)[this.axis]) || 0);
+        },
 
-            offsetRect.bottom = offsetRect.top + offsetRect.height;
-        } else {
-            var offsetRect = {
-                    top: childRect.top - viewRect.top,
-                    bottom: viewRect.bottom - childRect.bottom,
-                    left: childRect.left - ((this.options.xPadding1 || 0) + viewRect.left),
-                    width: childRect.width,
-                    height: childRect.height
-                };
+        refresh: function() {
+            var el = this.element;
+            var isVertical = (this.axis === 'y');
+            var type = isVertical?'height':'width';
+            var Type = isVertical?'Height':'Width';
 
-            offsetRect.right = offsetRect.left + offsetRect.width;
-        }
-        return offsetRect;
-    },
-
-    isInView: function(childEl) {
-        var viewRect = this.viewport.getBoundingClientRect();
-        var childRect = childEl.getBoundingClientRect();
-        if (this.axis === 'y') {
-            return viewRect.top < childRect.bottom && viewRect.bottom > childRect.top;
-        } else {
-            return viewRect.left < childRect.right && viewRect.right > childRect.left;
-        }
-    },
-
-    scrollTo: function(offset, isSmooth) {
-        var element = this.element;
-
-        offset = -offset - (this.options[this.axis + 'Padding1'] || 0);
-        offset = touchBoundary(this, offset);
-
-        if (isSmooth === true) {
-            element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-            webkitTransitionEndHandler = function(){
-                element.style.webkitTransition = '';
-                element.style.webkitAnimation = '';
+            if (this.options.height || this.options.width) {
+                // use options
+                el.style[type] = this.options[type] + 'px';
+            } else if (document.createRange) {
+                // use range
+                //el.style[type] = 'auto';
+                var range = document.createRange();
+                range.selectNodeContents(el);
+                el.style[type] = range.getBoundingClientRect()[type] + 'px';
+            } else if (el.childElementCount > 0){
+                // use child offsets
+                //el.style[type] = 'auto';
+                for (var firstEl = el.firstElementChild; firstEl && !firstEl.getBoundingClientRect()[type]; firstEl = firstEl.nextElementSibling);
+                for (var lastEl = el.lastElementChild; lastEl && !lastEl.getBoundingClientRect()[type] && lastEl !== firstEl; lastEl = lastEl.previousElementSibling);
+                el.style[type] = (lastEl.getBoundingClientRect()[isVertical?'bottom':'right'] -
+                        firstEl.getBoundingClientRect()[isVertical?'top':'left']) + 'px'; 
+            } else {
+                el.style[type] = 'auto';
+                el.style[type] = el.getBoundingClientRect()[type] + 'px';
             }
-        } else {
-            element.style.webkitTransition = '';
-            element.style.webkitAnimation = '';
-        }
-        if (this.axis === 'y') {
-            element.style.webkitTransform = getTranslate(getTransformOffset(this).x, offset);
-        } else {
-            element.style.webkitTransform = getTranslate(offset, getTransformOffset(this).y);
-        }
 
-        return this;
-    },
+            this.transformOffset = getTransformOffset(this);
+            this.minScrollOffset = getMinScrollOffset(this);
+            this.maxScrollOffset = getMaxScrollOffset(this);
+            this.scrollTo(-this.transformOffset[this.axis] - (this.options[this.axis + 'Padding1'] || 0));
 
-    scrollToElement: function(childEl, isSmooth) {
-        var offset = this.offset(childEl);
-        return this.scrollTo(this.axis === 'y'?offset.top:offset.left, isSmooth);
-    },
+            return this;
+        },
 
-    getViewWidth: function() {
-        return this.viewport.getBoundingClientRect().width;
-    },
+        offset: function(childEl) {
+            var elRect = this.element.getBoundingClientRect();
+            var childRect = childEl.getBoundingClientRect();
+            if (this.axis === 'y') {
+                var offsetRect = {
+                        top: childRect.top - ((this.options.yPadding1 || 0) + elRect.top),
+                        left: childRect.left - elRect.left,
+                        right: elRect.right - childRect.right,
+                        width: childRect.width,
+                        height: childRect.height
+                    };
 
-    getViewHeight: function() {
-        return this.viewport.getBoundingClientRect().height;
-    },
+                offsetRect.bottom = offsetRect.top + offsetRect.height;
+            } else {
+                var offsetRect = {
+                        top: childRect.top - elRect.top,
+                        bottom: elRect.bottom - childRect.bottom,
+                        left: childRect.left - ((this.options.xPadding1 || 0) + elRect.left),
+                        width: childRect.width,
+                        height: childRect.height
+                    };
 
-    addPulldownHandler: function(handler) {
-        var that = this;
-        var element = this.element;
+                offsetRect.right = offsetRect.left + offsetRect.width;
+            }
+            return offsetRect;
+        },
 
-        element.addEventListener('pulldownend', function(e) {
-            that.disable();
-            handler(e, function() {
-                that.enable();
-            });
-        }, false);
-    },
+        getRect: function(childEl) {
+            var viewRect = this.viewport.getBoundingClientRect();
+            var childRect = childEl.getBoundingClientRect();
+            if (this.axis === 'y') {
+                var offsetRect = {
+                        top: childRect.top - ((this.options.yPadding1 || 0) + viewRect.top),
+                        left: childRect.left - viewRect.left,
+                        right: viewRect.right - childRect.right,
+                        width: childRect.width,
+                        height: childRect.height
+                    };
 
-    addPullupHandler: function(handler) {
-        var that = this;
-        var element = this.element;
+                offsetRect.bottom = offsetRect.top + offsetRect.height;
+            } else {
+                var offsetRect = {
+                        top: childRect.top - viewRect.top,
+                        bottom: viewRect.bottom - childRect.bottom,
+                        left: childRect.left - ((this.options.xPadding1 || 0) + viewRect.left),
+                        width: childRect.width,
+                        height: childRect.height
+                    };
 
-        element.addEventListener('pullupend', function(e) {
-            that.disable();
-            handler(e, function() {
-                that.enable();
-            });
-        }, false);
-    },
+                offsetRect.right = offsetRect.left + offsetRect.width;
+            }
+            return offsetRect;
+        },
 
-    addScrollingHandler: function(handler) {
-        var that = this;
-        that.scrollingHandlers = that.scrollingHandlers || [];
-        that.scrollingHandlers.push(handler);
+        isInView: function(childEl) {
+            var viewRect = this.viewport.getBoundingClientRect();
+            var childRect = this.getRect(childEl);
+            if (this.axis === 'y') {
+                return viewRect.top < childRect.bottom && viewRect.bottom > childRect.top;
+            } else {
+                return viewRect.left < childRect.right && viewRect.right > childRect.left;
+            }
+        },
 
-        if (!that.fireScrollingEvent) {
-            that.firstScrollingEvent = true;
-            that.element.addEventListener('scrollstart', function(e){
-                setTimeout(function(){
-                    if (that.isScrolling) {
-                        that.scrollingHandlers.forEach(function(h){
-                            setTimeout(h, 1);
-                        });
-                        setTimeout(arguments.callee, 16);
-                    }
-                }, 16);
+        scrollTo: function(offset, isSmooth) {
+            var that = this;
+            var element = this.element;
+
+            offset = -offset - (this.options[this.axis + 'Padding1'] || 0);
+            offset = touchBoundary(this, offset);
+
+            if (isSmooth === true) {
+                element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
+                setTransitionEndHandler(scrollEnd, 400);
+            } else {
+                element.style.webkitTransition = '';
+            }
+            if (this.axis === 'y') {
+                element.style.webkitTransform = getTranslate(getTransformOffset(this).x, offset);
+            } else {
+                element.style.webkitTransform = getTranslate(offset, getTransformOffset(this).y);
+            }
+
+            return this;
+        },
+
+        scrollToElement: function(childEl, isSmooth) {
+            var offset = this.offset(childEl);
+            return this.scrollTo(this.axis === 'y'?offset.top:offset.left, isSmooth);
+        },
+
+        getViewWidth: function() {
+            return this.viewport.getBoundingClientRect().width;
+        },
+
+        getViewHeight: function() {
+            return this.viewport.getBoundingClientRect().height;
+        },
+
+        addPulldownHandler: function(handler) {
+            var that = this;
+            this.element.addEventListener('pulldownend', function(e) {
+                that.disable();
+                handler(e, function() {
+                    that.scrollTo(0, true);
+                    that.enable();
+                });
             }, false);
-        }
-    },
 
-    addScrollendHandler: function(handler) {
-        var that = this;
-        that.scrollendHandlers = that.scrollendHandlers || [];
-        that.scrollendHandlers.push(handler);
+            return this;
+        },
 
-        if (!that.fireScrollendEvent) {
-            that.fireScrollendEvent = true;
-            that.element.addEventListener('scrollstart', function(e){
-                var top = 0;
-                setTimeout(function(){
-                    if (top !== that.getScrollTop()) {
-                        top = that.getScrollTop();
-                        setTimeout(arguments.callee, 150);
-                    } else {
-                        top = 0;
-                        that.scrollendHandlers.forEach(function(h){
-                            setTimeout(h, 1);
-                        });
-                    }
-                }, 150);
+        addPullupHandler: function(handler) {
+            var that = this;
+
+            this.element.addEventListener('pullupend', function(e) {
+                that.disable();
+                handler(e, function() {
+                    that.scrollTo(that.getScrollHeight(), true);
+                    that.enable();
+                });
             }, false);
+
+            return this;
+        },
+
+        addScrollstartHandler: function(handler) {
+            this.element.addEventListener('scrollstart', function(e){
+                handler(e);
+            }, false);
+
+            return this;
+        },
+
+        addScrollingHandler: function(handler) {
+            if (!this.fireScrollingEvent) {
+                this.fireScrollingEvent = true;
+                var forceRefreshEl = doc.createElement('div');
+                forceRefreshEl.className = 'force-refresh';
+                forceRefreshEl.style.cssText = 'position: absolute; top: 0; left: 0; width: 0; height: 0; font-size: 0; opacity: 1;';
+                this.viewport.appendChild(forceRefreshEl);
+
+                this.element.addEventListener('scrolling', function(e) {
+                    forceRefreshEl.style.opacity = Math.abs(parseInt(forceRefreshEl.style.opacity) - 1) + '';
+                }, false);
+            }
+            
+            this.element.addEventListener('scrolling', function(e){
+                handler(e);
+            }, false);
+
+            return this;
+        },
+
+        addScrollendHandler: function(handler) {
+            this.element.addEventListener('scrollend', function(e){
+                handler(e);
+            }, false);
+
+            return this;
+        },
+
+        enablePlugin: function(name, options) {
+            var plugin = plugins[name];
+            if (plugin && !this.plugins[name]) {
+                options = options || {};
+                this.plugins[name] = plugin.apply(this, [name, options]);
+            }
+            return this;
         }
     }
-}
 
-for (var k in proto) {
-    Scroll.prototype[k] = proto[k];
+    for (var k in proto) {
+        this[k] = proto[k];
+    }
+    delete proto;
 }
 
 lib.scroll = function(el, options) {
+    if (arguments.length === 1 && !(arguments[0] instanceof HTMLElement)) {
+        options = arguments[0];
+        if (options.scrollElement) {
+            el = options.scrollElement;    
+        } else if (options.scrollWrap) {
+            el = options.scrollWrap.firstElementChild;
+        } else {
+            throw new Error('no scroll element');
+        }
+    }
+
     if (!el.parentNode) {
         throw new Error('wrong dom tree');
     }
@@ -634,12 +788,23 @@ lib.scroll = function(el, options) {
     }
 
     var scroll;
-    if (el.parentNode.scrollId) {
-        scroll = scrollObjs[el.parentNode.scrollId];
+    if (el.scrollId) {
+        scroll = scrollObjs[el.scrollId];
     } else {
         scroll = new Scroll(el, options);
     }
     return scroll;
+}
+
+lib.scroll.plugin = function(name, constructor) {
+    if (constructor) {
+        name = name.split(',');
+        name.forEach(function(n) {
+            plugins[n] = constructor;
+        });
+    } else {
+        return plugins[name];
+    }
 }
 
 })(window, window['lib']||(window['lib']={}));

@@ -1,7 +1,7 @@
 {
   "name": "lib.scroll",
-  "description": "用Transform来模拟原生的滚动，并提供丰富的API和插件",
-  "version": "2.1.8",
+  "description": "dom scroll",
+  "version": "2.2.0",
   "homepage": "http://gitlab.alibaba-inc.com/mtb/lib-scroll",
   "author": {
     "name": "zhuxun.jb",
