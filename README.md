@@ -4,39 +4,45 @@
 
 **2.2.0**
 
-## 安装依赖
+## 依赖库
 
-运行 `npm install`，来安装所需的依赖模块。关于NPM的知识，请参见[nodejs](http://nodejs.org/);
+- [lib.motion](http://gitlab.alibaba-inc.com/mtb/lib-motion/tree/master)
+- [lib.gesture](http://gitlab.alibaba-inc.com/mtb/lib-gesture/tree/master)
+
+完整引用举例：
+
+    <script src="http://g.tbcdn.cn/mtb/lib-scroll/{{version}}/??combo.js,scroll.js"></script>
 
 ## 用Grunt打包
+
+运行 `npm install`，来安装所需的依赖模块。关于NPM的知识，请参见[nodejs](http://nodejs.org/);
 
 运行 `grunt`，来对项目进行打包。关于Grunt的知识，请参见[gruntjs](http://gruntjs.com/);
 
 ## 如何使用
 
     var scroller = lib.scroll(element, {
-        scrollElement: document.getElementById('search-list'),
-        isPrevent: true
+        scrollElement: document.getElementById('search-list')
     });
     scrller.init();
 
-### 初始化参数
+### 参数
 
 **scrollWrap**
 
-滚动元素的父级，如果用了这个属性，那么scrollElement会设置为该元素的第一个子元素
+滚动元素的父级，如果设置这个属性，那么`scrollElement`会自动设置为其第一个子元素
 
 **scrollElement**
 
-滚动的元素
+滚动的元素，在同时设置`scrollElement`和`scrollWrap`时，以`scrollElement`为准。
 
 **direction**
 
-方向x/y，可省略，默认为y
+方向`x（水平方向）`/`y（垂直方向）`，可省略，默认为`y`。
 
 **padding**
 
-可以设置边缘空白，对象的key分别为top/bottom/left/right，可省略，默认都为0
+可以设置内边距，传递一个对象给这个属性，对象的key分别为top/bottom/left/right，可省略，默认都为0。
 
 **noBounce**
 
@@ -54,157 +60,122 @@
 
 点停滚动时，触发点击事件的问题，可省略，默认为true
 
+### 图示
 
-## 使用增强插件
+![Scroll图示](http://gtms04.alicdn.com/tps/i4/TB1rRumFVXXXXX_XVXXzVfsGpXX-700-654.jpg)
+
+## 使用插件
+
+需额外引入一个js：
+
+    <script src="http://g.tbcdn.cn/mtb/lib-scroll/{{version}}/plugin.js"></script>
+
+### 贴边固定元素
+
+![图示](http://gtms01.alicdn.com/tps/i1/TB17UCqFVXXXXcbXFXXRNQOKpXX-1036-254.png)
+
+贴边固定元素可位于顶部/底部（只适用于Y轴滚动），左边/右边（只适用于X轴滚动）
+
+	scroller.enablePlugin('fixed', {
+		topOffset: 0, //默认为0，可省略
+		topElement: '<h2>标题xxxxx</h2>'  // 顶部的元素，可以是HTML片段也可以是HTML元素
+	});
+
+除了topOffset/topElement的参数，另外还有bottomOffset/bottomElement，leftOffset/leftElement，rightOffset/rightElement。
+
+启用这个插件后，scroller会增加如下方法/属性：
+
+**topFixedElement** 
+
+topElement的父元素
+
+**bottomFixedElement** 
+
+bottomElement的父元素
+
+**leftFixedElement** 
+
+leftElement的父元素
+
+**rightFixedElement** 
+
+rightElement的父元素
 
 ### 懒加载
 
-    - useLazyload - 是否检查懒加载图片
-    - realtimeLazyload - 在useLazyload为true的前提下，是否实时检查懒加载（会比较吃性能）
+懒加载的触发条件是元素有`lazy`的类名，并且该元素是img标签或其子元素有img标签，且img标签的图片用`data-src`属性标识。
 
-* options中，设置useLazyload为true。
-* 需要懒加载的元素拥有lazy类名，且有dataimg属性配置图片地址。
-* 需要懒加载的元素必须有初始高度，不要让图片加载后来撑开。
-* 在第一次dom加载完后，需要手动调用checkLazyLoad来显示当前屏的图片。
+	scroller.enablePlugin('lazyload', {
+	    realTimeLoad: false // 是否在滚动时进行懒加载，默认为false
+	});
 
-### 元素吸顶（fixed）
+启用这个插件后，scroller会增加如下方法/属性：
 
-### 单独使用吸顶
+**checkLazyload()**
 
-    - useSticky - 是否对拥有sticky类名的子元素采用吸顶功能
-    
-* 调用makeSticky，传入需要被吸顶的元素，必须保证被吸顶的元素，拥有作为占位符的父元素且定高。
+执行懒加载
 
-### 初始化吸顶
+### 元素吸顶
 
-* 在options中，设置useSticky为true
-* 需要吸顶的元素拥有sticky类名
+![图示](http://gtms02.alicdn.com/tps/i2/TB1MHSqFVXXXXXXXVXX0vNdTFXX-1057-289.png)
+
+吸顶的触发条件是元素有`sticky`的类名，并且该元素的父元素是个固定高度的元素（也就是原始位置需要有个占位符）。
+	
+	scroller.enablePlugin('sticky'， {
+		offset: 0, //元素距离顶部的偏移，默认为0，可为负数
+	});
+
+启用这个插件后，scroller会增加如下方法/属性：
+
+**checkSticky()**
+
+执行元素吸顶。
+
+**makeSticky(element)**
+
+让某个元素拥有吸顶功能。
 
 ### 下拉刷新
 
+![图示](http://gtms03.alicdn.com/tps/i3/TB1wQ9rFVXXXXbAXFXX25K14XXX-1079-229.png)
 
-### 上拉加载
+	scroller.enablePlugin('refresh', {
+		element: '<div>下拉刷新</div>' //可以是HTML片段也可以是HTML元素
+		height: 20, // 元素的高度，默认为0
+		offset: 0,  // 元素距离顶部的偏移，默认为0，可为负数
+		onrefresh： function(done) {
+			// 上下文是当前的scroller对象
+			// 触发刷新动作时的回调
+			// 自行做刷新的渲染
+			// 完成后运行done方法
+			done();
+        }
+	});
 
+启用这个插件后，scroller会增加如下方法/属性：
 
-## 实例方法
+**refreshElement**
 
-### scroll.enable()
+element的父元素
 
-启用滚动。
+### 上拉加载更多
 
-### scroll.disable()
+	scroller.enablePlugin('refresh', {
+		element: '<div>加载更多</div>' //可以是HTML片段也可以是HTML元素
+		height: 20, // 元素的高度，默认为0
+		offset: 0,  // 元素距离顶部的偏移，默认为0，可为负数
+		onupdate： function(done) {
+			// 上下文是当前的scroller对象
+			// 触发加载动作时的回调
+			// 自行做加载的渲染
+			// 完成后运行done方法
+			done();
+        }
+	});
 
-停用滚动。
+启用这个插件后，scroller会增加如下方法/属性：
 
-### scroll.getScrollWidth()
+**updateElement**
 
-* @return {number} width
+element的父元素
 
-获取HTML元素区域的滚动宽度（方向为x时有效）。
-
-### scroll.getScrollHeight()
-
-* @return {number} height
-
-获取HTML元素区域的滚动高度（方向为y时有效）。
-
-### scroll.getScrollLeft()
-
-* @return {number} left
-
-获取滚动位置（方向为x时有效）。
-
-### scroll.getScrollTop()
-
-* @return {number} top
-
-获取滚动位置（方向为y时有效）。
-
-### scroll.refresh()
-
-刷新区域。
-
-### scroll.offset(childEl)
-
-* @param {HTMLElement} childEl 滚动区域内的元素
-* @return {object} a rectangle object
-
-返回某元素相对滚动区域的偏移，包括`top/bottom/left/right/width/height`。
-
-### scroll.getRect(childEl)
-
-* @param {HTMLElement} childEl 滚动区域内的元素
-* @return {object} a rectangle object
-
-返回某元素相对视觉区域的矩阵数据，包括`top/bottom/left/right/width/height`。
-
-### scroll.isInView(childEl)
-
-* @param {HTMLElement} childEl 滚动区域内的元素
-* @return {Boolean} 是否在视觉区域内
-
-判断滚动区域内的元素是否在视觉区域内
-
-### scroll.scrollTo(s, isSmooth)
-
-* @param {Number} s 滚动到的位置
-* @param {Boolean} isSmooth 是否平滑滚动
-
-滚动到区域中的某位置。
-
-### scroll.scrollToElement(childEl, isSmooth)
-
-* @param {HTMLElement} childEl 滚动到的元素
-* @param {Boolean} isSmooth 是否平滑滚动
-
-滚动到区域中的某元素。
-
-### scroll.getViewWidth()
-
-* @return {Number} width
-
-获得区域的可见宽度（方向为x时有效）。
-
-### scroll.getViewHeight()
-
-* @return {Number} height
-
-获得区域的可见高度（方向为y时有效）。
-
-### scroll.addScrollstartHandler(handler)
-
-增加处理滚动开始的处理函数。
-
-### scroll.addScrollingHandler(handler)
-
-增加处理滚动中的处理函数。
-
-### scroll.addScrollendHandler(handler)
-
-增加处理滚动结束的处理函数。
-
-### scroll.checkLazyload()
-
-检查当前可见区域内是否有需要懒加载的图片，如有则触发加载。
-
-### scroll.makeSticky(stickyElement)
-
-使得scroll区域内一个元素stickyElement变成sticky的：即当元素位置在滚动区域上方时，元素会吸附于滚动区域顶部。
-
-**一般来说stickyElement的父元素应该指定固定高度，避免元素sticky行为触发时页面重排版。**
-
-## 事件
-
-在滚动的元素上，可以监听如下这些事件：
-
-- scrollstart - 滚动开始
-- scrolling - 滚动中（建议使用addScrollingHandler来处理）
-- scrollend - 滚动结束（建议使用addScrollendHandler来处理）
-- pullleft - 往左拉（方向为x时有效）
-- pullleftend - 往左拉结束（方向为x时有效）
-- pullright - 往右拉（方向为x时有效）
-- pullrightend - 往右拉结束（方向为x时有效）
-- pulldown - 往下拉（方向为y时有效）
-- pulldownend - 往下拉结束（方向为y时有效）
-- pullup - 往上拉（方向为y时有效）
-- pullupend - 往上拉结束（方向为y时有效）

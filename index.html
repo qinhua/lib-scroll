@@ -16,10 +16,6 @@
         overflow: hidden;
         background: #FFF;
     }
-    header {
-        position: absolute;
-        top: 0;
-    }
 
     .J_FilterBarContainer {
         width: 100%;
@@ -50,47 +46,21 @@
     </style>
 </head>
 <body scroll="none">
-<header class="top-bar" id="J_Header">
-    <div class="top-bar-w">
-        <a class="logo" href="http://m.taobao.com">
-            <div class="icons-taobao-logo"></div>
-        </a>
-        <div class="top-bar-c">
-            <div class="s-input-select">
-                <div class="s-input-tab">
-                    <div class="s-input-tab-txt">宝贝</div>
-                    <div class="s-input-tab-nav off" id="J_TabNav">
-                        <ul>
-                            <li class="all">宝贝</li>
-                            <li class="shop">店铺</li>
-                            <li class="tmall">天猫</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="top-bar-e">
-            <span class="s-tab-btn sub" id="J_selt">分类</span>
-            <span class="s-tab-btn sort" id="J_sift">筛选</span>
-        </div>
-        <div class="top-bar-btn closed">取消</div>
-    </div>
-</header>
 <div id="wrap">
     <div id="tbh5v0" class="mytaobao">
         <div class="toolbar">
             <div class="J_RellkeyContainer">
                 <div class="rellkey">
                     <ul>
-                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E6%B8%AF%E7%89%88&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">港版</li>
-                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E6%97%A5%E7%89%88&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">日版</li>
-                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E8%8B%B9%E6%9E%9C&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">苹果</li>
-                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E7%94%B5%E4%BF%A1&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">电信</li>
-                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E7%BE%8E%E7%89%88&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">美版</li>
-                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E5%9B%BD%E8%A1%8C&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">国行</li>
-                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E4%B8%89%E7%BD%91&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">三网</li>
-                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E6%89%8B%E6%9C%BA&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">手机</li>
-                        <li data="http://s.m.taobao.com/search.htm?searchfrom=1&amp;_input_charset=utf-8&amp;tab=all&amp;q=iphone5s+%E6%97%A0%E9%94%81&amp;sst=1&amp;DN=1&amp;atype=1&amp;sid=wpfd3b80fq7acamqg1aem9xt1461d83a&amp;abtest=1">无锁</li>
+                        <li>港版</li>
+                        <li>日版</li>
+                        <li>苹果</li>
+                        <li>电信</li>
+                        <li>美版</li>
+                        <li>国行</li>
+                        <li>三网</li>
+                        <li>手机</li>
+                        <li>无锁</li>
                     </ul>
                 </div>
             </div>
@@ -118,6 +88,34 @@
         </div>
     </div>
 </div>
+<script type="text/template" id="headerTpl">
+    <header class="top-bar" id="J_Header">
+        <div class="top-bar-w">
+            <a class="logo" href="http://m.taobao.com">
+                <div class="icons-taobao-logo"></div>
+            </a>
+            <div class="top-bar-c">
+                <div class="s-input-select">
+                    <div class="s-input-tab">
+                        <div class="s-input-tab-txt">宝贝</div>
+                        <div class="s-input-tab-nav off" id="J_TabNav">
+                            <ul>
+                                <li class="all">宝贝</li>
+                                <li class="shop">店铺</li>
+                                <li class="tmall">天猫</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="top-bar-e">
+                <span class="s-tab-btn sub" id="J_selt">分类</span>
+                <span class="s-tab-btn sort" id="J_sift">筛选</span>
+            </div>
+            <div class="top-bar-btn closed">取消</div>
+        </div>
+    </header>
+</script>
 <script type="text/template" id="itemTpl">
     <li>
         <div class="list-item">
@@ -169,9 +167,12 @@ var listScroller = lib.scroll({
         top: 48,
         bottom: 20
     },
-    isPrevent: true,
     inertia: 'slow'
 }).init();
+
+listScroller.enablePlugin('fixed', {
+    topElement: document.getElementById('headerTpl').innerHTML
+})
 
 listScroller.enablePlugin('lazyload', {
     realTimeLoad: false
@@ -181,12 +182,14 @@ listScroller.enablePlugin('sticky');
 
 listScroller.enablePlugin('refresh', {
     html: '<div style="height: 30px;line-height: 30px; text-align:center; background: #FFF;"><span>下拉即可刷新</span></div>',
-    onrefresh: function(wrap, done) {
-        wrap.querySelector('span').innerHTML = '加载中...';
+    height: 30,
+    onrefresh: function(done) {
+        var that = this;
+        this.refreshElement.querySelector('span').innerHTML = '加载中...';
         setTimeout(function() {
             listUl.innerHTML = '';
             listUl.appendChild(genItems());
-            wrap.querySelector('span').innerHTML = '下拉即可刷新';
+            that.refreshElement.querySelector('span').innerHTML = '下拉即可刷新';
             done();
         }, 1000);
     }
@@ -198,11 +201,12 @@ el.innerHTML = '<span></span>努力加载中';
 
 listScroller.enablePlugin('update', {
     element: el,
-    onupdate: function(element, done) {
-        el.innerHTML = 'aaaaa';
+    height: 30,
+    onupdate: function(done) {
+        el.innerHTML = '<span></span>正在加载...';
         setTimeout(function() {
             listUl.appendChild(genItems());
-            el.innerHTML = 'bbbb';
+            el.innerHTML = '<span></span>努力加载中';
             done();
         }, 1000);
     }
@@ -211,8 +215,7 @@ listScroller.enablePlugin('update', {
 var barScroller = lib.scroll({
     scrollWrap: document.querySelector('.filter-bar'),
     direction: 'x',
-    noBounce: false,
-    isPrevent: true
+    noBounce: false
 }).init();
 </script>
 </body>

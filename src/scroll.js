@@ -745,8 +745,9 @@ function Scroll(element, options){
         enablePlugin: function(name, options) {
             var plugin = plugins[name];
             if (plugin && !this.plugins[name]) {
+                this.plugins[name] = true;
                 options = options || {};
-                this.plugins[name] = plugin.apply(this, [name, options]);
+                plugin.call(this, name, options);
             }
             return this;
         }

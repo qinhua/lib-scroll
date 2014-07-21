@@ -220,16 +220,6 @@ function Scroll(element, options){
         }
     }, false);
 
-    
-    // function noClickHandler(e) {
-    //     if (that.isScrolling && e.target.tagName.toUpperCase() === 'a'){
-    //         e.preventDefault();
-    //         e.stopPropagation();
-    //     }
-    // }
-    // element.addEventListener('click', noClickHandler, true);
-    // element.addEventListener('tap', noClickHandler, true);
-
     var cancelScrollEnd;
     function touchstartHandler(e) {
         if (!that.enabled) {
@@ -755,8 +745,9 @@ function Scroll(element, options){
         enablePlugin: function(name, options) {
             var plugin = plugins[name];
             if (plugin && !this.plugins[name]) {
+                this.plugins[name] = true;
                 options = options || {};
-                this.plugins[name] = plugin.apply(this, [name, options]);
+                plugin.call(this, name, options);
             }
             return this;
         }
