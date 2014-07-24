@@ -21,10 +21,11 @@
 
 ## 如何使用
 
-    var scroller = lib.scroll(element, {
-        scrollElement: document.getElementById('search-list')
+	var Scroll = lib.scroll;
+    var scroller = new Scroll({
+        scrollElement: someElement
     });
-    scrller.init();
+    scroller.init();
 
 ### 参数
 
