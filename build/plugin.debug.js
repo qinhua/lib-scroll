@@ -322,7 +322,6 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
         }
     }
 
-
     this.addScrollingHandler(function(e) {
         var top = that.getScrollTop();
         var maxTop = that.getMaxScrollTop();

@@ -1,4 +1,4 @@
-<html>
+<html data-dpr="1" font-size="12px">
 <head>
 	<meta charset="utf-8">
 	<title>搜索宝贝</title>
@@ -8,7 +8,7 @@
 	<meta name="format-detection" content="telephone=no">
     <link href="http://gtms02.alicdn.com/tps/i2/TB1nmqyFFXXXXcQbFXXE5jB3XXX-114-114.png" rel="apple-touch-icon-precomposed">
     <link href="http://gtms02.alicdn.com/tps/i2/TB1nmqyFFXXXXcQbFXXE5jB3XXX-114-114.png" rel="Shortcut Icon" type="image/x-icon" />
-    <link rel="stylesheet" type="text/css" href="http://zx.x.taobao.net/h5ctrl/loading/build/loading1x.css">
+    <link rel="stylesheet" type="text/css" href="http://localhost/ctrl/loading/build/loading.css">
     <link rel="stylesheet" type="text/css" href="index.css">
     <style>
     html,body,#wrap {
@@ -140,7 +140,7 @@
         </div>
     </li>
 </script>
-<script src="http://zx.x.taobao.net/h5ctrl/loading/build/loading.debug.js"></script>
+<script src="http://localhost/ctrl/loading/build/loading.debug.js"></script>
 <script src="build/combo.debug.js" type="text/javascript"></script>
 <script src="build/scroll.debug.js" type="text/javascript"></script>
 <script src="build/plugin.debug.js" type="text/javascript"></script>
@@ -168,7 +168,7 @@ var listScroller = lib.scroll({
     scrollElement: document.getElementById('tbh5v0'),
     padding: {
         top: 48,
-        bottom: 20
+        bottom: 40
     },
     inertia: 'slow'
 }).init();
@@ -191,9 +191,9 @@ refreshLoading.text = '下拉即可刷新...';
 
 listScroller.enablePlugin('refresh', {
     element: refreshLoading.element,    
-    height: 40,
+    height: 60,
     onpull: function(top) {
-        refreshLoading.per = top/40;
+        refreshLoading.per = Math.round(top/60 * 100);
     },
     onrefresh: function(done) {
         var that = this;
@@ -209,19 +209,24 @@ listScroller.enablePlugin('refresh', {
     }
 });
 
-var el = document.createElement('div');
-el.className = 'J_BottomLoading loading'
-el.innerHTML = '<span></span>努力加载中';
+var updateLoading = new ctrl.loading();
+updateLoading.arrowDirection = 'up';
+updateLoading.text = '上拉加载更多...';
+updateLoading.mode = 'draw';
+updateLoading.per = 100;
 
 listScroller.enablePlugin('update', {
-    element: el,
-    height: 30,
+    element: updateLoading.element,
+    height: 40,
     onupdate: function(done) {
-        el.innerHTML = '<span></span>正在加载...';
+        updateLoading.text = '正在加载...';
+        updateLoading.mode = 'spin';
         setTimeout(function() {
             listUl.appendChild(genItems());
-            el.innerHTML = '<span></span>努力加载中';
             done();
+            updateLoading.text = '上拉加载更多...';
+            updateLoading.mode = 'draw';
+            updateLoading.per = 100;
         }, 1000);
     }
 });
