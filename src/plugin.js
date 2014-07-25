@@ -259,7 +259,7 @@ lib.scroll.plugin('refresh', function(name, pluginOptions) {
         var transformOffset = getTransformOffset(refreshElement);
         refreshElement.style.webkitTransform = 'translateY(' + -(pluginOptions.height + top) + 'px)';
         if (top < 0 && pluginOptions.onpull) {
-            pluginOptions.onpull.call(that, refreshElement, -top);
+            pluginOptions.onpull.call(that, -top);
         }
     });
 
@@ -334,7 +334,7 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
             updateHandler();
         } else {
             if (pluginOptions.onpull) {
-                pluginOptions.onpull.call(that, updateElement);
+                pluginOptions.onpull.call(that);
             }
         }
     });

@@ -6,7 +6,9 @@
 	<meta content="yes" name="apple-mobile-web-app-capable">
 	<meta content="black" name="apple-mobile-web-app-status-bar-style">
 	<meta name="format-detection" content="telephone=no">
-	<meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1" media="(device-height: 568px)">
+    <link href="http://gtms02.alicdn.com/tps/i2/TB1nmqyFFXXXXcQbFXXE5jB3XXX-114-114.png" rel="apple-touch-icon-precomposed">
+    <link href="http://gtms02.alicdn.com/tps/i2/TB1nmqyFFXXXXcQbFXXE5jB3XXX-114-114.png" rel="Shortcut Icon" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" href="http://zx.x.taobao.net/h5ctrl/loading/build/loading1x.css">
     <link rel="stylesheet" type="text/css" href="index.css">
     <style>
     html,body,#wrap {
@@ -138,6 +140,7 @@
         </div>
     </li>
 </script>
+<script src="http://zx.x.taobao.net/h5ctrl/loading/build/loading.debug.js"></script>
 <script src="build/combo.debug.js" type="text/javascript"></script>
 <script src="build/scroll.debug.js" type="text/javascript"></script>
 <script src="build/plugin.debug.js" type="text/javascript"></script>
@@ -180,17 +183,28 @@ listScroller.enablePlugin('lazyload', {
 
 listScroller.enablePlugin('sticky');
 
+
+var refreshLoading = new ctrl.loading();
+refreshLoading.arrowDirection = 'down';
+refreshLoading.mode = 'draw';
+refreshLoading.text = '下拉即可刷新...';
+
 listScroller.enablePlugin('refresh', {
-    html: '<div style="height: 30px;line-height: 30px; text-align:center; background: #FFF;"><span>下拉即可刷新</span></div>',
-    height: 30,
+    element: refreshLoading.element,    
+    height: 40,
+    onpull: function(top) {
+        refreshLoading.per = top/40;
+    },
     onrefresh: function(done) {
         var that = this;
-        this.refreshElement.querySelector('span').innerHTML = '加载中...';
+        refreshLoading.text = '正在刷新...';
+        refreshLoading.mode = 'spin';
         setTimeout(function() {
             listUl.innerHTML = '';
             listUl.appendChild(genItems());
-            that.refreshElement.querySelector('span').innerHTML = '下拉即可刷新';
             done();
+            refreshLoading.text = '下拉即可刷新...';
+            refreshLoading.mode = 'draw';
         }, 1000);
     }
 });
