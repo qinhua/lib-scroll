@@ -8,7 +8,8 @@
 	<meta name="format-detection" content="telephone=no">
     <link href="http://gtms02.alicdn.com/tps/i2/TB1nmqyFFXXXXcQbFXXE5jB3XXX-114-114.png" rel="apple-touch-icon-precomposed">
     <link href="http://gtms02.alicdn.com/tps/i2/TB1nmqyFFXXXXcQbFXXE5jB3XXX-114-114.png" rel="Shortcut Icon" type="image/x-icon" />
-    <link rel="stylesheet" type="text/css" href="http://zx.x.taobao.net/h5ctrl/loading/build/loading.css">
+    <link rel="stylesheet" type="text/css" href="http://g.assets.daily.taobao.net/mtb/ctrl-loading/0.1.1/loading.css">
+    <link rel="stylesheet" type="text/css" href="http://g.assets.daily.taobao.net/mtb/ctrl-tabheader/0.4.2/tabheader.css">
     <link rel="stylesheet" type="text/css" href="index.css">
     <style>
     html,body,#wrap {
@@ -69,14 +70,7 @@
             
             <div class="J_FilterBarContainer">
                 <div class="filter-bar sticky">
-                    <ul class="sort-tab J_sortTab">
-                        <li data-value="" class="selected">默认</li>
-                        <li data-value="_sale">销量</li>
-                        <li data-value="bid">价格</li>
-                        <li data-value="">信用</li>
-                        <li data-value="_sale">相关</li>
-                        <li data-value="bid">最近</li>
-                    </ul>
+
                 </div>
             </div>
         </div>
@@ -140,13 +134,14 @@
         </div>
     </li>
 </script>
-<script src="http://zx.x.taobao.net/h5ctrl/loading/build/loading.debug.js"></script>
-<script src="build/combo.debug.js" type="text/javascript"></script>
+<script src="http://g.assets.daily.taobao.net/mtb/lib-motion/1.0.1/motion.debug.js" type="text/javascript"></script>
+<script src="http://g.assets.daily.taobao.net/mtb/lib-gesture/1.1.4/gesture.debug.js" type="text/javascript"></script>
+<script src="http://g.assets.daily.taobao.net/mtb/ctrl-loading/0.1.1/loading.debug.js" type="text/javascript"></script>
 <script src="build/scroll.debug.js" type="text/javascript"></script>
+<script src="http://g.assets.daily.taobao.net/mtb/ctrl-tabheader/0.4.2/tabheader.debug.js" type="text/javascript"></script>
 <script src="build/plugin.debug.js" type="text/javascript"></script>
 <script>
-var tpl = document.getElementById('itemTpl').innerHTML;
-var listUl = document.getElementById('list-wrap');
+lib.scroll.outputDebugLog = false;
 
 function genItems() {
     var html = new Array(10).join(tpl);
@@ -160,10 +155,13 @@ function genItems() {
 
     return fragment;
 }
+
+// 初始化列表
+var tpl = document.getElementById('itemTpl').innerHTML;
+var listUl = document.getElementById('list-wrap');
 listUl.appendChild(genItems());
 
-lib.scroll.outputDebugLog = false;
-
+// 列表的滚动功能
 var listScroller = lib.scroll({
     scrollElement: document.getElementById('tbh5v0'),
     padding: {
@@ -173,17 +171,21 @@ var listScroller = lib.scroll({
     inertia: 'slow'
 }).init();
 
+// 顶部固定
 listScroller.enablePlugin('fixed', {
     topElement: document.getElementById('headerTpl').innerHTML
 })
 
+// 懒加载
 listScroller.enablePlugin('lazyload', {
     realTimeLoad: false
 });
 
+
+// 吸顶元素
 listScroller.enablePlugin('sticky');
 
-
+// 下拉刷新
 var refreshLoading = new ctrl.loading();
 refreshLoading.arrowDirection = 'down';
 refreshLoading.mode = 'draw';
@@ -209,6 +211,7 @@ listScroller.enablePlugin('refresh', {
     }
 });
 
+// 上拉加载更多
 var updateLoading = new ctrl.loading();
 updateLoading.arrowDirection = 'up';
 updateLoading.text = '上拉加载更多...';
@@ -234,11 +237,17 @@ listScroller.enablePlugin('update', {
     }
 });
 
-var barScroller = lib.scroll({
-    scrollWrap: document.querySelector('.filter-bar'),
-    direction: 'x',
-    noBounce: false
-}).init();
+// 筛选的bar
+var tabheader = new ctrl.tabheader();
+document.querySelector('.filter-bar').appendChild(tabheader.root);
+tabheader.viewModel = [
+    {text: '默认'},
+    {text: '销量'},
+    {text: '价格'},
+    {text: '信用'},
+    {text: '相关'},
+    {text: '最近'}
+]
 </script>
 </body>
 </html>
