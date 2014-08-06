@@ -420,9 +420,14 @@ function Scroll(element, options){
                     debugLog('没有回弹效果');
 
                     s1 = touchBoundary(that, s);
-                    element.style.webkitTransition = '-webkit-transform 0.4s ease-out 0';
-                    element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
-                    setTransitionEndHandler(scrollEnd, 400);
+
+                    if (s0 !== s1) {
+                        element.style.webkitTransition = '-webkit-transform 0.4s ease-out 0';
+                        element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
+                        setTransitionEndHandler(scrollEnd, 400);
+                    } else {
+                        scrollEnd();
+                    }
                 } else {
                     //惯性运动足够滑出屏幕边缘
                     v1 = v0;
@@ -450,22 +455,30 @@ function Scroll(element, options){
                     t2 = motion2.t;
                     s2 = s1 + motion2.s;
 
-                    element.style.webkitTransition = '-webkit-transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0';                
-                    element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s2.toFixed(0) + 'px)';
-
                     debugLog('惯性滚动', 's=' + s2.toFixed(0), 't=' + ((t1 + t2) / 1000).toFixed(2));
 
-                    setTransitionEndHandler(function(e) {
-                        if (!that.enabled) {
-                            return;
-                        }
+                    if (s0 !== s2) {
+                        element.style.webkitTransition = '-webkit-transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0';                
+                        element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s2.toFixed(0) + 'px)';
 
-                        element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-                        element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
+                        setTransitionEndHandler(function(e) {
+                            if (!that.enabled) {
+                                return;
+                            }
 
-                        debugLog('惯性回弹', 's=' + s1.toFixed(0), 't=400');
-                        setTransitionEndHandler(scrollEnd, 400);
-                    }, ((t1 + t2) / 1000).toFixed(2) * 1000);
+                            debugLog('惯性回弹', 's=' + s1.toFixed(0), 't=400');
+
+                            if (s2 !== s1) {
+                                element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
+                                element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';                            
+                                setTransitionEndHandler(scrollEnd, 400);
+                            } else {
+                                scrollEnd();
+                            }
+                        }, ((t1 + t2) / 1000).toFixed(2) * 1000);
+                    } else {
+                        scrollEnd();
+                    }
                 }
             } else {
                 debugLog('惯性计算没有超出了边缘');
