@@ -26,42 +26,64 @@ function getTransformOffset(element) {
 }
 
 
-lib.scroll.plugin('addFixedElement', function(name, pluginOptions) {
+lib.scroll.plugin('fixed', function(name, pluginOptions) {
     var scrollOptions = this.options;
 
     if (!getComputedStyle(this.viewport).position.match(/^relative|absolute$/)) {
         this.viewport.style.position = 'relative';
     }
 
-    var topOffset = pluginOptions.topOffset;
-    if (topOffset == null) {
-        topOffset = this.element.getBoundingClientRect().top - this.viewport.getBoundingClientRect().top
-    } else {
-        topOffset = 0;
-    }
-    var bottomOffset = pluginOptions.bottomOffset || 0;
-
     var fragment = doc.createDocumentFragment();
 
+    function setElement(fixedElement, wrapElement) {
+        if (typeof fixedElement === 'string') {
+            wrapElement.innerHTML = fixedElement;
+        } else if (fixedElement instanceof HTMLElement){
+            wrapElement.appendChild(fixedElement);
+        }
+    }
+
     if (this.axis === 'y') {
+        var topOffset = pluginOptions.topOffset || 0;
+        var bottomOffset = pluginOptions.bottomOffset || 0;
+
         var topFixedElement = this.topFixedElement = doc.createElement('div');
         topFixedElement.className = 'top-fixed';
-        topFixedElement.style.cssText = 'position: absolute; top: ' + topOffset + 'px; left: 0; width: 100%;';
+        topFixedElement.style.cssText = 'z-index:9; position: absolute; top: ' + topOffset + 'px; left: 0; width: 100%;';
 
         var bottomFixedElement = this.bottomFixedElement = doc.createElement('div');
         bottomFixedElement.className = 'bottom-fxied';
-        bottomFixedElement.style.cssText = 'position: absolute; bottom: ' + bottomOffset + 'px; left: 0; width: 100%';
+        bottomFixedElement.style.cssText = 'z-index:9; position: absolute; bottom: ' + bottomOffset + 'px; left: 0; width: 100%';
+
+        if (pluginOptions.topElement) {
+            setElement(pluginOptions.topElement, topFixedElement);
+        }
+
+        if (pluginOptions.bottomElement) {
+            setElement(pluginOptions.bottomElement, bottomFixedElement);
+        }
 
         fragment.appendChild(topFixedElement);
         fragment.appendChild(bottomFixedElement);
     } else {
+        var leftOffset = pluginOptions.leftOffset || 0;
+        var rightOffset = pluginOptions.rightOffset || 0;
+
         var leftFixedElement = this.leftFixedElement = doc.createElement('div');
         leftFixedElement.className = 'left-fixed';
-        leftFixedElement.style.cssText = 'position: absolute; top: 0; left: 0; height: 100%;';
+        leftFixedElement.style.cssText = 'z-index:9; position: absolute; top: 0; left: ' + leftOffset + 'px; height: 100%;';
 
         var rightFixedElement = this.rightFixedElement = doc.createElement('div');
         rightFixedElement.className = 'right-fxied';
-        rightFixedElement.style.cssText = 'position: absolute; top: 0; right: 0; height: 100%;';
+        rightFixedElement.style.cssText = 'z-index:9; position: absolute; top: 0; right: ' + rightOffset + 'px; height: 100%;';
+
+        if (pluginOptions.leftElement) {
+            setElement(pluginOptions.leftElement, leftFixedElement);
+        }
+
+        if (pluginOptions.rightElement) {
+            setElement(pluginOptions.rightElement, rightFixedElement);
+        }
 
         fragment.appendChild(leftFixedElement);
         fragment.appendChild(rightFixedElement);
@@ -126,7 +148,11 @@ lib.scroll.plugin('sticky', function(name, pluginOptions) {
     var that = this;
     var scrollOptions = this.options;
 
-    this.enablePlugin('addFixedElement');
+    var top = (pluginOptions.offset || 0) + (scrollOptions.padding.top || 0);
+    var stickyWrapElement = this.stickyWrapElement = doc.createElement('div');
+    stickyWrapElement.className = 'stick-wrap';
+    stickyWrapElement.style.cssText = 'z-index:9; position: absolute; top: ' + top + 'px; left: 0; width: 100%;';
+    this.viewport.appendChild(stickyWrapElement)
 
     this.makeSticky = function(childEl){
         var that = this;
@@ -156,7 +182,7 @@ lib.scroll.plugin('sticky', function(name, pluginOptions) {
 
     this.checkSticky = function(childEl, parentEl) {
         if(this.getRect(parentEl).top < 0 ) {
-            this.topFixedElement.appendChild(childEl);
+            this.stickyWrapElement.appendChild(childEl);
         } else if(this.getRect(parentEl).top > 0) {
             parentEl.appendChild(childEl);
         }
@@ -173,10 +199,10 @@ lib.scroll.plugin('refresh', function(name, pluginOptions) {
         this.viewport.style.position = 'relative';
     }
 
-    pluginOptions.offset = pluginOptions.offset || scrollOptions.padding.top || 0;
-    pluginOptions.height = pluginOptions.height || Math.round(this.viewport.getBoundingClientRect().height * 0.05);
+    pluginOptions.height = pluginOptions.height || 0;
+    pluginOptions.offset = (pluginOptions.offset || 0) + (scrollOptions.padding.top || 0);
 
-    var refreshElement = doc.createElement('div');
+    var refreshElement = this.refreshElement = doc.createElement('div');
     refreshElement.className = 'refresh';
     refreshElement.style.cssText = ['position: absolute',
         'top: ' + pluginOptions.offset + 'px',
@@ -208,7 +234,7 @@ lib.scroll.plugin('refresh', function(name, pluginOptions) {
             });
 
             setTimeout(function() {
-                pluginOptions.onrefresh.call(that, refreshElement, function() {
+                pluginOptions.onrefresh.call(that, function() {
                     requestAnimationFrame(function(){
                         refreshElement.style.webkitTransition = '-webkit-transform 0.4s ease 0';
                         refreshElement.style.webkitTransform = 'translateY(-' + pluginOptions.height + 'px)';
@@ -233,7 +259,7 @@ lib.scroll.plugin('refresh', function(name, pluginOptions) {
         var transformOffset = getTransformOffset(refreshElement);
         refreshElement.style.webkitTransform = 'translateY(' + -(pluginOptions.height + top) + 'px)';
         if (top < 0 && pluginOptions.onpull) {
-            pluginOptions.onpull.call(that, refreshElement, -top);
+            pluginOptions.onpull.call(that, -top);
         }
     });
 
@@ -256,10 +282,10 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
         this.viewport.style.position = 'relative';
     }
 
-    pluginOptions.height = pluginOptions.height || Math.round(this.viewport.getBoundingClientRect().height * 0.05);
-    pluginOptions.offset = pluginOptions.offset || scrollOptions.padding.bottom || 0;
+    pluginOptions.height = pluginOptions.height || 0;
+    pluginOptions.offset = (scrollOptions.padding.bottom || 0) - (pluginOptions.offset || 0);
 
-    var updateElement = doc.createElement('div');
+    var updateElement = this.updateElement = doc.createElement('div');
     updateElement.className = 'update';
     updateElement.style.cssText = ['position: absolute',
         'bottom: ' + (pluginOptions.offset) + 'px',
@@ -282,7 +308,7 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
             isUpdating = true;
 
             if (pluginOptions.onupdate) {
-                pluginOptions.onupdate.call(that, updateElement, function() {
+                pluginOptions.onupdate.call(that, function() {
                     requestAnimationFrame(function(){
                         updateElement.style.webkitTransition = '';
                         that.refresh();
@@ -296,7 +322,6 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
         }
     }
 
-
     this.addScrollingHandler(function(e) {
         var top = that.getScrollTop();
         var maxTop = that.getMaxScrollTop();
@@ -304,11 +329,11 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
 
         if (isUpdating) return;
 
-        if ((top - maxTop) > pluginOptions.height * 0.5) {
+        if ((top - maxTop) > pluginOptions.height * 0.2) {
             updateHandler();
         } else {
             if (pluginOptions.onpull) {
-                pluginOptions.onpull.call(that, updateElement);
+                pluginOptions.onpull.call(that);
             }
         }
     });

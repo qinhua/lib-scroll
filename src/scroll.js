@@ -581,19 +581,50 @@ function Scroll(element, options){
             if (this.options.height || this.options.width) {
                 // use options
                 el.style[type] = this.options[type] + 'px';
-            } else if (document.createRange) {
+            } else if (false && document.createRange) {
+                debugger;
                 // use range
                 //el.style[type] = 'auto';
                 var range = document.createRange();
                 range.selectNodeContents(el);
-                el.style[type] = range.getBoundingClientRect()[type] + 'px';
+                var rect = range.getBoundingClientRect();
+                if (rect) {
+                    el.style[type] = range.getBoundingClientRect()[type] + 'px';
+                } else {
+                    el.style[type] = '0';
+                }
             } else if (el.childElementCount > 0){
                 // use child offsets
                 //el.style[type] = 'auto';
-                for (var firstEl = el.firstElementChild; firstEl && !firstEl.getBoundingClientRect()[type]; firstEl = firstEl.nextElementSibling);
-                for (var lastEl = el.lastElementChild; lastEl && !lastEl.getBoundingClientRect()[type] && lastEl !== firstEl; lastEl = lastEl.previousElementSibling);
-                el.style[type] = (lastEl.getBoundingClientRect()[isVertical?'bottom':'right'] -
+                var firstEl = el.firstElementChild;
+                var lastEl = el.lastElementChild;
+                if (firstEl && lastEl) {
+                    while (firstEl) {
+                        if (firstEl.getBoundingClientRect()[type] === 0 && firstEl.nextElementSibling) {
+                            firstEl = firstEl.nextElementSibling;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    while (lastEl && lastEl !== firstEl) {
+                        if (lastEl.getBoundingClientRect()[type] === 0 && lastEl.previousElementSibling) {
+                            lastEl = lastEl.previousElementSibling;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    el.style[type] = (lastEl.getBoundingClientRect()[isVertical?'bottom':'right'] -
                         firstEl.getBoundingClientRect()[isVertical?'top':'left']) + 'px'; 
+                } else {
+                    el.style[type] = '0';
+                }
+                // for (var firstEl = el.firstElementChild; 
+                //     firstEl && !firstEl.getBoundingClientRect()[type] && firstEl.nextElementSibling; 
+                //     firstEl = firstEl.nextElementSibling);
+                // for (var lastEl = el.lastElementChild; lastEl && !lastEl.getBoundingClientRect()[type] && lastEl !== firstEl; lastEl = lastEl.previousElementSibling);
+
             } else {
                 el.style[type] = 'auto';
                 el.style[type] = el.getBoundingClientRect()[type] + 'px';
@@ -780,8 +811,9 @@ function Scroll(element, options){
         enablePlugin: function(name, options) {
             var plugin = plugins[name];
             if (plugin && !this.plugins[name]) {
+                this.plugins[name] = true;
                 options = options || {};
-                this.plugins[name] = plugin.apply(this, [name, options]);
+                plugin.call(this, name, options);
             }
             return this;
         }
