@@ -49,7 +49,7 @@ function touchBoundary(scrollObj, offset) {
 }
 
 function fireEvent(scrollObj, eventName, extra) {
-    debugLog(eventName, extra);
+    debugLog(scrollObj.element.scrollId, eventName, extra);
 
     var event = doc.createEvent('HTMLEvents');
     event.initEvent(eventName, false, true);
@@ -275,9 +275,14 @@ function Scroll(element, options){
             return;
         }
 
-        if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
-            e.stopPropagation();    
+        // 不是同方向的手势，直接不做任何处理
+        if (that.axis !== 'y' && e.isVertical || that.axis === 'x' && e.isVertical) {
+            return;
         }
+
+        // if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
+        //     e.stopPropagation();    
+        // }
         
         that.transformOffset = getTransformOffset(that);
         that.minScrollOffset = getMinScrollOffset(that);
@@ -296,19 +301,22 @@ function Scroll(element, options){
             return;
         }
 
-        var displacement = e['displacement' + that.axis.toUpperCase()];
-
-        if (Math.abs(displacement - lastDisplacement) < 5) return;
-        lastDisplacement = displacement;
-
+        // 不是同方向的手势，直接不做任何处理
         if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
             e.stopPropagation();
         } else {
             return;
         }
 
-        var offset = that.transformOffset[that.axis] + displacement;
+        // 手指移动小于5像素，也忽略
+        var displacement = e['displacement' + that.axis.toUpperCase()];
+        if (Math.abs(displacement - lastDisplacement) < 5) {
+            e.stopPropagation();
+            return;
+        }
+        lastDisplacement = displacement;
 
+        var offset = that.transformOffset[that.axis] + displacement;
         if(offset > that.minScrollOffset) {
             offset = that.minScrollOffset + (offset - that.minScrollOffset) / that.panFixRatio;
             that.panFixRatio *= 1.003;
@@ -320,6 +328,7 @@ function Scroll(element, options){
             that.panFixRatio = 4;
         }
 
+        // 判断是否到了边缘
         var boundaryOffset = getBoundaryOffset(that, offset);
         if (boundaryOffset) {
             fireEvent(that, boundaryOffset > 0?(that.axis === 'y'?'pulldown':'pullright'):(that.axis === 'y'?'pullup':'pullleft'), {
@@ -347,9 +356,14 @@ function Scroll(element, options){
             return;
         }
 
-        if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
-            e.stopPropagation();    
+        // 不是同方向的手势，直接不做任何处理
+        if (that.axis !== 'y' && e.isVertical || that.axis === 'x' && e.isVertical) {
+            return;
         }
+
+        // if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
+        //     e.stopPropagation();    
+        // }
     }
 
     function flickHandler(e) {
@@ -358,7 +372,7 @@ function Scroll(element, options){
         }
 
         if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
-            e.stopPropagation();    
+            e.stopPropagation();
         } else {
             return;
         }
@@ -740,6 +754,14 @@ function Scroll(element, options){
             }, false);
 
             return this;
+        },
+
+        addEventListener: function() {
+            this.element.addEventListener.apply(this.element, arguments);
+        },
+
+        removeEventListener: function() {
+            this.element.removeEventListener.apply(this.element, arguments);  
         },
 
         enablePlugin: function(name, options) {
