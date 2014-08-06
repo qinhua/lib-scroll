@@ -220,16 +220,6 @@ function Scroll(element, options){
         }
     }, false);
 
-    
-    // function noClickHandler(e) {
-    //     if (that.isScrolling && e.target.tagName.toUpperCase() === 'a'){
-    //         e.preventDefault();
-    //         e.stopPropagation();
-    //     }
-    // }
-    // element.addEventListener('click', noClickHandler, true);
-    // element.addEventListener('tap', noClickHandler, true);
-
     var cancelScrollEnd;
     function touchstartHandler(e) {
         if (!that.enabled) {
@@ -312,7 +302,7 @@ function Scroll(element, options){
         lastDisplacement = displacement;
 
         if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
-            e.stopPropagation();    
+            e.stopPropagation();
         } else {
             return;
         }
