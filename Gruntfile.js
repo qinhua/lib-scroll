@@ -88,8 +88,27 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     
+    grunt.registerTask('cmdwrap', 'wrap for CMD', function() {
+        var path = require('path');
+        var done = this.async();
+        var type = 'lib';
+        var name = 'scroll';
+        var distPath = 'build';
+        var pkgJson = grunt.file.readJSON('package.json');
+        var version = pkgJson.version;
 
-    grunt.registerTask('dist', ['copy', 'depconcat', 'uglify', 'depcombo']);
+        var jsFile = grunt.file.read(path.join(distPath, name + '.js'));
+        jsFile += ('\nif (window.KISSY) {' +
+                        'KISSY.add(\'mtb/{{type}}-{{name}}/{{version}}/{{name}}.cmd\', window.{{type}}.{{name}});' +
+                    '} else if (\'undefined\' !== typeof define) {' +
+                        'define(\'mtb/{{type}}-{{name}}/{{version}}/{{name}}.cmd\', [], window.{{type}}.{{name}});' +
+                    '}').replace(/\{\{type\}\}/g, type).replace(/\{\{name\}\}/g, name).replace(/\{\{version\}\}/g, version);
+        grunt.file.write(path.join(distPath, name + '.cmd.js'), jsFile);
+
+        done();
+    });
+
+    grunt.registerTask('dist', ['copy', 'depconcat', 'uglify', 'depcombo', 'cmdwrap']);
     grunt.registerTask('dev', ['watch']);
     
     grunt.registerTask('default', ['dist']);

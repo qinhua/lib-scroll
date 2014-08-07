@@ -2,7 +2,7 @@
 
 ## 最新版本
 
-**2.2.1**
+**2.3.0**
 
 ## 依赖库
 
@@ -179,4 +179,12 @@ element的父元素
 **updateElement**
 
 element的父元素
+
+## API使用
+
+请参见[API.md](http://gitlab.alibaba-inc.com/mtb/lib-scroll/blob/master/API.md)
+
+## 扩充阅读
+
+- [代码片段](http://gitlab.alibaba-inc.com/mtb/lib-scroll/snippets)
 
