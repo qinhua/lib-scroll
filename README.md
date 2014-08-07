@@ -161,7 +161,7 @@ element的父元素
 
 ### 上拉加载更多
 
-	scroller.enablePlugin('refresh', {
+	scroller.enablePlugin('update', {
 		element: '<div>加载更多</div>' //可以是HTML片段也可以是HTML元素
 		height: 20, // 元素的高度，默认为0
 		offset: 0,  // 元素距离顶部的偏移，默认为0，可为负数

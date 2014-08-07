@@ -97,9 +97,15 @@
 
 增加处理滚动结束的处理函数。
 
-## 事件
+### scroll.addEventListener(name, handler, useCapture)
 
-在滚动的元素上，可以监听如下这些事件：
+增加事件监听
+
+### scroll.removeEventListener(name, handler)
+
+移除事件监听
+
+## 事件
 
 - scrollstart - 滚动开始
 - scrolling - 滚动中（建议使用addScrollingHandler来处理）
