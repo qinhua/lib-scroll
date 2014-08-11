@@ -135,7 +135,7 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
         });
     }
 
-    this.element.addEventListener('refresh', function() {
+    this.element.addEventListener('contentchange', function() {
         that.checkLazyload();
     });
 
@@ -329,7 +329,7 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
 
         if (isUpdating) return;
 
-        if ((top - maxTop) > pluginOptions.height * 0.2) {
+        if (maxTop - top < pluginOptions.height * 0.2) {
             updateHandler();
         } else {
             if (pluginOptions.onpull) {

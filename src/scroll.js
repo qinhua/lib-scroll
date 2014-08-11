@@ -15,20 +15,42 @@ function debugLog() {
     }
 }
 
+function getBoundingClientRect(el) {
+    var rect = el.getBoundingClientRect();
+    if (!rect) {
+        rect = {};
+        rect.width = el.offsetWidth;
+        rect.height = el.offsetHeight;
+
+        rect.left = el.offsetLeft;
+        rect.top = el.offsetTop;
+        var parent = el.offsetParent;
+        while (parent) {
+            rect.left += parent.offsetLeft;
+            rect.top += parent.offsetTop;
+            parent = parent.offsetParent;
+        }
+
+        rect.right = rect.left + rect.width;
+        rect.bottom = rect.top + rect.height;
+    }
+    return rect;
+}
+
 function getMinScrollOffset(scrollObj) {
-    return 0 - (scrollObj.options[scrollObj.axis + 'Padding1'] || 0);
+    return 0 - scrollObj.options[scrollObj.axis + 'Padding1'];
 }
 
 function getMaxScrollOffset(scrollObj) {
-    var rect = scrollObj.element.getBoundingClientRect();
-    var pRect = scrollObj.viewport.getBoundingClientRect();
+    var rect = getBoundingClientRect(scrollObj.element);
+    var pRect = getBoundingClientRect(scrollObj.viewport);
     var min = getMinScrollOffset(scrollObj);
     if (scrollObj.axis === 'y') {
         var max = 0 - rect.height + pRect.height;
     } else {
         var max = 0 - rect.width + pRect.width;
     }
-    return Math.min(max + (scrollObj.options[scrollObj.axis + 'Padding2'] || 0), min);
+    return Math.min(max + scrollObj.options[scrollObj.axis + 'Padding2'], min);
 }
 
 function getBoundaryOffset(scrollObj, offset) {
@@ -128,11 +150,27 @@ function Scroll(element, options){
         options.yPadding2 = -options.padding.bottom || 0;
         options.xPadding1 = -options.padding.left || 0;
         options.xPadding2 = -options.padding.right || 0;
+    } else {
+        options.yPadding1 = 0;
+        options.yPadding2 = 0;
+        options.xPadding1 = 0;
+        options.xPadding2 = 0;
+    }
+
+    if (options.margin) {
+        options.yMargin1 = -options.margin.top || 0;
+        options.yMargin2 = -options.margin.bottom || 0;
+        options.xMargin1 = -options.margin.left || 0;
+        options.xMargin2 = -options.margin.right || 0;
+    } else {
+        options.yMargin1 = 0;
+        options.yMargin2 = 0;
+        options.xMargin1 = 0;
+        options.xMargin2 = 0;
     }
 
     options.direction = options.direction || 'y';
     options.inertia = options.inertia || 'normal';
-
 
     this.options = options;
     that.axis = options.direction;
@@ -545,27 +583,27 @@ function Scroll(element, options){
         },
 
         getScrollWidth: function() {
-            return this.element.getBoundingClientRect().width - (this.options.xPadding1||0) - (this.options.xPadding2||0);
+            return getBoundingClientRect(this.element).width;
         },
 
         getScrollHeight: function() {
-            return this.element.getBoundingClientRect().height - (this.options.yPadding1||0) - (this.options.yPadding2||0);
+            return getBoundingClientRect(this.element).height;
         },
 
         getScrollLeft: function() {
-            return -getTransformOffset(this).x - (this.options.xPadding1 || 0);
+            return -getTransformOffset(this).x - this.options.xPadding1;
         },
 
         getScrollTop: function() {
-            return -getTransformOffset(this).y - (this.options.yPadding1 || 0);
+            return -getTransformOffset(this).y - this.options.yPadding1;
         },
 
         getMaxScrollLeft: function() {
-            return -that.maxScrollOffset - (this.options.xPadding1 || 0);
+            return -that.maxScrollOffset - this.options.xPadding1;
         },
 
         getMaxScrollTop: function() {
-            return -that.maxScrollOffset - (this.options.yPadding1 || 0);
+            return -that.maxScrollOffset - this.options.yPadding1;
         },
 
         getBoundaryOffset: function() {
@@ -576,31 +614,29 @@ function Scroll(element, options){
             var el = this.element;
             var isVertical = (this.axis === 'y');
             var type = isVertical?'height':'width';
-            var Type = isVertical?'Height':'Width';
 
-            if (this.options.height || this.options.width) {
+            if (this.options[type] != null) {
                 // use options
                 el.style[type] = this.options[type] + 'px';
-            } else if (false && document.createRange) {
-                debugger;
-                // use range
-                //el.style[type] = 'auto';
-                var range = document.createRange();
-                range.selectNodeContents(el);
-                var rect = range.getBoundingClientRect();
-                if (rect) {
-                    el.style[type] = range.getBoundingClientRect()[type] + 'px';
-                } else {
-                    el.style[type] = '0';
-                }
-            } else if (el.childElementCount > 0){
-                // use child offsets
-                //el.style[type] = 'auto';
+            } else if (el.childElementCount > 0) {
+                var range
+                var rect;
                 var firstEl = el.firstElementChild;
                 var lastEl = el.lastElementChild;
-                if (firstEl && lastEl) {
+
+                if (document.createRange) {
+                    // use range
+                    range = document.createRange();
+                    range.selectNodeContents(el);
+                    rect = getBoundingClientRect(range);
+                }
+
+                if (rect) {
+                    el.style[type] = rect[type] + 'px';
+                } else if (firstEl && lastEl) {
+                    // use child offsets
                     while (firstEl) {
-                        if (firstEl.getBoundingClientRect()[type] === 0 && firstEl.nextElementSibling) {
+                        if (getBoundingClientRect(firstEl)[type] === 0 && firstEl.nextElementSibling) {
                             firstEl = firstEl.nextElementSibling;
                         } else {
                             break;
@@ -608,42 +644,38 @@ function Scroll(element, options){
                     }
 
                     while (lastEl && lastEl !== firstEl) {
-                        if (lastEl.getBoundingClientRect()[type] === 0 && lastEl.previousElementSibling) {
+                        if (getBoundingClientRect(lastEl)[type] === 0 && lastEl.previousElementSibling) {
                             lastEl = lastEl.previousElementSibling;
                         } else {
                             break;
                         }
                     }
 
-                    el.style[type] = (lastEl.getBoundingClientRect()[isVertical?'bottom':'right'] -
-                        firstEl.getBoundingClientRect()[isVertical?'top':'left']) + 'px'; 
+                    el.style[type] = (getBoundingClientRect(lastEl)[isVertical?'bottom':'right'] -
+                        getBoundingClientRect(firstEl)[isVertical?'top':'left']) + 'px'; 
                 } else {
                     el.style[type] = '0';
                 }
-                // for (var firstEl = el.firstElementChild; 
-                //     firstEl && !firstEl.getBoundingClientRect()[type] && firstEl.nextElementSibling; 
-                //     firstEl = firstEl.nextElementSibling);
-                // for (var lastEl = el.lastElementChild; lastEl && !lastEl.getBoundingClientRect()[type] && lastEl !== firstEl; lastEl = lastEl.previousElementSibling);
-
             } else {
                 el.style[type] = 'auto';
-                el.style[type] = el.getBoundingClientRect()[type] + 'px';
+                el.style[type] = getBoundingClientRect(el)[type] + 'px';
             }
 
             this.transformOffset = getTransformOffset(this);
             this.minScrollOffset = getMinScrollOffset(this);
             this.maxScrollOffset = getMaxScrollOffset(this);
-            this.scrollTo(-this.transformOffset[this.axis] - (this.options[this.axis + 'Padding1'] || 0));
+            this.scrollTo(-this.transformOffset[this.axis] - this.options[this.axis + 'Padding1']);
+            fireEvent(this, 'contentchange');
 
             return this;
         },
 
         offset: function(childEl) {
-            var elRect = this.element.getBoundingClientRect();
-            var childRect = childEl.getBoundingClientRect();
+            var elRect = getBoundingClientRect(this.element);
+            var childRect = getBoundingClientRect(childEl);
             if (this.axis === 'y') {
                 var offsetRect = {
-                        top: childRect.top - ((this.options.yPadding1 || 0) + elRect.top),
+                        top: childRect.top - this.options.yPadding1 - elRect.top,
                         left: childRect.left - elRect.left,
                         right: elRect.right - childRect.right,
                         width: childRect.width,
@@ -655,7 +687,7 @@ function Scroll(element, options){
                 var offsetRect = {
                         top: childRect.top - elRect.top,
                         bottom: elRect.bottom - childRect.bottom,
-                        left: childRect.left - ((this.options.xPadding1 || 0) + elRect.left),
+                        left: childRect.left - this.options.xPadding1 - elRect.left,
                         width: childRect.width,
                         height: childRect.height
                     };
@@ -666,11 +698,11 @@ function Scroll(element, options){
         },
 
         getRect: function(childEl) {
-            var viewRect = this.viewport.getBoundingClientRect();
-            var childRect = childEl.getBoundingClientRect();
+            var viewRect = getBoundingClientRect(this.viewport);
+            var childRect = getBoundingClientRect(childEl);
             if (this.axis === 'y') {
                 var offsetRect = {
-                        top: childRect.top - ((this.options.yPadding1 || 0) + viewRect.top),
+                        top: childRect.top - viewRect.top,
                         left: childRect.left - viewRect.left,
                         right: viewRect.right - childRect.right,
                         width: childRect.width,
@@ -682,7 +714,7 @@ function Scroll(element, options){
                 var offsetRect = {
                         top: childRect.top - viewRect.top,
                         bottom: viewRect.bottom - childRect.bottom,
-                        left: childRect.left - ((this.options.xPadding1 || 0) + viewRect.left),
+                        left: childRect.left - viewRect.left,
                         width: childRect.width,
                         height: childRect.height
                     };
@@ -693,7 +725,7 @@ function Scroll(element, options){
         },
 
         isInView: function(childEl) {
-            var viewRect = this.viewport.getBoundingClientRect();
+            var viewRect = getBoundingClientRect(this.viewport);
             var childRect = this.getRect(childEl);
             if (this.axis === 'y') {
                 return viewRect.top < childRect.bottom && viewRect.bottom > childRect.top;
@@ -706,7 +738,7 @@ function Scroll(element, options){
             var that = this;
             var element = this.element;
 
-            offset = -offset - (this.options[this.axis + 'Padding1'] || 0);
+            offset = -offset - this.options[this.axis + 'Padding1'];
             offset = touchBoundary(this, offset);
 
             if (isSmooth === true) {
@@ -714,6 +746,7 @@ function Scroll(element, options){
                 setTransitionEndHandler(scrollEnd, 400);
             } else {
                 element.style.webkitTransition = '';
+                setTransitionEndHandler(scrollEnd, 1);
             }
             if (this.axis === 'y') {
                 element.style.webkitTransform = getTranslate(getTransformOffset(this).x, offset);
@@ -726,15 +759,16 @@ function Scroll(element, options){
 
         scrollToElement: function(childEl, isSmooth) {
             var offset = this.offset(childEl);
-            return this.scrollTo(this.axis === 'y'?offset.top:offset.left, isSmooth);
+            offset = offset[this.axis === 'y'?'top':'left'];
+            return this.scrollTo(offset, isSmooth);
         },
 
         getViewWidth: function() {
-            return this.viewport.getBoundingClientRect().width;
+            return getBoundingClientRect(this.viewport).width;
         },
 
         getViewHeight: function() {
-            return this.viewport.getBoundingClientRect().height;
+            return getBoundingClientRect(this.viewport).height;
         },
 
         addPulldownHandler: function(handler) {
