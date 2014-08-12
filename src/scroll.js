@@ -82,6 +82,7 @@ function fireEvent(scrollObj, eventName, extra) {
         }
     }
     scrollObj.element.dispatchEvent(event);
+    scrollObj.viewport.dispatchEvent(event);
 }
 
 function getTransformOffset(scrollObj) {
@@ -203,7 +204,7 @@ function Scroll(element, options){
     if (options.isFixScrollendClick) {
         var preventScrollendClick;
         this.viewport.addEventListener('touchstart', function() {
-            if (that.isScrolling) {
+            if (isScrolling) {
                 preventScrollendClick = true;
             }
         }, false);
@@ -258,13 +259,16 @@ function Scroll(element, options){
         }
     }, false);
 
+    var panFixRatio;
+    var isScrolling;
+    var isFlickScrolling;
     var cancelScrollEnd;
     function touchstartHandler(e) {
         if (!that.enabled) {
             return;
         }
 
-        if (that.isScrolling) {
+        if (isScrolling) {
             scrollEnd();
         }
 
@@ -296,13 +300,13 @@ function Scroll(element, options){
 
             if (that.fireScrollingEvent) {
                 requestAnimationFrame(function() {
-                    if (that.isScrolling && that.enabled) {
+                    if (isScrolling && that.enabled) {
                         fireEvent(that, 'scrolling');
                         requestAnimationFrame(arguments.callee);
                     }
                 });
             }
-        } else if (that.isScrolling) {
+        } else if (isScrolling) {
             scrollEnd();
         }
     }
@@ -325,9 +329,10 @@ function Scroll(element, options){
         that.transformOffset = getTransformOffset(that);
         that.minScrollOffset = getMinScrollOffset(that);
         that.maxScrollOffset = getMaxScrollOffset(that);
-        that.panFixRatio = 2.5;
+        panFixRatio = 2.5;
         cancelScrollEnd = true;
-        that.isScrolling = true;
+        isScrolling = true;
+        isFlickScrolling = false;
         fireEvent(that, 'scrollstart');
 
         lastDisplacement = e['displacement' + that.axis.toUpperCase()];
@@ -356,14 +361,14 @@ function Scroll(element, options){
 
         var offset = that.transformOffset[that.axis] + displacement;
         if(offset > that.minScrollOffset) {
-            offset = that.minScrollOffset + (offset - that.minScrollOffset) / that.panFixRatio;
-            that.panFixRatio *= 1.003;
+            offset = that.minScrollOffset + (offset - that.minScrollOffset) / panFixRatio;
+            panFixRatio *= 1.003;
         } else if(offset < that.maxScrollOffset) {
-            offset = that.maxScrollOffset - (that.maxScrollOffset - offset) / that.panFixRatio;
-            that.panFixRatio *= 1.003;
+            offset = that.maxScrollOffset - (that.maxScrollOffset - offset) / panFixRatio;
+            panFixRatio *= 1.003;
         }
-        if (that.panFixRatio > 4) {
-            that.panFixRatio = 4;
+        if (panFixRatio > 4) {
+            panFixRatio = 4;
         }
 
         // 判断是否到了边缘
@@ -528,8 +533,9 @@ function Scroll(element, options){
 
 
             if (that.fireScrollingEvent) {
+                isFlickScrolling = true;
                 requestAnimationFrame(function() {
-                    if (that.isScrolling && that.enabled) {
+                    if (isScrolling && isFlickScrolling && that.enabled) {
                         fireEvent(that, 'scrolling', {
                             afterFlick: true
                         });
@@ -548,8 +554,9 @@ function Scroll(element, options){
         cancelScrollEnd = false;
 
         setTimeout(function() {
-            if (!cancelScrollEnd && that.enabled) {
-                that.isScrolling = false;
+            if (!cancelScrollEnd && isScrolling) {
+                isScrolling = false;
+                isFlickScrolling = false;
                 element.style.webkitTransition = '';
                 fireEvent(that, 'scrollend');
             }
@@ -573,7 +580,6 @@ function Scroll(element, options){
         disable: function() {
             var el = this.element;
             this.enabled = false;
-            that.isScrolling = false;
 
             requestAnimationFrame(function() {
                 el.style.webkitTransform = getComputedStyle(el).webkitTransform;
@@ -675,7 +681,7 @@ function Scroll(element, options){
             var childRect = getBoundingClientRect(childEl);
             if (this.axis === 'y') {
                 var offsetRect = {
-                        top: childRect.top - this.options.yPadding1 - elRect.top,
+                        top: childRect.top - elRect.top - this.options.yPadding1,
                         left: childRect.left - elRect.left,
                         right: elRect.right - childRect.right,
                         width: childRect.width,
@@ -687,7 +693,7 @@ function Scroll(element, options){
                 var offsetRect = {
                         top: childRect.top - elRect.top,
                         bottom: elRect.bottom - childRect.bottom,
-                        left: childRect.left - this.options.xPadding1 - elRect.left,
+                        left: childRect.left - elRect.left - this.options.xPadding1,
                         width: childRect.width,
                         height: childRect.height
                     };

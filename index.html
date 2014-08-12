@@ -229,9 +229,9 @@ listScroller.enablePlugin('update', {
         updateLoading.text = '正在加载...';
         updateLoading.mode = 'spin';
         setTimeout(function() {
-            that.disable();
+            //that.disable();
             listUl.appendChild(genItems());
-            that.enable();
+            //that.enable();
             done();
             updateLoading.text = '上拉加载更多...';
             updateLoading.mode = 'draw';
