@@ -489,7 +489,7 @@ function Scroll(element, options){
 
                     v2 = v1 - a1 * t1;
                     a2 = 0.03 * (v2 / Math.abs(v2));
-                    motion2 = motion({
+                    motion2 = new lib.motion({
                         v: v2,
                         a: -a2
                     });
