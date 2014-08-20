@@ -1,6 +1,5 @@
 ;(function(win, lib, undef) {
 var doc = win.document;
-var motion = lib.motion;
 var scrollObjs = {};
 var plugins = {};
 var inertiaCoefficient = {
@@ -192,11 +191,10 @@ function Scroll(element, options){
     }, 1);
 
     if (options.isPrevent) {
-        var d = this.axis === 'y'?'vertical':'horizontal';
-        this.viewport.addEventListener(d + 'panstart', function(e) {
+        this.viewport.addEventListener('touchstart', function(e) {
             panning = true;
         }, false);
-        that.viewport.addEventListener('panend', function(e){  
+        that.viewport.addEventListener('touchend', function(e){  
             panning = false;
         }, false);
     }
@@ -447,7 +445,7 @@ function Scroll(element, options){
                 v0 = -maxV;
             }
             a0 = friction * ( v0 / Math.abs(v0));
-            motion0 = motion({
+            motion0 = new lib.motion({
                 v: v0,
                 a: -a0
             });
@@ -482,7 +480,7 @@ function Scroll(element, options){
                         s1 = that.maxScrollOffset;
                         sign = -1;
                     }
-                    motion1 = motion({
+                    motion1 = new lib.motion({
                         v: sign * v1, 
                         a: - sign * a1, 
                         s: Math.abs(s1 - s0)

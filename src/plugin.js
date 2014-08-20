@@ -102,8 +102,8 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
         elements.filter(function(el){
             return that.isInView(el);
         }).forEach(function(el){
-            if (pluginOptions.onLazyLoad) {
-                pluginOptions.onLazyLoad(el);
+            if (pluginOptions.onlazyload) {
+                pluginOptions.onlazyload(el);
             } else {
                 var img = el;
                 if (img.tagName.toUpperCase() !== 'IMG') {
@@ -116,12 +116,18 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
                         img.src = src;
                         img.removeAttribute('data-src');
                     }
+                } else {
+                    var bg = img.getAttribute('data-image');
+                    if (bg) {
+                        bg.style.backgroundImage = 'url(' + bg + ')';
+                        img.removeAttribute('data-image');
+                    }
                 }
-
-                el.className = el.className.split(' ').map(function(c) {
-                    return c !== 'lazy';
-                }).join(' ');
             }
+
+            el.className = el.className.split(' ').map(function(c) {
+                return c !== 'lazy';
+            }).join(' ');
         });
     }
 

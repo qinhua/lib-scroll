@@ -93,17 +93,24 @@ module.exports = function(grunt) {
         var done = this.async();
         var type = 'lib';
         var name = 'scroll';
+        var files = ['scroll', 'plugin'];
         var distPath = 'build';
         var pkgJson = grunt.file.readJSON('package.json');
         var version = pkgJson.version;
 
-        var jsFile = grunt.file.read(path.join(distPath, name + '.js'));
-        jsFile += ('\nif (window.KISSY) {' +
-                        'KISSY.add(\'mtb/{{type}}-{{name}}/{{version}}/{{name}}.cmd\', window.{{type}}.{{name}});' +
-                    '} else if (\'undefined\' !== typeof define) {' +
-                        'define(\'mtb/{{type}}-{{name}}/{{version}}/{{name}}.cmd\', [], window.{{type}}.{{name}});' +
-                    '}').replace(/\{\{type\}\}/g, type).replace(/\{\{name\}\}/g, name).replace(/\{\{version\}\}/g, version);
-        grunt.file.write(path.join(distPath, name + '.cmd.js'), jsFile);
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var jsFile = grunt.file.read(path.join(distPath, file + '.js'));
+            jsFile += ('\nif (window.KISSY) {' +
+                            'KISSY.add(\'mtb/{{type}}-{{name}}/{{version}}/{{file}}.cmd\', window.{{type}}.{{name}});' +
+                        '} else if (\'undefined\' !== typeof define) {' +
+                            'define(\'mtb/{{type}}-{{name}}/{{version}}/{{file}}.cmd\', [], window.{{type}}.{{name}});' +
+                        '}').replace(/\{\{type\}\}/g, type)
+                        .replace(/\{\{name\}\}/g, name)
+                        .replace(/\{\{file\}\}/g, file)
+                        .replace(/\{\{version\}\}/g, version);
+            grunt.file.write(path.join(distPath, file + '.cmd.js'), jsFile);
+        }
 
         done();
     });
