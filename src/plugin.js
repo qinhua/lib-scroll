@@ -117,10 +117,10 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
                         img.removeAttribute('data-src');
                     }
                 } else {
-                    var bg = img.getAttribute('data-image');
+                    var bg = el.getAttribute('data-image');
                     if (bg) {
                         bg.style.backgroundImage = 'url(' + bg + ')';
-                        img.removeAttribute('data-image');
+                        el.removeAttribute('data-image');
                     }
                 }
             }
