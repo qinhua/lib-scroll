@@ -125,7 +125,7 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
                 }
             }
 
-            el.className = el.className.split(' ').map(function(c) {
+            el.className = el.className.split(' ').filter(function(c) {
                 return c !== 'lazy';
             }).join(' ');
         });
