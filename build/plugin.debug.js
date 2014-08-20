@@ -119,7 +119,7 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
                 } else {
                     var bg = el.getAttribute('data-image');
                     if (bg) {
-                        bg.style.backgroundImage = 'url(' + bg + ')';
+                        el.style.backgroundImage = 'url(' + bg + ')';
                         el.removeAttribute('data-image');
                     }
                 }
