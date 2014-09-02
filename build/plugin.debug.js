@@ -33,6 +33,10 @@ lib.scroll.plugin('fixed', function(name, pluginOptions) {
         this.viewport.style.position = 'relative';
     }
 
+    if (!getComputedStyle(this.element).position.match(/^relative|absolute$/)) {
+        this.element.style.position = 'absolute';
+    }
+
     var fragment = doc.createDocumentFragment();
 
     function setElement(fixedElement, wrapElement) {
@@ -205,6 +209,10 @@ lib.scroll.plugin('refresh', function(name, pluginOptions) {
         this.viewport.style.position = 'relative';
     }
 
+    if (!getComputedStyle(this.element).position.match(/^relative|absolute$/)) {
+        this.element.style.position = 'absolute';
+    }
+
     pluginOptions.height = pluginOptions.height || 0;
     pluginOptions.offset = (pluginOptions.offset || 0) + (scrollOptions.padding.top || 0);
 
@@ -286,6 +294,10 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
 
     if (!getComputedStyle(this.viewport).position.match(/^relative|absolute$/)) {
         this.viewport.style.position = 'relative';
+    }
+
+    if (!getComputedStyle(this.element).position.match(/^relative|absolute$/)) {
+        this.element.style.position = 'absolute';
     }
 
     pluginOptions.height = pluginOptions.height || 0;

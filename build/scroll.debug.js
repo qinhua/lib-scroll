@@ -186,6 +186,8 @@ function Scroll(element, options){
     this.viewport.addEventListener('panend', panendHandler, false);
     this.viewport.addEventListener('flick', flickHandler, false);
 
+    this.element.style.webkitBackfaceVisibility = 'hidden';
+    this.element.style.webkitTransformStyle = 'preserve-3d';
     this.element.scrollId = setTimeout(function(){
         scrollObjs[that.element.scrollId + ''] = that;
     }, 1);
@@ -201,21 +203,18 @@ function Scroll(element, options){
 
     if (options.isFixScrollendClick) {
         var preventScrollendClick;
-        this.viewport.addEventListener('touchstart', function() {
-            if (isScrolling) {
-                preventScrollendClick = true;
-            }
-        }, false);
-
-        this.viewport.addEventListener('scrollend', function() {
-            setTimeout(function(e){
+        var fixScrollendClickTimeoutId;
+        this.viewport.addEventListener('scrolling', function() {
+            preventScrollendClick = true;
+            fixScrollendClickTimeoutId && clearTimeout(fixScrollendClickTimeoutId);
+            fixScrollendClickTimeoutId = setTimeout(function(e){
                 preventScrollendClick = false;
             }, 400);
         }, false);
 
         function preventScrollendClickHandler(e) {
             e.preventScrollendClick = preventScrollendClick;
-            if (preventScrollendClick) {
+            if (preventScrollendClick && isScrolling) {
                 e.preventDefault();
                 e.stopPropagation();
                 return false;
@@ -224,8 +223,8 @@ function Scroll(element, options){
             }
         }
 
-        this.viewport.addEventListener('click', preventScrollendClickHandler, false);
-        this.viewport.addEventListener('tap', preventScrollendClickHandler, false);
+        this.element.addEventListener('click', preventScrollendClickHandler, false);
+        this.element.addEventListener('tap', preventScrollendClickHandler, false);
     }
 
     var webkitTransitionEndHandler;
