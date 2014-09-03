@@ -122,7 +122,7 @@
     <li>
         <div class="list-item">
             <div class="p">
-                <a href="http://mclick.simba.taobao.com/cc_im?p=iphone5s&amp;s=384300457&amp;k=269&amp;e=Bf52Czfzg4zEzEYXHF1ZrjhZAekQJJP1K4M14jql2z%2F1lYR6JgolkyoCZbepooNsYHcE2byB58uPEB5nyzmdRlFplfhdyusoNBrETXawvQ6BF7KUbKK962nsBJEbCRNEQA7w4cN%2F10pIouaYhvJponIUuKyCq5k8UWTc1rhquXcHnpuCFIjDVpsXMwjxx%2BxkzeiRu%2Bi0WaRELmURVnaN47Cr9H8IhjN4YT2aULWczh7FPRTaiMoo3quVwCSMOmdelXji%2B%2BqulpI%3D" title=""><img class="p-pic lazy" data-src="http://gma.alicdn.com/tfscom/i2/11031028964676638/T1WMPDFlVbXXXXXXXX_!!0-item_pic.jpg_210x210.jpg" style="visibility: visible;"></a>
+                <a data-href="http://mclick.simba.taobao.com/cc_im?p=iphone5s&amp;s=384300457&amp;k=269&amp;e=Bf52Czfzg4zEzEYXHF1ZrjhZAekQJJP1K4M14jql2z%2F1lYR6JgolkyoCZbepooNsYHcE2byB58uPEB5nyzmdRlFplfhdyusoNBrETXawvQ6BF7KUbKK962nsBJEbCRNEQA7w4cN%2F10pIouaYhvJponIUuKyCq5k8UWTc1rhquXcHnpuCFIjDVpsXMwjxx%2BxkzeiRu%2Bi0WaRELmURVnaN47Cr9H8IhjN4YT2aULWczh7FPRTaiMoo3quVwCSMOmdelXji%2B%2BqulpI%3D" title=""><img class="p-pic lazy" data-src="http://gma.alicdn.com/tfscom/i2/11031028964676638/T1WMPDFlVbXXXXXXXX_!!0-item_pic.jpg_210x210.jpg" style="visibility: visible;"></a>
             </div>
             <div class="d">
                 <a href="http://mclick.simba.taobao.com/cc_im?p=iphone5s&amp;s=384300457&amp;k=269&amp;e=Bf52Czfzg4zEzEYXHF1ZrjhZAekQJJP1K4M14jql2z%2F1lYR6JgolkyoCZbepooNsYHcE2byB58uPEB5nyzmdRlFplfhdyusoNBrETXawvQ6BF7KUbKK962nsBJEbCRNEQA7w4cN%2F10pIouaYhvJponIUuKyCq5k8UWTc1rhquXcHnpuCFIjDVpsXMwjxx%2BxkzeiRu%2Bi0WaRELmURVnaN47Cr9H8IhjN4YT2aULWczh7FPRTaiMoo3quVwCSMOmdelXji%2B%2BqulpI%3D" title="">
@@ -145,7 +145,7 @@
 <script src="build/plugin.debug.js" type="text/javascript"></script>
 <script src="http://g.tbcdn.cn/mtb/??ctrl-loading/0.1.2/loading.debug.js,ctrl-tabheader/0.4.2/tabheader.debug.js" type="text/javascript"></script>
 <script>
-lib.scroll.outputDebugLog = true;
+//lib.scroll.outputDebugLog = true;
 
 function genItems() {
     var html = new Array(10).join(tpl);
@@ -238,6 +238,19 @@ listScroller.enablePlugin('update', {
             updateLoading.mode = 'draw';
             updateLoading.per = 100;
         }, 1000);
+    }
+});
+
+listScroller.addEventListener('niceclick', function(e) {
+    var target = e.target;
+    while (target && target !== this) {
+        var href;
+        if ((href = target.getAttribute('data-href'))) {
+            location.href = href;
+            break;
+        } else {
+            target = target.parentNode;
+        }
     }
 });
 

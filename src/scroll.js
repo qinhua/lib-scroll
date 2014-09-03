@@ -90,10 +90,10 @@ function getTransformOffset(scrollObj) {
     var matched;
 
     if (transform !== 'none') {
-        if ((matched = transform.match(/^matrix3d\(\d+, \d+, \d+, \d+, \d+, \d+, \d+, \d+, \d+, \d+, \d+, \d+, ([-\d.]+), ([-\d.]+), [-\d.]+, \d+\)/) ||
-                transform.match(/^matrix\(\d+, \d+, \d+, \d+, ([-\d.]+), ([-\d.]+)\)$/))) {
-            offset.x = parseInt(matched[1]) || 0;
-            offset.y = parseInt(matched[2]) || 0;
+        if ((matched = transform.match(/^matrix3d\((?:[-\d.]+,\s*){12}([-\d.]+),\s*([-\d.]+)(?:,\s*[-\d.]+){2}\)/) ||
+                transform.match(/^matrix\((?:[-\d.]+,\s*){4}([-\d.]+),\s*([-\d.]+)\)$/))) {
+            offset.x = parseFloat(matched[1]) || 0;
+            offset.y = parseFloat(matched[2]) || 0;
         }
     }
 
@@ -204,6 +204,7 @@ function Scroll(element, options){
     if (options.isFixScrollendClick) {
         var preventScrollendClick;
         var fixScrollendClickTimeoutId;
+
         this.viewport.addEventListener('scrolling', function() {
             preventScrollendClick = true;
             fixScrollendClickTimeoutId && clearTimeout(fixScrollendClickTimeoutId);
@@ -213,8 +214,7 @@ function Scroll(element, options){
         }, false);
 
         function preventScrollendClickHandler(e) {
-            e.preventScrollendClick = preventScrollendClick;
-            if (preventScrollendClick && isScrolling) {
+            if (preventScrollendClick || isScrolling) {
                 e.preventDefault();
                 e.stopPropagation();
                 return false;
@@ -223,8 +223,18 @@ function Scroll(element, options){
             }
         }
 
-        this.element.addEventListener('click', preventScrollendClickHandler, false);
-        this.element.addEventListener('tap', preventScrollendClickHandler, false);
+        function fireNiceTapEventHandler(e) {
+            if (!preventScrollendClick && !isScrolling) {
+                setTimeout(function(){
+                    var niceTapEvent = document.createEvent('HTMLEvents');
+                    niceTapEvent.initEvent('niceclick', true, true);
+                    e.target.dispatchEvent(niceTapEvent);
+                }, 300);
+            }
+        }
+
+        this.viewport.addEventListener('click', preventScrollendClickHandler, false);
+        this.viewport.addEventListener('tap', fireNiceTapEventHandler, false);
     }
 
     var webkitTransitionEndHandler;
@@ -271,7 +281,8 @@ function Scroll(element, options){
 
         element.style.webkitBackfaceVisibility = 'hidden';
         element.style.webkitTransformStyle = 'preserve-3d';
-        element.style.webkitTransform = getComputedStyle(element).webkitTransform;
+        var transform = getTransformOffset(that);
+        element.style.webkitTransform = getTranslate(transform.x, transform.y);
         element.style.webkitTransition = '';
         webkitTransitionEndHandler = null;
         clearTimeout(transitionEndTimeoutId);
@@ -453,75 +464,73 @@ function Scroll(element, options){
 
             var boundaryOffset1 = getBoundaryOffset(that, s);
             if (boundaryOffset1) {
+                //惯性运动足够滑出屏幕边缘
                 debugLog('惯性计算超出了边缘', boundaryOffset1);
+
+                v1 = v0;
+                a1 = a0;
+                if(boundaryOffset1 > 0) {
+                    s1 = that.minScrollOffset;
+                    sign = 1;
+                } else {
+                    s1 = that.maxScrollOffset;
+                    sign = -1;
+                }
+                motion1 = new lib.motion({
+                    v: sign * v1, 
+                    a: - sign * a1, 
+                    s: Math.abs(s1 - s0)
+                });
+                t1 = motion1.t;
+                var timeFunction1 = motion1.generateCubicBezier();
+
+                v2 = v1 - a1 * t1;
+                a2 = 0.03 * (v2 / Math.abs(v2));
+                motion2 = new lib.motion({
+                    v: v2,
+                    a: -a2
+                });
+                t2 = motion2.t;
+                s2 = s1 + motion2.s;
+                var timeFunction2 = motion2.generateCubicBezier();
 
                 if (options.noBounce) {
                     // 没有边缘回弹效果，直接平顺滑到边缘
                     debugLog('没有回弹效果');
 
-                    s1 = touchBoundary(that, s);
-
                     if (s0 !== s1) {
-                        element.style.webkitTransition = '-webkit-transform 0.4s ease-out 0';
+                        element.style.webkitTransition = '-webkit-transform ' + (t1/1000).toFixed(2) + 's cubic-bezier(' + timeFunction1 + ') 0';
                         element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
-                        setTransitionEndHandler(scrollEnd, 400);
+                        setTransitionEndHandler(scrollEnd, (t1/1000).toFixed(2) * 1000);
                     } else {
                         scrollEnd();
                     }
-                } else {
-                    //惯性运动足够滑出屏幕边缘
-                    v1 = v0;
-                    a1 = a0;
-                    if(boundaryOffset1 > 0) {
-                        s1 = that.minScrollOffset;
-                        sign = 1;
-                    } else {
-                        s1 = that.maxScrollOffset;
-                        sign = -1;
-                    }
-                    motion1 = new lib.motion({
-                        v: sign * v1, 
-                        a: - sign * a1, 
-                        s: Math.abs(s1 - s0)
-                    });
-                    t1 = motion1.t;
-
-                    v2 = v1 - a1 * t1;
-                    a2 = 0.03 * (v2 / Math.abs(v2));
-                    motion2 = new lib.motion({
-                        v: v2,
-                        a: -a2
-                    });
-                    t2 = motion2.t;
-                    s2 = s1 + motion2.s;
-
+                } else if (s0 !== s2) {
                     debugLog('惯性滚动', 's=' + s2.toFixed(0), 't=' + ((t1 + t2) / 1000).toFixed(2));
 
-                    if (s0 !== s2) {
-                        element.style.webkitTransition = '-webkit-transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0';                
-                        element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s2.toFixed(0) + 'px)';
+                    element.style.webkitTransition = '-webkit-transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0';                
+                    element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s2.toFixed(0) + 'px)';
 
-                        setTransitionEndHandler(function(e) {
-                            if (!that.enabled) {
-                                return;
-                            }
+                    setTransitionEndHandler(function(e) {
+                        if (!that.enabled) {
+                            return;
+                        }
 
-                            debugLog('惯性回弹', 's=' + s1.toFixed(0), 't=400');
+                        debugLog('惯性回弹', 's=' + s1.toFixed(0), 't=400');
 
-                            if (s2 !== s1) {
-                                element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-                                element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';                            
-                                setTransitionEndHandler(scrollEnd, 400);
-                            } else {
-                                scrollEnd();
-                            }
-                        }, ((t1 + t2) / 1000).toFixed(2) * 1000);
-                    } else {
-                        scrollEnd();
-                    }
+                        if (s2 !== s1) {
+                            element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
+                            element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';                            
+                            setTransitionEndHandler(scrollEnd, 400);
+                        } else {
+                            scrollEnd();
+                        }
+                    }, ((t1 + t2) / 1000).toFixed(2) * 1000);
+                } else {
+                    scrollEnd();
                 }
             } else {
-                debugLog('惯性计算没有超出了边缘');
+                debugLog('惯性计算没有超出边缘');
                 var timeFunction = motion0.generateCubicBezier();
                 element.style.webkitTransition = '-webkit-transform ' + (t0 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction + ') 0';
                 element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s.toFixed(0) + 'px)';

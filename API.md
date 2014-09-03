@@ -118,3 +118,4 @@
 - pulldownend - 往下拉结束（方向为y时有效）
 - pullup - 往上拉（方向为y时有效）
 - pullupend - 往上拉结束（方向为y时有效）
+- niceclick - 经过优化后的click事件（建议用来代替click事件）
