@@ -227,9 +227,9 @@ lib.scroll.plugin('sticky', function(name, pluginOptions) {
     }
 
     this.checkSticky = function(childEl, parentEl) {
-        if(this.getRect(parentEl).top < 0 ) {
+        if(this.getRect(parentEl).top < top ) {
             this.stickyWrapElement.appendChild(childEl);
-        } else if(this.getRect(parentEl).top > 0) {
+        } else if(this.getRect(parentEl).top > top) {
             parentEl.appendChild(childEl);
         }
     }
