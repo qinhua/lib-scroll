@@ -270,6 +270,13 @@ function Scroll(element, options){
     var isScrolling;
     var isFlickScrolling;
     var cancelScrollEnd;
+
+    Object.defineProperty(this, 'isScrolling', {
+        get: function() {
+            return !!isScrolling;
+        }
+    });
+
     function touchstartHandler(e) {
         if (!that.enabled) {
             return;
@@ -306,14 +313,12 @@ function Scroll(element, options){
             element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
             setTransitionEndHandler(scrollEnd, 400);
 
-            if (that.fireScrollingEvent) {
-                requestAnimationFrame(function() {
-                    if (isScrolling && that.enabled) {
-                        fireEvent(that, 'scrolling');
-                        requestAnimationFrame(arguments.callee);
-                    }
-                });
-            }
+            requestAnimationFrame(function() {
+                if (isScrolling && that.enabled) {
+                    fireEvent(that, 'scrolling');
+                    requestAnimationFrame(arguments.callee);
+                }
+            });
         } else if (isScrolling) {
             scrollEnd();
         }
@@ -397,9 +402,8 @@ function Scroll(element, options){
             element.style.webkitTransform = getTranslate(offset, that.transformOffset.y);
         }
 
-        if (that.fireScrollingEvent) {
-            fireEvent(that, 'scrolling');
-        }
+        
+        fireEvent(that, 'scrolling');
     }
 
     function panendHandler(e) {
@@ -538,17 +542,15 @@ function Scroll(element, options){
             }
 
 
-            if (that.fireScrollingEvent) {
-                isFlickScrolling = true;
-                requestAnimationFrame(function() {
-                    if (isScrolling && isFlickScrolling && that.enabled) {
-                        fireEvent(that, 'scrolling', {
-                            afterFlick: true
-                        });
-                        requestAnimationFrame(arguments.callee);
-                    }
-                });
-            }
+            isFlickScrolling = true;
+            requestAnimationFrame(function() {
+                if (isScrolling && isFlickScrolling && that.enabled) {
+                    fireEvent(that, 'scrolling', {
+                        afterFlick: true
+                    });
+                    requestAnimationFrame(arguments.callee);
+                }
+            });
         }
     }
 
@@ -819,18 +821,6 @@ function Scroll(element, options){
         },
 
         addScrollingHandler: function(handler) {
-            if (!this.fireScrollingEvent) {
-                this.fireScrollingEvent = true;
-                var forceRefreshEl = doc.createElement('div');
-                forceRefreshEl.className = 'force-refresh';
-                forceRefreshEl.style.cssText = 'position: absolute; top: 0; left: 0; width: 0; height: 0; font-size: 0; opacity: 1;';
-                this.viewport.appendChild(forceRefreshEl);
-
-                this.element.addEventListener('scrolling', function(e) {
-                    forceRefreshEl.style.opacity = Math.abs(parseInt(forceRefreshEl.style.opacity) - 1) + '';
-                }, false);
-            }
-            
             this.element.addEventListener('scrolling', function(e){
                 handler(e);
             }, false);

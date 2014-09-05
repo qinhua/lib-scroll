@@ -25,6 +25,38 @@ function getTransformOffset(element) {
     return offset;
 }
 
+lib.scroll.plugin('force-repaint', function(name, pluginOptions) {
+    var that = this;
+    var scrollOptions = this.options;
+    var forceRepaintElement = this.forceRepaintElement = doc.createElement('div');
+    forceRepaintElement.className = 'force-repaint';
+    forceRepaintElement.style.cssText = 'position: absolute; top: 0; left: 0; width: 0; height: 0; font-size: 0; opacity: 1;';
+    this.viewport.appendChild(forceRepaintElement);
+
+    function forceRepaint() {
+        forceRepaintElement.style.opacity = Math.abs(parseInt(forceRepaintElement.style.opacity) - 1) + '';
+    }
+
+    if (pluginOptions.whenScrolling) {
+        this.addScrollingHandler(forceRepaint);
+    } else if (typeof pluginOptions.timeout === 'number') {
+        setTimeout(function() {
+            if (that.isScrolling) {
+                forceRepaint();
+            }
+            setTimeout(arguments.callee, pluginOptions.timeout);
+        }, pluginOptions.timeout);
+    } else {
+        requestAnimationFrame(function(){
+            if (that.isScrolling) {
+                forceRepaint();
+            }
+            requestAnimationFrame(arguments.callee);
+        });    
+    }
+    
+});
+
 
 lib.scroll.plugin('fixed', function(name, pluginOptions) {
     var scrollOptions = this.options;
@@ -136,14 +168,16 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
     }
 
     if(pluginOptions.realTimeLoad) {
+        this.enablePlugin('force-repaint');
+
         this.addScrollingHandler(function(){
             that.checkLazyload();
         });
-    } else {
-        this.addScrollendHandler(function(){
-            that.checkLazyload();
-        });
     }
+
+    this.addScrollendHandler(function(){
+        that.checkLazyload();
+    });
 
     this.element.addEventListener('contentchange', function() {
         that.checkLazyload();
@@ -155,6 +189,8 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
 });
 
 lib.scroll.plugin('sticky', function(name, pluginOptions) {
+    this.enablePlugin('force-repaint');
+    
     var that = this;
     var scrollOptions = this.options;
 

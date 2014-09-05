@@ -2,7 +2,7 @@
 
 ## 最新版本
 
-**2.3.5**
+**2.3.6**
 
 ## 依赖库
 
@@ -70,6 +70,12 @@
 需额外引入一个js：
 
     <script src="http://g.tbcdn.cn/mtb/lib-scroll/{{version}}/plugin.js"></script>
+
+### 滚动时强制重绘
+
+在有些机型上，在transform动画时会阻塞UI，所以需要进行强制重绘。
+
+	scroller.enablePlugin('force-repaint');
 
 ### 贴边固定元素
 
