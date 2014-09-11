@@ -755,9 +755,17 @@ function Scroll(element, options){
             offset = -offset - this.options[this.axis + 'Padding1'];
             offset = touchBoundary(this, offset);
 
+            isScrolling = true;
             if (isSmooth === true) {
                 element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
                 setTransitionEndHandler(scrollEnd, 400);
+
+                requestAnimationFrame(function() {
+                    if (isScrolling && that.enabled) {
+                        fireEvent(that, 'scrolling');
+                        requestAnimationFrame(arguments.callee);
+                    }
+                });
             } else {
                 element.style.webkitTransition = '';
                 setTransitionEndHandler(scrollEnd, 1);
