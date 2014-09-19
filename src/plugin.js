@@ -1,3 +1,4 @@
+//@require scroll
 ;(function(win, lib, undef) {
 var doc = win.document;
 
@@ -131,6 +132,41 @@ lib.scroll.plugin('fixed', function(name, pluginOptions) {
 lib.scroll.plugin('lazyload', function(name, pluginOptions) {
     var that = this;
     var scrollOptions = this.options;
+    var limit = 4;
+    var queue = [];
+    var loading = {};
+    var loaded = {};
+
+    function load(url, callback) {
+        if (loading[url]) {
+            loading[url].push(callback);
+        } else if (loaded[url]) {
+            callback(url);
+        } else {
+            queue.push([url, callback]);
+        }
+    }
+
+    requestAnimationFrame(function() {
+        var len = Object.keys(loading).length;
+        if (len <= limit && queue.length > 0) {
+            var item = queue.shift();
+            var url = item[0];
+            var callback = item[1];
+            var img = new Image();
+
+            loading[url] = [callback];
+            img.src = url;
+            img.onload = img.onreadystatechange = function() {
+                loaded[url] = true;
+                loading[url].forEach(function(cb) {
+                    cb(url);
+                });
+                delete loading[url];
+            }
+        }
+        requestAnimationFrame(arguments.callee);
+    });
 
     this.checkLazyload = function(){
         var elements = Array.prototype.slice.call(this.element.querySelectorAll('.lazy'));
@@ -138,28 +174,41 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
         elements.filter(function(el){
             return that.isInView(el);
         }).forEach(function(el){
-            if (pluginOptions.onlazyload) {
-                pluginOptions.onlazyload(el);
-            } else {
-                var img = el;
-                if (img.tagName.toUpperCase() !== 'IMG') {
-                    img = el.querySelector('img[data-src]');
-                }
+            var imglist;
+            var bglist;
 
-                if (img) {
-                    var src = img.getAttribute('data-src');
-                    if (src) {
-                        img.src = src;
-                        img.removeAttribute('data-src');
-                    }
-                } else {
-                    var bg = el.getAttribute('data-image');
-                    if (bg) {
-                        el.style.backgroundImage = 'url(' + bg + ')';
-                        el.removeAttribute('data-image');
-                    }
+            if (el.tagName.toUpperCase() === 'IMG') {
+                imglist = [el];
+                bglist = [];
+            } else {
+                imglist = Array.prototype.slice.call(el.querySelectorAll('img[data-src]'));
+                bglist = Array.prototype.slice.call(el.querySelectorAll('*[data-image]'));
+                if (el.hasAttribute('data-image')) {
+                    bglist.push(el);
                 }
             }
+
+            imglist.forEach(function(img) {
+                var src = img.getAttribute('data-src');
+                if (src) {
+                    img.removeAttribute('data-src');
+                    load(src, function() {
+                        img.src = src;
+                    });
+                }
+            });
+
+            bglist.forEach(function(bg) {
+                var image = bg.getAttribute('data-image');
+                if (image) {
+                    bg.removeAttribute('data-image');
+                    load(image, function() {
+                        bg.style.backgroundImage = 'url(' + image + ')';    
+                    });
+                }
+            });
+
+            pluginOptions.onlazyload && pluginOptions.onlazyload(el);
 
             el.className = el.className.split(' ').filter(function(c) {
                 return c !== 'lazy';
@@ -179,7 +228,7 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
         that.checkLazyload();
     });
 
-    this.element.addEventListener('contentchange', function() {
+    this.element.addEventListener('contentrefresh', function() {
         that.checkLazyload();
     });
 
