@@ -679,7 +679,7 @@ function Scroll(element, options){
             this.minScrollOffset = getMinScrollOffset(this);
             this.maxScrollOffset = getMaxScrollOffset(this);
             this.scrollTo(-this.transformOffset[this.axis] - this.options[this.axis + 'Padding1']);
-            fireEvent(this, 'contentchange');
+            fireEvent(this, 'contentrefresh');
 
             return this;
         },
