@@ -7,6 +7,13 @@ var inertiaCoefficient = {
     'slow': [1.5, 0.003],
     'veryslow': [1.5, 0.005]
 }
+var timeFunction = {
+    'ease': [.25,.1,.25,1],
+    'liner': [0,0,1,1],
+    'ease-in': [.42,0,1,1],
+    'ease-out': [0,0,.58,1],
+    'ease-in-out': [.42,0,.58,1]
+}
 
 function debugLog() {
     if (lib.scroll.outputDebugLog) {
@@ -102,20 +109,23 @@ function getTransformOffset(scrollObj) {
 
 var has3d = 'WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix();
 function getTranslate(x, y) {
+    x = parseFloat(x);
+    y = parseFloat(y);
+
+    if (x != 0) {
+        x += 'px';
+    }
+
+    if (y != 0) {
+        y += 'px';
+    }
+
     if (has3d) {
-        return 'translate3d(' + x + 'px, ' + y + 'px, 0)';
+        return 'translate3d(' + x + ', ' + y + ', 0)';
     } else {
-        return 'translate(' + x + 'px, ' + y + 'px)';
+        return 'translate(' + x + ', ' + y + ')';
     }
 }
-
-var requestAnimationFrame = (function() {
-    return  window.requestAnimationFrame || 
-                window.webkitRequestAnimationFrame || 
-            function(cb) {
-                setTimeout(cb, 16);
-            }
-})();
 
 var panning = false;
 doc.addEventListener('touchmove', function(e){
@@ -184,10 +194,7 @@ function Scroll(element, options){
     this.viewport.addEventListener('panstart', panstartHandler, false);
     this.viewport.addEventListener('pan', panHandler, false);
     this.viewport.addEventListener('panend', panendHandler, false);
-    this.viewport.addEventListener('flick', flickHandler, false);
 
-    this.element.style.webkitBackfaceVisibility = 'hidden';
-    this.element.style.webkitTransformStyle = 'preserve-3d';
     this.element.scrollId = setTimeout(function(){
         scrollObjs[that.element.scrollId + ''] = that;
     }, 1);
@@ -237,34 +244,45 @@ function Scroll(element, options){
         this.viewport.addEventListener('tap', fireNiceTapEventHandler, false);
     }
 
-    var webkitTransitionEndHandler;
-    var transitionEndTimeoutId = 0;
-    function setTransitionEndHandler(h, t) {
-        webkitTransitionEndHandler = null;
-        clearTimeout(transitionEndTimeoutId);
-        
-        transitionEndTimeoutId = setTimeout(function() {
-            if (webkitTransitionEndHandler) {
-                webkitTransitionEndHandler = null;
-                requestAnimationFrame(h);
+    if (options.useFrameAnimation) {
+        var scrollAnimation;
+
+        Object.defineProperty(this, 'animation', {
+            get: function() {
+                return scrollAnimation;
             }
-        }, (t || 400));
+        });
+    } else {
+        var webkitTransitionEndHandler;
+        var transitionEndTimeoutId = 0;
 
-        webkitTransitionEndHandler = h;   
-    }
-
-    element.addEventListener('webkitTransitionEnd', function(e) {
-        if (webkitTransitionEndHandler) {
-            var handler = webkitTransitionEndHandler;
-
+        function setTransitionEndHandler(h, t) {
             webkitTransitionEndHandler = null;
             clearTimeout(transitionEndTimeoutId);
+            
+            transitionEndTimeoutId = setTimeout(function() {
+                if (webkitTransitionEndHandler) {
+                    webkitTransitionEndHandler = null;
+                    lib.animation.requestFrame(h);
+                }
+            }, (t || 400));
 
-            requestAnimationFrame(function(){
-                handler(e);
-            });
+            webkitTransitionEndHandler = h;   
         }
-    }, false);
+
+        element.addEventListener('webkitTransitionEnd', function(e) {
+            if (webkitTransitionEndHandler) {
+                var handler = webkitTransitionEndHandler;
+
+                webkitTransitionEndHandler = null;
+                clearTimeout(transitionEndTimeoutId);
+
+                lib.animation.requestFrame(function(){
+                    handler(e);
+                });
+            }
+        }, false);
+    }
 
     var panFixRatio;
     var isScrolling;
@@ -286,13 +304,17 @@ function Scroll(element, options){
             scrollEnd();
         }
 
-        element.style.webkitBackfaceVisibility = 'hidden';
-        element.style.webkitTransformStyle = 'preserve-3d';
-        var transform = getTransformOffset(that);
-        element.style.webkitTransform = getTranslate(transform.x, transform.y);
-        element.style.webkitTransition = '';
-        webkitTransitionEndHandler = null;
-        clearTimeout(transitionEndTimeoutId);
+        if (options.useFrameAnimation) {
+            scrollAnimation && scrollAnimation.stop();
+            scrollAnimation = null;
+        } else {
+            var transform = getTransformOffset(that);
+            element.style.webkitTransform = getTranslate(transform.x, transform.y);
+            element.style.webkitTransition = '';
+            webkitTransitionEndHandler = null;
+            clearTimeout(transitionEndTimeoutId);
+        }
+
     }
 
     function touchendHandler(e) {
@@ -302,24 +324,49 @@ function Scroll(element, options){
 
         var s0 = getTransformOffset(that)[that.axis];
         var boundaryOffset = getBoundaryOffset(that, s0);
-        if (element.style.webkitTransition === '' && boundaryOffset) {
+
+        if (boundaryOffset) {
+            // 拖动超出边缘，需要回弹
             var s1 = touchBoundary(that, s0);
             if (boundaryOffset > 0) {
                 fireEvent(that, that.axis === 'y'?'pulldownend':'pullrightend');
             } else if (boundaryOffset < 0) {
                 fireEvent(that, that.axis === 'y'?'pullupend':'pullleftend');
             }
-            element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-            element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
-            setTransitionEndHandler(scrollEnd, 400);
-
-            requestAnimationFrame(function() {
-                if (isScrolling && that.enabled) {
+            if (options.useFrameAnimation) {
+                // frame
+                var _s = s1 - s0;
+                scrollAnimation = new lib.animation(400, lib.cubicbezier.ease, 0, function(i1, i2) {
+                    var offset = (s0 + _s * i2).toFixed(2);
+                    if (that.axis === 'y') {
+                        element.style.webkitTransform = getTranslate(0, offset);
+                    } else {
+                        element.style.webkitTransform = getTranslate(offset, 0);
+                    }
                     fireEvent(that, 'scrolling');
-                    requestAnimationFrame(arguments.callee);
+                });
+                scrollAnimation.onend(scrollEnd);
+                scrollAnimation.play();
+            } else {
+                // css
+                element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
+                var offset =  s1.toFixed(0);
+                if (that.axis === 'y') {
+                    element.style.webkitTransform = getTranslate(0, offset);
+                } else {
+                    element.style.webkitTransform = getTranslate(offset, 0);
                 }
-            });
+                setTransitionEndHandler(scrollEnd, 400);
+
+                lib.animation.requestFrame(function() {
+                    if (isScrolling && that.enabled) {
+                        fireEvent(that, 'scrolling');
+                        lib.animation.requestFrame(arguments.callee);
+                    }
+                });                
+            }
         } else if (isScrolling) {
+            // 未超出边缘，直接结束
             scrollEnd();
         }
     }
@@ -395,33 +442,16 @@ function Scroll(element, options){
             }
         }
 
-        element.style.webkitTransition = '';
+        //element.style.webkitTransition = '';
         if (that.axis === 'y') {
-            element.style.webkitTransform = getTranslate(that.transformOffset.x, offset);  
+            element.style.webkitTransform = getTranslate(0, offset.toFixed(2));
         } else {
-            element.style.webkitTransform = getTranslate(offset, that.transformOffset.y);
+            element.style.webkitTransform = getTranslate(offset.toFixed(2), 0);
         }
-
-        
         fireEvent(that, 'scrolling');
     }
 
     function panendHandler(e) {
-        if (!that.enabled) {
-            return;
-        }
-
-        // 不是同方向的手势，直接不做任何处理
-        if (that.axis !== 'y' && e.isVertical || that.axis === 'x' && e.isVertical) {
-            return;
-        }
-
-        // if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
-        //     e.stopPropagation();    
-        // }
-    }
-
-    function flickHandler(e) {
         if (!that.enabled) {
             return;
         }
@@ -432,6 +462,21 @@ function Scroll(element, options){
             return;
         }
 
+        // 不是同方向的手势，直接不做任何处理
+        // if (that.axis !== 'y' && e.isVertical || that.axis === 'x' && e.isVertical) {
+        //     return;
+        // }
+
+        // if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
+        //     e.stopPropagation();    
+        // }
+
+        if (e.isflick) {
+            flickHandler(e);
+        }
+    }
+
+    function flickHandler(e) {
         cancelScrollEnd = true;
     
         var v0, a0, t0, s0, s, motion0;
@@ -503,58 +548,167 @@ function Scroll(element, options){
                     debugLog('没有回弹效果');
 
                     if (s0 !== s1) {
-                        element.style.webkitTransition = '-webkit-transform ' + (t1/1000).toFixed(2) + 's cubic-bezier(' + timeFunction1 + ') 0';
-                        element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';
-                        setTransitionEndHandler(scrollEnd, (t1/1000).toFixed(2) * 1000);
+                        if (options.useFrameAnimation) {
+                            // frame
+                            var _s = s1 - s0;
+                            var bezier = lib.cubicbezier(timeFunction1[0][0], timeFunction1[0][1], timeFunction1[1][0], timeFunction1[1][1]);
+                            scrollAnimation = new lib.animation(t1.toFixed(0), bezier, 0, function(i1, i2) {
+                                fireEvent(that, 'scrolling',{
+                                    afterFlick: true
+                                });
+                                var offset = (s0 + _s * i2);
+                                if (that.axis === 'y') {
+                                    element.style.webkitTransform = getTranslate(0, offset.toFixed(2));
+                                } else {
+                                    element.style.webkitTransform = getTranslate(offset.toFixed(2), 0);
+                                }
+                            });
+
+                            scrollAnimation.onend(scrollEnd);
+
+                            scrollAnimation.play();
+                        } else {
+                            // css
+                            element.style.webkitTransition = '-webkit-transform ' + (t1/1000).toFixed(2) + 's cubic-bezier(' + timeFunction1 + ') 0';
+                            var offset = s1.toFixed(0);
+                            if (that.axis === 'y') {
+                                element.style.webkitTransform = getTranslate(0, offset);
+                            } else {
+                                element.style.webkitTransform = getTranslate(offset, 0);
+                            }
+                            setTransitionEndHandler(scrollEnd, (t1/1000).toFixed(2) * 1000);
+                        }
                     } else {
                         scrollEnd();
                     }
                 } else if (s0 !== s2) {
                     debugLog('惯性滚动', 's=' + s2.toFixed(0), 't=' + ((t1 + t2) / 1000).toFixed(2));
 
-                    element.style.webkitTransition = '-webkit-transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0';                
-                    element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s2.toFixed(0) + 'px)';
+                    if (options.useFrameAnimation) {
+                        var _s = s2 - s0;
+                        var bezier = lib.cubicbezier.easeOut;
+                        scrollAnimation = new lib.animation((t1 + t2).toFixed(0), bezier, 0, function(i1, i2) {
+                            fireEvent(that, 'scrolling',{
+                                afterFlick: true
+                            });
+                            var offset = s0 + _s * i2;
+                            if (that.axis === 'y') {
+                                element.style.webkitTransform = getTranslate(0, offset.toFixed(2));
+                            } else {
+                                element.style.webkitTransform = getTranslate(offset.toFixed(2), 0);
+                            }
+                        });
 
-                    setTransitionEndHandler(function(e) {
-                        if (!that.enabled) {
-                            return;
-                        }
+                        scrollAnimation.onend(function() {
+                            if (!that.enabled) {
+                                return;
+                            }
 
-                        debugLog('惯性回弹', 's=' + s1.toFixed(0), 't=400');
+                            var _s = s1 - s2;
+                            var bezier = lib.cubicbezier.ease;
+                            scrollAnimation = new lib.animation(400, bezier, 0, function(i1, i2) {
+                                fireEvent(that, 'scrolling',{
+                                    afterFlick: true
+                                });
+                                var offset = s2 + _s * i2;
+                                if (that.axis === 'y') {
+                                    element.style.webkitTransform = getTranslate(0, offset.toFixed(2));
+                                } else {
+                                    element.style.webkitTransform = getTranslate(offset.toFixed(2), 0);
+                                }
+                            });
 
-                        if (s2 !== s1) {
-                            element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-                            element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s1.toFixed(0) + 'px)';                            
-                            setTransitionEndHandler(scrollEnd, 400);
+                            scrollAnimation.onend(scrollEnd);
+
+                            scrollAnimation.play();
+                        });
+
+                        scrollAnimation.play();
+                    } else {
+                        element.style.webkitTransition = '-webkit-transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0';                
+                        var offset = s2.toFixed(0);
+                        if (that.axis === 'y') {
+                            element.style.webkitTransform = getTranslate(0, offset);
                         } else {
-                            scrollEnd();
+                            element.style.webkitTransform = getTranslate(offset, 0);
                         }
-                    }, ((t1 + t2) / 1000).toFixed(2) * 1000);
+
+                        setTransitionEndHandler(function(e) {
+                            if (!that.enabled) {
+                                return;
+                            }
+
+                            debugLog('惯性回弹', 's=' + s1.toFixed(0), 't=400');
+
+                            if (s2 !== s1) {
+                                element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
+                                var offset = s1.toFixed(0);
+                                if (that.axis === 'y') {
+                                    element.style.webkitTransform = getTranslate(0, offset);
+                                } else {
+                                    element.style.webkitTransform = getTranslate(offset, 0);
+                                }
+                                setTransitionEndHandler(scrollEnd, 400);
+                            } else {
+                                scrollEnd();
+                            }
+                        }, ((t1 + t2) / 1000).toFixed(2) * 1000);
+                    }
                 } else {
                     scrollEnd();
                 }
             } else {
                 debugLog('惯性计算没有超出边缘');
                 var timeFunction = motion0.generateCubicBezier();
-                element.style.webkitTransition = '-webkit-transform ' + (t0 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction + ') 0';
-                element.style.webkitTransform = 'translate' + that.axis.toUpperCase() + '(' + s.toFixed(0) + 'px)';
-                setTransitionEndHandler(scrollEnd, (t0 / 1000).toFixed(2) * 1000);
+
+                if (options.useFrameAnimation) {
+                    // frame;
+                    var _s = s - s0;
+                    var bezier = lib.cubicbezier(timeFunction[0][0], timeFunction[0][1], timeFunction[1][0], timeFunction[1][1]);
+                    scrollAnimation = new lib.animation(t0.toFixed(0), bezier, 0, function(i1, i2) {
+                        fireEvent(that, 'scrolling',{
+                            afterFlick: true
+                        });
+                        var offset = (s0 + _s * i2).toFixed(2);
+                        if (that.axis === 'y') {
+                            element.style.webkitTransform = getTranslate(0, offset);
+                        } else {
+                            element.style.webkitTransform = getTranslate(offset, 0);
+                        }
+                    });
+
+                    scrollAnimation.onend(scrollEnd);
+
+                    scrollAnimation.play();
+                } else {
+                    // css
+                    element.style.webkitTransition = '-webkit-transform ' + (t0 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction + ') 0';
+                    var offset = s.toFixed(0);
+                    if (that.axis === 'y') {
+                        element.style.webkitTransform = getTranslate(0, offset);
+                    } else {
+                        element.style.webkitTransform = getTranslate(offset, 0);
+                    }
+                    setTransitionEndHandler(scrollEnd, (t0 / 1000).toFixed(2) * 1000);
+                }
             }
 
 
             isFlickScrolling = true;
-            requestAnimationFrame(function() {
-                if (isScrolling && isFlickScrolling && that.enabled) {
-                    fireEvent(that, 'scrolling', {
-                        afterFlick: true
-                    });
-                    requestAnimationFrame(arguments.callee);
-                }
-            });
+            if (!options.useFrameAnimation) {
+                lib.animation.requestFrame(function() {
+                    if (isScrolling && isFlickScrolling && that.enabled) {
+                        fireEvent(that, 'scrolling', {
+                            afterFlick: true
+                        });
+                        lib.animation.requestFrame(arguments.callee);
+                    }
+                });
+            }
         }
     }
 
-    function scrollEnd(e) {
+    function scrollEnd() {
         if (!that.enabled) {
             return;
         }
@@ -565,7 +719,14 @@ function Scroll(element, options){
             if (!cancelScrollEnd && isScrolling) {
                 isScrolling = false;
                 isFlickScrolling = false;
-                element.style.webkitTransition = '';
+
+                if (options.useFrameAnimation) {
+                    scrollAnimation && scrollAnimation.stop();
+                    scrollAnimation = null;
+                } else {
+                    element.style.webkitTransition = '';    
+                }
+                
                 fireEvent(that, 'scrollend');
             }
         }, 50);
@@ -589,9 +750,13 @@ function Scroll(element, options){
             var el = this.element;
             this.enabled = false;
 
-            requestAnimationFrame(function() {
-                el.style.webkitTransform = getComputedStyle(el).webkitTransform;
-            });
+            if (this.options.useFrameAnimation) {
+                this.animation && this.animation.stop();
+            } else {
+                lib.animation.requestFrame(function() {
+                    el.style.webkitTransform = getComputedStyle(el).webkitTransform;
+                });
+            }
 
             return this;
         },
@@ -760,16 +925,17 @@ function Scroll(element, options){
                 element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
                 setTransitionEndHandler(scrollEnd, 400);
 
-                requestAnimationFrame(function() {
+                lib.animation.requestFrame(function() {
                     if (isScrolling && that.enabled) {
                         fireEvent(that, 'scrolling');
-                        requestAnimationFrame(arguments.callee);
+                        lib.animation.requestFrame(arguments.callee);
                     }
                 });
             } else {
                 element.style.webkitTransition = '';
                 setTransitionEndHandler(scrollEnd, 1);
             }
+
             if (this.axis === 'y') {
                 element.style.webkitTransform = getTranslate(getTransformOffset(this).x, offset);
             } else {

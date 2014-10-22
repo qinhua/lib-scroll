@@ -1,14 +1,5 @@
-//@require scroll
 ;(function(win, lib, undef) {
 var doc = win.document;
-
-var requestAnimationFrame = (function() {
-    return  window.requestAnimationFrame || 
-                window.webkitRequestAnimationFrame || 
-            function(cb) {
-                setTimeout(cb, 16);
-            }
-})();
 
 function getTransformOffset(element) {
     var offset = {x: 0, y: 0}; 
@@ -31,7 +22,7 @@ lib.scroll.plugin('force-repaint', function(name, pluginOptions) {
     var scrollOptions = this.options;
     var forceRepaintElement = this.forceRepaintElement = doc.createElement('div');
     forceRepaintElement.className = 'force-repaint';
-    forceRepaintElement.style.cssText = 'position: absolute; top: 0; left: 0; width: 0; height: 0; font-size: 0; opacity: 1;';
+    forceRepaintElement.style.cssText = 'position: absolute; top: 0; left: 0; width: 0; height: 0; font-size: 0; opacity: 1; translateZ(0)';
     this.viewport.appendChild(forceRepaintElement);
 
     function forceRepaint() {
@@ -48,11 +39,11 @@ lib.scroll.plugin('force-repaint', function(name, pluginOptions) {
             setTimeout(arguments.callee, pluginOptions.timeout);
         }, pluginOptions.timeout);
     } else {
-        requestAnimationFrame(function(){
+        lib.animation.requestFrame(function(){
             if (that.isScrolling) {
                 forceRepaint();
             }
-            requestAnimationFrame(arguments.callee);
+            lib.animation.requestFrame(arguments.callee);
         });    
     }
     
@@ -86,11 +77,11 @@ lib.scroll.plugin('fixed', function(name, pluginOptions) {
 
         var topFixedElement = this.topFixedElement = doc.createElement('div');
         topFixedElement.className = 'top-fixed';
-        topFixedElement.style.cssText = 'z-index:9; position: absolute; top: ' + topOffset + 'px; left: 0; width: 100%;';
+        topFixedElement.style.cssText = 'z-index:9; position: absolute; top: ' + topOffset + 'px; left: 0; width: 100%; -webkit-transform: translateZ(9px);';
 
         var bottomFixedElement = this.bottomFixedElement = doc.createElement('div');
         bottomFixedElement.className = 'bottom-fxied';
-        bottomFixedElement.style.cssText = 'z-index:9; position: absolute; bottom: ' + bottomOffset + 'px; left: 0; width: 100%';
+        bottomFixedElement.style.cssText = 'z-index:9; position: absolute; bottom: ' + bottomOffset + 'px; left: 0; width: 100%; -webkit-transform: translateZ(9px);';
 
         if (pluginOptions.topElement) {
             setElement(pluginOptions.topElement, topFixedElement);
@@ -108,11 +99,11 @@ lib.scroll.plugin('fixed', function(name, pluginOptions) {
 
         var leftFixedElement = this.leftFixedElement = doc.createElement('div');
         leftFixedElement.className = 'left-fixed';
-        leftFixedElement.style.cssText = 'z-index:9; position: absolute; top: 0; left: ' + leftOffset + 'px; height: 100%;';
+        leftFixedElement.style.cssText = 'z-index:9; position: absolute; top: 0; left: ' + leftOffset + 'px; height: 100%; -webkit-transform: translateZ(9px);';
 
         var rightFixedElement = this.rightFixedElement = doc.createElement('div');
         rightFixedElement.className = 'right-fxied';
-        rightFixedElement.style.cssText = 'z-index:9; position: absolute; top: 0; right: ' + rightOffset + 'px; height: 100%;';
+        rightFixedElement.style.cssText = 'z-index:9; position: absolute; top: 0; right: ' + rightOffset + 'px; height: 100%; -webkit-transform: translateZ(9px);';
 
         if (pluginOptions.leftElement) {
             setElement(pluginOptions.leftElement, leftFixedElement);
@@ -143,29 +134,30 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
         } else if (loaded[url]) {
             callback(url);
         } else {
+            loading[url] = [callback];
             queue.push([url, callback]);
         }
     }
 
-    requestAnimationFrame(function() {
+    lib.animation.requestFrame(function() {
         var len = Object.keys(loading).length;
         if (len <= limit && queue.length > 0) {
             var item = queue.shift();
             var url = item[0];
             var callback = item[1];
             var img = new Image();
-
-            loading[url] = [callback];
             img.src = url;
             img.onload = img.onreadystatechange = function() {
-                loaded[url] = true;
-                loading[url].forEach(function(cb) {
-                    cb(url);
-                });
-                delete loading[url];
+                if (!loaded[url]) {
+                    loaded[url] = true;
+                    loading[url].forEach(function(cb) {
+                        cb(url);
+                    });
+                    delete loading[url];
+                }
             }
         }
-        requestAnimationFrame(arguments.callee);
+        lib.animation.requestFrame(arguments.callee);
     });
 
     this.checkLazyload = function(){
@@ -232,7 +224,7 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
         that.checkLazyload();
     });
 
-    requestAnimationFrame(function(){
+    lib.animation.requestFrame(function(){
         that.checkLazyload();
     });
 });
@@ -246,7 +238,7 @@ lib.scroll.plugin('sticky', function(name, pluginOptions) {
     var top = (pluginOptions.offset || 0) + (scrollOptions.padding.top || 0);
     var stickyWrapElement = this.stickyWrapElement = doc.createElement('div');
     stickyWrapElement.className = 'stick-wrap';
-    stickyWrapElement.style.cssText = 'z-index:9; position: absolute; top: ' + top + 'px; left: 0; width: 100%;';
+    stickyWrapElement.style.cssText = 'z-index:9; position: absolute; top: ' + top + 'px; left: 0; width: 100%; -webkit-transform: translateZ(9px);';
     this.viewport.appendChild(stickyWrapElement)
 
     this.makeSticky = function(childEl){
@@ -308,7 +300,7 @@ lib.scroll.plugin('refresh', function(name, pluginOptions) {
         'left: 0',
         'width: 100%',
         'height: ' + pluginOptions.height + 'px',
-        '-webkit-transform: translateY(-' + pluginOptions.height + 'px)'
+        '-webkit-transform: translateY(-' + pluginOptions.height + 'px) translateZ(9px)'
     ].join(';');
     
     if (pluginOptions.html || typeof pluginOptions.element === 'string') {
@@ -325,22 +317,22 @@ lib.scroll.plugin('refresh', function(name, pluginOptions) {
             isRefresh = true;
             that.disable();
 
-            requestAnimationFrame(function() {
+            lib.animation.requestFrame(function() {
                 refreshElement.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-                refreshElement.style.webkitTransform = 'translateY(0)';
+                refreshElement.style.webkitTransform = 'translateY(0) translateZ(9px)';
                 that.element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-                that.element.style.webkitTransform = 'translateY(' + (that.minScrollOffset + pluginOptions.height) + 'px)';
+                that.element.style.webkitTransform = 'translateY(' + (that.minScrollOffset + pluginOptions.height) + 'px) translateZ(9px)';
             });
 
             setTimeout(function() {
                 pluginOptions.onrefresh.call(that, function() {
-                    requestAnimationFrame(function(){
+                    lib.animation.requestFrame(function(){
                         refreshElement.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-                        refreshElement.style.webkitTransform = 'translateY(-' + pluginOptions.height + 'px)';
+                        refreshElement.style.webkitTransform = 'translateY(-' + pluginOptions.height + 'px) translateZ(9px)';
                         that.scrollTo(0, true);
                         setTimeout(function() {
                             refreshElement.style.webkitTransition = '';
-                            refreshElement.style.webkitTransform = 'translateY(-' + pluginOptions.height + 'px)';
+                            refreshElement.style.webkitTransform = 'translateY(-' + pluginOptions.height + 'px) translateZ(9px)';
                             that.enable();
                             that.refresh();
                             isRefresh = false;
@@ -356,9 +348,17 @@ lib.scroll.plugin('refresh', function(name, pluginOptions) {
 
         var top = that.getScrollTop();
         var transformOffset = getTransformOffset(refreshElement);
-        refreshElement.style.webkitTransform = 'translateY(' + -(pluginOptions.height + top) + 'px)';
-        if (top < 0 && pluginOptions.onpull) {
-            pluginOptions.onpull.call(that, -top);
+        refreshElement.style.webkitTransform = 'translateY(' + -(pluginOptions.height + top) + 'px) translateZ(9px)';
+
+        if (top < 0) {
+            if (refreshElement.style.display === 'none') {
+                refreshElement.style.display = '';
+            }
+            pluginOptions.onpull && pluginOptions.onpull.call(that, -top);
+        } else {
+            if (refreshElement.style.display === '') {
+                refreshElement.style.display = 'none';
+            }
         }
     });
 
@@ -395,7 +395,7 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
         'left: 0',
         'width: 100%',
         'height: ' + pluginOptions.height + 'px',
-        '-webkit-transform: translateY(' + (that.getMaxScrollTop() + pluginOptions.height) + 'px)'
+        '-webkit-transform: translateY(' + (that.getMaxScrollTop() + pluginOptions.height) + 'px) translateZ(9px)'
     ].join(';');    
 
     if (typeof pluginOptions.element === 'string') {
@@ -412,10 +412,10 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
 
             if (pluginOptions.onupdate) {
                 pluginOptions.onupdate.call(that, function() {
-                    requestAnimationFrame(function(){
+                    lib.animation.requestFrame(function(){
                         updateElement.style.webkitTransition = '';
                         that.refresh();
-                        updateElement.style.webkitTransform = 'translateY(' + (that.getMaxScrollTop() + pluginOptions.height) + 'px)';
+                        updateElement.style.webkitTransform = 'translateY(' + (that.getMaxScrollTop() + pluginOptions.height) + 'px) translateZ(9px)';
                         isUpdating = false;
                     });
                 });
@@ -428,9 +428,19 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
     this.addScrollingHandler(function(e) {
         var top = that.getScrollTop();
         var maxTop = that.getMaxScrollTop();
-        updateElement.style.webkitTransform = 'translateY(' + (maxTop + pluginOptions.height - top) + 'px)';
+        updateElement.style.webkitTransform = 'translateY(' + (maxTop + pluginOptions.height - top) + 'px) translateZ(9px)';
 
         if (isUpdating) return;
+
+        if (top > maxTop) {
+            if (updateElement.style.display === 'none') {
+                updateElement.style.display = '';
+            }
+        } else {
+            if (updateElement.style.display === '') {
+                updateElement.style.display = 'none';
+            }
+        }
 
         if (maxTop - top < pluginOptions.height * 0.2) {
             updateHandler();

@@ -2,12 +2,14 @@
 
 ## 最新版本
 
-**2.3.11**
+**2.4.0**
 
 ## 依赖库
 
 - [lib.motion](http://gitlab.alibaba-inc.com/mtb/lib-motion/tree/master)
 - [lib.gesture](http://gitlab.alibaba-inc.com/mtb/lib-gesture/tree/master)
+- [lib.cubicbezier](http://gitlab.alibaba-inc.com/mtb/lib-cubicbezier/tree/master)
+- [lib.animation](http://gitlab.alibaba-inc.com/mtb/lib-animation/tree/master)
 
 完整引用举例：
 
@@ -60,6 +62,10 @@
 **isFixScrollendClick**
 
 点停滚动时，触发点击事件的问题，可省略，默认为true
+
+**useFrameAnimation**
+
+用帧动画实现滚动
 
 ### 图示
 
