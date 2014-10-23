@@ -29,15 +29,8 @@ lib.scroll.plugin('force-repaint', function(name, pluginOptions) {
         forceRepaintElement.style.opacity = Math.abs(parseInt(forceRepaintElement.style.opacity) - 1) + '';
     }
 
-    if (pluginOptions.whenScrolling) {
+    if (pluginOptions.whenScrolling !== false) {
         this.addScrollingHandler(forceRepaint);
-    } else if (typeof pluginOptions.timeout === 'number') {
-        setTimeout(function() {
-            if (that.isScrolling) {
-                forceRepaint();
-            }
-            setTimeout(arguments.callee, pluginOptions.timeout);
-        }, pluginOptions.timeout);
     } else {
         lib.animation.requestFrame(function(){
             if (that.isScrolling) {
@@ -128,37 +121,38 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
     var loading = {};
     var loaded = {};
 
-    function load(url, callback) {
-        if (loading[url]) {
-            loading[url].push(callback);
-        } else if (loaded[url]) {
-            callback(url);
-        } else {
-            loading[url] = [callback];
-            queue.push([url, callback]);
-        }
-    }
+    var isRunningLoadingQueue = false;
+    function runLoadingQueue() {
+        if (isRunningLoadingQueue) return;
+        isRunningLoadingQueue = true;
 
-    lib.animation.requestFrame(function() {
-        var len = Object.keys(loading).length;
-        if (len <= limit && queue.length > 0) {
-            var item = queue.shift();
-            var url = item[0];
-            var callback = item[1];
+        if (Object.keys(loading).length <= limit && queue.length > 0) {
+            var url = queue.shift();
             var img = new Image();
             img.src = url;
             img.onload = img.onreadystatechange = function() {
                 if (!loaded[url]) {
                     loaded[url] = true;
                     loading[url].forEach(function(cb) {
-                        cb(url);
+                        cb && cb(url);
                     });
                     delete loading[url];
                 }
             }
         }
-        lib.animation.requestFrame(arguments.callee);
-    });
+    }
+
+    function load(url, callback) {
+        if (loaded[url]) {
+            return callback(url);
+        } else if (loading[url]) {
+            loading[url].push(callback);
+        } else {
+            loading[url] = [callback];
+            queue.push(url);
+        }
+        runLoadingQueue();
+    }
 
     this.checkLazyload = function(){
         var elements = Array.prototype.slice.call(this.element.querySelectorAll('.lazy'));
