@@ -117,8 +117,8 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
     var that = this;
     var scrollOptions = this.options;
     var limit = 4;
-    var queue = [];
-    var loading = {};
+    var waitingQueue = [];
+    var loadingCount = 0;
     var loaded = {};
 
     var isRunningLoadingQueue = false;
@@ -126,30 +126,36 @@ lib.scroll.plugin('lazyload', function(name, pluginOptions) {
         if (isRunningLoadingQueue) return;
         isRunningLoadingQueue = true;
 
-        if (Object.keys(loading).length <= limit && queue.length > 0) {
-            var url = queue.shift();
+        if (loadingCount < limit && waitingQueue.length > 0) {
+            var url = waitingQueue.shift();
+            loadingCount++;
+
             var img = new Image();
             img.src = url;
             img.onload = img.onreadystatechange = function() {
-                if (!loaded[url]) {
-                    loaded[url] = true;
-                    loading[url].forEach(function(cb) {
+                if (loaded[url] !== true) {
+                    loaded[url].forEach(function(cb) {
                         cb && cb(url);
                     });
-                    delete loading[url];
+                    loaded[url] = true;
+                    loadingCount--;
                 }
+                runLoadingQueue();
             }
+            runLoadingQueue();
         }
+
+        isRunningLoadingQueue = false;
     }
 
     function load(url, callback) {
-        if (loaded[url]) {
+        if (loaded[url] ===  true) {
             return callback(url);
-        } else if (loading[url]) {
-            loading[url].push(callback);
+        } else if (loaded[url]) {
+            loaded[url].push(callback);
         } else {
-            loading[url] = [callback];
-            queue.push(url);
+            loaded[url] = [callback];
+            waitingQueue.push(url);
         }
         runLoadingQueue();
     }
