@@ -1,9 +1,11 @@
 ;(function(win, lib, undef) {
 var doc = win.document;
+var isIE = window.navigator.userAgent.match(/IEMobile\/([\d\.]+)/);
+var stylePrefix = isIE?'ms':'webkit';
 
 function getTransformOffset(element) {
     var offset = {x: 0, y: 0}; 
-    var transform = getComputedStyle(element).webkitTransform;
+    var transform = getComputedStyle(element)[stylePrefix + 'Transform'];
     var matched;
 
     if (transform !== 'none') {
@@ -70,11 +72,11 @@ lib.scroll.plugin('fixed', function(name, pluginOptions) {
 
         var topFixedElement = this.topFixedElement = doc.createElement('div');
         topFixedElement.className = 'top-fixed';
-        topFixedElement.style.cssText = 'z-index:9; position: absolute; top: ' + topOffset + 'px; left: 0; width: 100%; -webkit-transform: translateZ(9px);';
+        topFixedElement.style.cssText = 'z-index:9; position: absolute; top: ' + topOffset + 'px; left: 0; width: 100%; -' + stylePrefix + '-transform: translateZ(9px);';
 
         var bottomFixedElement = this.bottomFixedElement = doc.createElement('div');
         bottomFixedElement.className = 'bottom-fxied';
-        bottomFixedElement.style.cssText = 'z-index:9; position: absolute; bottom: ' + bottomOffset + 'px; left: 0; width: 100%; -webkit-transform: translateZ(9px);';
+        bottomFixedElement.style.cssText = 'z-index:9; position: absolute; bottom: ' + bottomOffset + 'px; left: 0; width: 100%; -' + stylePrefix + '-transform: translateZ(9px);';
 
         if (pluginOptions.topElement) {
             setElement(pluginOptions.topElement, topFixedElement);
@@ -92,11 +94,11 @@ lib.scroll.plugin('fixed', function(name, pluginOptions) {
 
         var leftFixedElement = this.leftFixedElement = doc.createElement('div');
         leftFixedElement.className = 'left-fixed';
-        leftFixedElement.style.cssText = 'z-index:9; position: absolute; top: 0; left: ' + leftOffset + 'px; height: 100%; -webkit-transform: translateZ(9px);';
+        leftFixedElement.style.cssText = 'z-index:9; position: absolute; top: 0; left: ' + leftOffset + 'px; height: 100%; -' + stylePrefix + '-transform: translateZ(9px);';
 
         var rightFixedElement = this.rightFixedElement = doc.createElement('div');
         rightFixedElement.className = 'right-fxied';
-        rightFixedElement.style.cssText = 'z-index:9; position: absolute; top: 0; right: ' + rightOffset + 'px; height: 100%; -webkit-transform: translateZ(9px);';
+        rightFixedElement.style.cssText = 'z-index:9; position: absolute; top: 0; right: ' + rightOffset + 'px; height: 100%; -' + stylePrefix + '-transform: translateZ(9px);';
 
         if (pluginOptions.leftElement) {
             setElement(pluginOptions.leftElement, leftFixedElement);
@@ -238,7 +240,7 @@ lib.scroll.plugin('sticky', function(name, pluginOptions) {
     var top = (pluginOptions.offset || 0) + (scrollOptions.padding.top || 0);
     var stickyWrapElement = this.stickyWrapElement = doc.createElement('div');
     stickyWrapElement.className = 'stick-wrap';
-    stickyWrapElement.style.cssText = 'z-index:9; position: absolute; top: ' + top + 'px; left: 0; width: 100%; -webkit-transform: translateZ(9px);';
+    stickyWrapElement.style.cssText = 'z-index:9; position: absolute; top: ' + top + 'px; left: 0; width: 100%; -' + stylePrefix + '-transform: translateZ(9px);';
     this.viewport.appendChild(stickyWrapElement)
 
     this.makeSticky = function(childEl){
@@ -300,7 +302,7 @@ lib.scroll.plugin('refresh', function(name, pluginOptions) {
         'left: 0',
         'width: 100%',
         'height: ' + pluginOptions.height + 'px',
-        '-webkit-transform: translateY(-' + pluginOptions.height + 'px) translateZ(9px)'
+        '-' + stylePrefix + '-transform: translateY(-' + pluginOptions.height + 'px) translateZ(9px)'
     ].join(';');
     
     if (pluginOptions.html || typeof pluginOptions.element === 'string') {
@@ -317,29 +319,37 @@ lib.scroll.plugin('refresh', function(name, pluginOptions) {
             isRefresh = true;
             that.disable();
 
-            lib.animation.requestFrame(function() {
-                refreshElement.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-                refreshElement.style.webkitTransform = 'translateY(0) translateZ(9px)';
-                that.element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-                that.element.style.webkitTransform = 'translateY(' + (that.minScrollOffset + pluginOptions.height) + 'px) translateZ(9px)';
+            var refereshY = getTransformOffset(refreshElement).y;
+            var diffRrefreshY = 0 - refereshY;         
+            var elementY = getTransformOffset(that.element).y;
+            var diffElementY = that.minScrollOffset + pluginOptions.height - elementY;
+
+            var anim = new lib.animation(400, lib.cubicbezier.ease, 0, function(i1, i2) {
+                refreshElement.style[stylePrefix + 'Transform'] = 'translateY(' + (refereshY + diffRrefreshY * i2) + 'px) translateZ(9px)';
+                that.element.style[stylePrefix + 'Transform'] = 'translateY(' + (elementY + diffElementY * i2) + 'px) translateZ(9px)';
             });
 
-            setTimeout(function() {
+            anim.onend(function() {
                 pluginOptions.onrefresh.call(that, function() {
-                    lib.animation.requestFrame(function(){
-                        refreshElement.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-                        refreshElement.style.webkitTransform = 'translateY(-' + pluginOptions.height + 'px) translateZ(9px)';
-                        that.scrollTo(0, true);
-                        setTimeout(function() {
-                            refreshElement.style.webkitTransition = '';
-                            refreshElement.style.webkitTransform = 'translateY(-' + pluginOptions.height + 'px) translateZ(9px)';
-                            that.enable();
-                            that.refresh();
-                            isRefresh = false;
-                        }, 400);
+                    var refereshY = getTransformOffset(refreshElement).y;
+                    var diffRrefreshY = -pluginOptions.height - refereshY;
+                    that.scrollTo(0, true);
+
+                    var anim = new lib.animation(400, lib.cubicbezier.ease, 0, function(i1, i2) {
+                        refreshElement.style[stylePrefix + 'Transform'] = 'translateY(' + (refereshY + diffRrefreshY * i2) + 'px) translateZ(9px)';
                     });
+
+                    anim.onend(function() {
+                        that.enable();
+                        that.refresh();
+                        isRefresh = false;
+                    });
+
+                    anim.play();
                 });
-            }, 400);
+            });
+
+            anim.play();
         }
     }
 
@@ -348,7 +358,7 @@ lib.scroll.plugin('refresh', function(name, pluginOptions) {
 
         var top = that.getScrollTop();
         var transformOffset = getTransformOffset(refreshElement);
-        refreshElement.style.webkitTransform = 'translateY(' + -(pluginOptions.height + top) + 'px) translateZ(9px)';
+        refreshElement.style[stylePrefix + 'Transform'] = 'translateY(' + -(pluginOptions.height + top) + 'px) translateZ(9px)';
 
         if (top < 0) {
             if (refreshElement.style.display === 'none') {
@@ -395,7 +405,7 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
         'left: 0',
         'width: 100%',
         'height: ' + pluginOptions.height + 'px',
-        '-webkit-transform: translateY(' + (that.getMaxScrollTop() + pluginOptions.height) + 'px) translateZ(9px)'
+        '-' + stylePrefix + '-transform: translateY(' + (that.getMaxScrollTop() + pluginOptions.height) + 'px) translateZ(9px)'
     ].join(';');    
 
     if (typeof pluginOptions.element === 'string') {
@@ -413,9 +423,9 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
             if (pluginOptions.onupdate) {
                 pluginOptions.onupdate.call(that, function() {
                     lib.animation.requestFrame(function(){
-                        updateElement.style.webkitTransition = '';
+                        updateElement.style[stylePrefix + 'Transition'] = '';
                         that.refresh();
-                        updateElement.style.webkitTransform = 'translateY(' + (that.getMaxScrollTop() + pluginOptions.height) + 'px) translateZ(9px)';
+                        updateElement.style[stylePrefix + 'Transform'] = 'translateY(' + (that.getMaxScrollTop() + pluginOptions.height) + 'px) translateZ(9px)';
                         isUpdating = false;
                     });
                 });
@@ -428,7 +438,7 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
     this.addScrollingHandler(function(e) {
         var top = that.getScrollTop();
         var maxTop = that.getMaxScrollTop();
-        updateElement.style.webkitTransform = 'translateY(' + (maxTop + pluginOptions.height - top) + 'px) translateZ(9px)';
+        updateElement.style[stylePrefix + 'Transform'] = 'translateY(' + (maxTop + pluginOptions.height - top) + 'px) translateZ(9px)';
 
         if (isUpdating) return;
 
