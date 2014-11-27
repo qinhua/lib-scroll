@@ -326,6 +326,7 @@ function Scroll(element, options){
         var boundaryOffset = getBoundaryOffset(that, s0);
 
         if (boundaryOffset) {
+            e.cancelBubble = true ;
             // 拖动超出边缘，需要回弹
             var s1 = touchBoundary(that, s0);
             if (boundaryOffset > 0) {
@@ -366,6 +367,7 @@ function Scroll(element, options){
                 });                
             }
         } else if (isScrolling) {
+            e.cancelBubble = true ;
             // 未超出边缘，直接结束
             scrollEnd();
         }
@@ -1003,8 +1005,9 @@ function Scroll(element, options){
         },
 
         addScrollendHandler: function(handler) {
+            var me = this ;
             this.element.addEventListener('scrollend', function(e){
-                handler(e);
+                handler.call( me , e);
             }, false);
 
             return this;
