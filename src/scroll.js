@@ -295,8 +295,20 @@ function Scroll(element, options){
         }
     });
 
+    function isThisScroll(e) {
+        var target = e.target;
+        while (!target.scrollId && target !== that.viewport && target.parentNode) {
+            target = target.parentNode;
+        }
+        if (target.scrollId === that.element.scrollId) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     function touchstartHandler(e) {
-        if (!that.enabled) {
+        if (!that.enabled || !isThisScroll(e)) {
             return;
         }
 
@@ -318,15 +330,14 @@ function Scroll(element, options){
     }
 
     function touchendHandler(e) {
-        if (!that.enabled) {
+        if (!that.enabled || !isThisScroll(e)) {
             return;
         }
 
         var s0 = getTransformOffset(that)[that.axis];
         var boundaryOffset = getBoundaryOffset(that, s0);
 
-        if (boundaryOffset) {
-            e.cancelBubble = true ;
+        if (boundaryOffset) {   
             // 拖动超出边缘，需要回弹
             var s1 = touchBoundary(that, s0);
             if (boundaryOffset > 0) {
@@ -367,7 +378,6 @@ function Scroll(element, options){
                 });                
             }
         } else if (isScrolling) {
-            e.cancelBubble = true ;
             // 未超出边缘，直接结束
             scrollEnd();
         }
@@ -375,7 +385,7 @@ function Scroll(element, options){
 
     var lastDisplacement;
     function panstartHandler(e) {
-        if (!that.enabled) {
+        if (!that.enabled || !isThisScroll(e)) {
             return;
         }
 
@@ -402,7 +412,7 @@ function Scroll(element, options){
 
 
     function panHandler(e) {
-        if (!that.enabled) {
+        if (!that.enabled || !isThisScroll(e)) {
             return;
         }
 
@@ -454,7 +464,7 @@ function Scroll(element, options){
     }
 
     function panendHandler(e) {
-        if (!that.enabled) {
+        if (!that.enabled || !isThisScroll(e)) {
             return;
         }
 
@@ -728,7 +738,6 @@ function Scroll(element, options){
                 } else {
                     element.style.webkitTransition = '';    
                 }
-                
                 fireEvent(that, 'scrollend');
             }
         }, 50);
@@ -965,7 +974,7 @@ function Scroll(element, options){
             var that = this;
             this.element.addEventListener('pulldownend', function(e) {
                 that.disable();
-                handler(e, function() {
+                handler.call(that, e, function() {
                     that.scrollTo(0, true);
                     that.enable();
                 });
@@ -979,7 +988,7 @@ function Scroll(element, options){
 
             this.element.addEventListener('pullupend', function(e) {
                 that.disable();
-                handler(e, function() {
+                handler.call(that, e, function() {
                     that.scrollTo(that.getScrollHeight(), true);
                     that.enable();
                 });
@@ -989,36 +998,44 @@ function Scroll(element, options){
         },
 
         addScrollstartHandler: function(handler) {
+            var that = this;
             this.element.addEventListener('scrollstart', function(e){
-                handler(e);
+                handler.call(that, e);
             }, false);
 
             return this;
         },
 
         addScrollingHandler: function(handler) {
+            var that = this;
             this.element.addEventListener('scrolling', function(e){
-                handler(e);
+                handler.call(that, e);
             }, false);
 
             return this;
         },
 
         addScrollendHandler: function(handler) {
-            var me = this ;
+            var that = this;
             this.element.addEventListener('scrollend', function(e){
-                handler.call( me , e);
+                handler.call(that, e);
             }, false);
 
             return this;
         },
 
-        addEventListener: function() {
-            this.element.addEventListener.apply(this.element, arguments);
+        addEventListener: function(name, handler, useCapture) {
+            var that = this;
+            this.element.addEventListener(name, function(e){
+                handler.call(that, e);
+            }, !!useCapture);
         },
 
-        removeEventListener: function() {
-            this.element.removeEventListener.apply(this.element, arguments);  
+        removeEventListener: function(name, handler) {
+            var that = this;
+            this.element.removeEventListener(name, function(e){
+                handler.call(that, e);
+            });
         },
 
         enablePlugin: function(name, options) {
