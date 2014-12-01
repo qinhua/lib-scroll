@@ -783,13 +783,16 @@ function Scroll(element, options){
             if (this.options[type] != null) {
                 // use options
                 el.style[type] = this.options[type] + 'px';
+            } else if (!!this.options.useElementRect) {
+                el.style[type] = 'auto';
+                el.style[type] = getBoundingClientRect(el)[type] + 'px';
             } else if (el.childElementCount > 0) {
                 var range
                 var rect;
                 var firstEl = el.firstElementChild;
                 var lastEl = el.lastElementChild;
 
-                if (document.createRange) {
+                if (document.createRange && !this.options.ignoreOverflow) {
                     // use range
                     range = document.createRange();
                     range.selectNodeContents(el);
@@ -798,7 +801,7 @@ function Scroll(element, options){
 
                 if (rect) {
                     el.style[type] = rect[type] + 'px';
-                } else if (firstEl && lastEl) {
+                } else {
                     // use child offsets
                     while (firstEl) {
                         if (getBoundingClientRect(firstEl)[type] === 0 && firstEl.nextElementSibling) {
@@ -818,12 +821,7 @@ function Scroll(element, options){
 
                     el.style[type] = (getBoundingClientRect(lastEl)[isVertical?'bottom':'right'] -
                         getBoundingClientRect(firstEl)[isVertical?'top':'left']) + 'px'; 
-                } else {
-                    el.style[type] = '0';
                 }
-            } else {
-                el.style[type] = 'auto';
-                el.style[type] = getBoundingClientRect(el)[type] + 'px';
             }
 
             this.transformOffset = getTransformOffset(this);
