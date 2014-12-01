@@ -295,20 +295,26 @@ function Scroll(element, options){
         }
     });
 
-    function isThisScroll(e) {
-        var target = e.target;
-        while (!target.scrollId && target !== that.viewport && target.parentNode) {
-            target = target.parentNode;
-        }
-        if (target.scrollId === that.element.scrollId) {
-            return true;
-        } else {
+    function isEnabled(e) {
+        if (!that.enabled) {
             return false;
         }
+
+        if (typeof e.isVertical != 'undefined') {
+            if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
+                // 同方向的手势，停止冒泡
+                e.stopPropagation();
+            } else {
+                // 不是同方向的手势，冒泡到上层，不做任何处理
+                return false;
+            }
+        }
+
+        return true;
     }
 
     function touchstartHandler(e) {
-        if (!that.enabled || !isThisScroll(e)) {
+        if (!isEnabled(e)) {
             return;
         }
 
@@ -330,7 +336,7 @@ function Scroll(element, options){
     }
 
     function touchendHandler(e) {
-        if (!that.enabled || !isThisScroll(e)) {
+        if (!isEnabled(e)) {
             return;
         }
 
@@ -385,18 +391,9 @@ function Scroll(element, options){
 
     var lastDisplacement;
     function panstartHandler(e) {
-        if (!that.enabled || !isThisScroll(e)) {
+        if (!isEnabled(e)) {
             return;
         }
-
-        // 不是同方向的手势，直接不做任何处理
-        if (that.axis !== 'y' && e.isVertical || that.axis === 'x' && e.isVertical) {
-            return;
-        }
-
-        // if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
-        //     e.stopPropagation();    
-        // }
         
         that.transformOffset = getTransformOffset(that);
         that.minScrollOffset = getMinScrollOffset(that);
@@ -412,14 +409,7 @@ function Scroll(element, options){
 
 
     function panHandler(e) {
-        if (!that.enabled || !isThisScroll(e)) {
-            return;
-        }
-
-        // 不是同方向的手势，直接不做任何处理
-        if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
-            e.stopPropagation();
-        } else {
+        if (!isEnabled(e)) {
             return;
         }
 
@@ -464,24 +454,9 @@ function Scroll(element, options){
     }
 
     function panendHandler(e) {
-        if (!that.enabled || !isThisScroll(e)) {
+        if (!isEnabled(e)) {
             return;
         }
-
-        if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
-            e.stopPropagation();
-        } else {
-            return;
-        }
-
-        // 不是同方向的手势，直接不做任何处理
-        // if (that.axis !== 'y' && e.isVertical || that.axis === 'x' && e.isVertical) {
-        //     return;
-        // }
-
-        // if (that.axis === 'y' && e.isVertical || that.axis === 'x' && !e.isVertical) {
-        //     e.stopPropagation();    
-        // }
 
         if (e.isflick) {
             flickHandler(e);
