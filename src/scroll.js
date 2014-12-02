@@ -2,10 +2,11 @@
 var doc = win.document;
 var scrollObjs = {};
 var plugins = {};
+var dpr = win.dpr || (!!win.navigator.userAgent.match(/iPhone|iPad|iPod/)?document.documentElement.clientWidth/win.screen.availWidth:1);
 var inertiaCoefficient = {
-    'normal': [2, 0.0015],
-    'slow': [1.5, 0.003],
-    'veryslow': [1.5, 0.005]
+    'normal': [2 * dpr, 0.0015 * dpr],
+    'slow': [1.5 * dpr, 0.003 * dpr],
+    'veryslow': [1.5 * dpr, 0.005 * dpr]
 }
 var timeFunction = {
     'ease': [.25,.1,.25,1],
