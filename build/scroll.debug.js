@@ -2,10 +2,11 @@
 var doc = win.document;
 var scrollObjs = {};
 var plugins = {};
+var dpr = win.dpr || (!!win.navigator.userAgent.match(/iPhone/)?document.documentElement.clientWidth/win.screen.availWidth:1);
 var inertiaCoefficient = {
-    'normal': [2, 0.0015],
-    'slow': [1.5, 0.003],
-    'veryslow': [1.5, 0.005]
+    'normal': [3 * dpr, 0.0015],
+    'slow': [1.5 * dpr, 0.003],
+    'veryslow': [1.5 * dpr, 0.005]
 }
 var timeFunction = {
     'ease': [.25,.1,.25,1],
@@ -483,6 +484,9 @@ function Scroll(element, options){
                 maxV = inertiaCoefficient[options.inertia][0];
                 friction = inertiaCoefficient[options.inertia][1];
             }
+
+            console.log(v0);
+            //alert(v0);
 
             if (v0 > maxV) {
                 v0 = maxV;
