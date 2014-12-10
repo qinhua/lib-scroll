@@ -1,5 +1,6 @@
 ;(function(win, lib, undef) {
 var doc = win.document;
+var ua = win.navigator.userAgent;
 var scrollObjs = {};
 var plugins = {};
 var dpr = win.dpr || (!!win.navigator.userAgent.match(/iPhone|iPad|iPod/)?document.documentElement.clientWidth/win.screen.availWidth:1);
@@ -15,6 +16,10 @@ var timeFunction = {
     'ease-out': [0,0,.58,1],
     'ease-in-out': [.42,0,.58,1]
 }
+var Firefox = !!ua.match(/Firefox/i);
+var IEMobile = !!ua.match(/IEMobile/i);
+var cssPrefix = Firefox?'-moz-':IEMobile?'-ms-':'-webkit-';
+var stylePrefix = Firefox?'Moz':IEMobile?'ms':'webkit';
 
 function debugLog() {
     if (lib.scroll.outputDebugLog) {
@@ -94,7 +99,7 @@ function fireEvent(scrollObj, eventName, extra) {
 
 function getTransformOffset(scrollObj) {
     var offset = {x: 0, y: 0}; 
-    var transform = getComputedStyle(scrollObj.element).webkitTransform;
+    var transform = getComputedStyle(scrollObj.element)[stylePrefix + 'Transform'];
     var matched;
 
     if (transform !== 'none') {
@@ -254,28 +259,28 @@ function Scroll(element, options){
             }
         });
     } else {
-        var webkitTransitionEndHandler;
+        var transitionEndHandler;
         var transitionEndTimeoutId = 0;
 
         function setTransitionEndHandler(h, t) {
-            webkitTransitionEndHandler = null;
+            transitionEndHandler = null;
             clearTimeout(transitionEndTimeoutId);
             
             transitionEndTimeoutId = setTimeout(function() {
-                if (webkitTransitionEndHandler) {
-                    webkitTransitionEndHandler = null;
+                if (transitionEndHandler) {
+                    transitionEndHandler = null;
                     lib.animation.requestFrame(h);
                 }
             }, (t || 400));
 
-            webkitTransitionEndHandler = h;   
+            transitionEndHandler = h;   
         }
 
-        element.addEventListener('webkitTransitionEnd', function(e) {
-            if (webkitTransitionEndHandler) {
-                var handler = webkitTransitionEndHandler;
+        element.addEventListener(Firefox?'transitionend':(stylePrefix + 'TransitionEnd'), function(e) {
+            if (transitionEndHandler) {
+                var handler = transitionEndHandler;
 
-                webkitTransitionEndHandler = null;
+                transitionEndHandler = null;
                 clearTimeout(transitionEndTimeoutId);
 
                 lib.animation.requestFrame(function(){
@@ -327,10 +332,10 @@ function Scroll(element, options){
             scrollAnimation && scrollAnimation.stop();
             scrollAnimation = null;
         } else {
-            var transform = getTransformOffset(that);
-            element.style.webkitTransform = getTranslate(transform.x, transform.y);
-            element.style.webkitTransition = '';
-            webkitTransitionEndHandler = null;
+            var transform = getComputedStyle(element)[stylePrefix + 'Transform'];
+            element.style[stylePrefix + 'Transform'] = transform;
+            element.style[stylePrefix + 'Transition'] = '';
+            transitionEndHandler = null;
             clearTimeout(transitionEndTimeoutId);
         }
 
@@ -358,9 +363,9 @@ function Scroll(element, options){
                 scrollAnimation = new lib.animation(400, lib.cubicbezier.ease, 0, function(i1, i2) {
                     var offset = (s0 + _s * i2).toFixed(2);
                     if (that.axis === 'y') {
-                        element.style.webkitTransform = getTranslate(0, offset);
+                        element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
                     } else {
-                        element.style.webkitTransform = getTranslate(offset, 0);
+                        element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
                     }
                     fireEvent(that, 'scrolling');
                 });
@@ -368,13 +373,15 @@ function Scroll(element, options){
                 scrollAnimation.play();
             } else {
                 // css
-                element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
+                element.style[stylePrefix + 'Transition'] =  cssPrefix + 'transform 0.4s ease 0s';
                 var offset =  s1.toFixed(0);
-                if (that.axis === 'y') {
-                    element.style.webkitTransform = getTranslate(0, offset);
-                } else {
-                    element.style.webkitTransform = getTranslate(offset, 0);
-                }
+                setTimeout(function(){
+                    if (that.axis === 'y') {
+                        element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+                    } else {
+                        element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+                    }
+                }, 0);
                 setTransitionEndHandler(scrollEnd, 400);
 
                 lib.animation.requestFrame(function() {
@@ -445,11 +452,10 @@ function Scroll(element, options){
             }
         }
 
-        //element.style.webkitTransition = '';
         if (that.axis === 'y') {
-            element.style.webkitTransform = getTranslate(0, offset.toFixed(2));
+            element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
         } else {
-            element.style.webkitTransform = getTranslate(offset.toFixed(2), 0);
+            element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
         }
         fireEvent(that, 'scrolling');
     }
@@ -546,9 +552,9 @@ function Scroll(element, options){
                                 });
                                 var offset = (s0 + _s * i2);
                                 if (that.axis === 'y') {
-                                    element.style.webkitTransform = getTranslate(0, offset.toFixed(2));
+                                    element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
                                 } else {
-                                    element.style.webkitTransform = getTranslate(offset.toFixed(2), 0);
+                                    element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
                                 }
                             });
 
@@ -557,13 +563,15 @@ function Scroll(element, options){
                             scrollAnimation.play();
                         } else {
                             // css
-                            element.style.webkitTransition = '-webkit-transform ' + (t1/1000).toFixed(2) + 's cubic-bezier(' + timeFunction1 + ') 0';
+                            element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform ' + (t1/1000).toFixed(2) + 's cubic-bezier(' + timeFunction1 + ') 0s';
                             var offset = s1.toFixed(0);
-                            if (that.axis === 'y') {
-                                element.style.webkitTransform = getTranslate(0, offset);
-                            } else {
-                                element.style.webkitTransform = getTranslate(offset, 0);
-                            }
+                            setTimeout(function(){
+                                if (that.axis === 'y') {
+                                    element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+                                } else {
+                                    element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+                                }
+                            }, 0);
                             setTransitionEndHandler(scrollEnd, (t1/1000).toFixed(2) * 1000);
                         }
                     } else {
@@ -581,9 +589,9 @@ function Scroll(element, options){
                             });
                             var offset = s0 + _s * i2;
                             if (that.axis === 'y') {
-                                element.style.webkitTransform = getTranslate(0, offset.toFixed(2));
+                                element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
                             } else {
-                                element.style.webkitTransform = getTranslate(offset.toFixed(2), 0);
+                                element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
                             }
                         });
 
@@ -600,9 +608,9 @@ function Scroll(element, options){
                                 });
                                 var offset = s2 + _s * i2;
                                 if (that.axis === 'y') {
-                                    element.style.webkitTransform = getTranslate(0, offset.toFixed(2));
+                                    element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
                                 } else {
-                                    element.style.webkitTransform = getTranslate(offset.toFixed(2), 0);
+                                    element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
                                 }
                             });
 
@@ -613,13 +621,15 @@ function Scroll(element, options){
 
                         scrollAnimation.play();
                     } else {
-                        element.style.webkitTransition = '-webkit-transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0';                
+                        element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0s';                
                         var offset = s2.toFixed(0);
-                        if (that.axis === 'y') {
-                            element.style.webkitTransform = getTranslate(0, offset);
-                        } else {
-                            element.style.webkitTransform = getTranslate(offset, 0);
-                        }
+                        setTimeout(function(){
+                            if (that.axis === 'y') {
+                                element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+                            } else {
+                                element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+                            }
+                        }, 0);
 
                         setTransitionEndHandler(function(e) {
                             if (!that.enabled) {
@@ -629,13 +639,15 @@ function Scroll(element, options){
                             debugLog('惯性回弹', 's=' + s1.toFixed(0), 't=400');
 
                             if (s2 !== s1) {
-                                element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
+                                element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform 0.4s ease 0s';
                                 var offset = s1.toFixed(0);
-                                if (that.axis === 'y') {
-                                    element.style.webkitTransform = getTranslate(0, offset);
-                                } else {
-                                    element.style.webkitTransform = getTranslate(offset, 0);
-                                }
+                                setTimeout(function(){
+                                    if (that.axis === 'y') {
+                                        element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+                                    } else {
+                                        element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+                                    }
+                                }, 0);
                                 setTransitionEndHandler(scrollEnd, 400);
                             } else {
                                 scrollEnd();
@@ -659,9 +671,9 @@ function Scroll(element, options){
                         });
                         var offset = (s0 + _s * i2).toFixed(2);
                         if (that.axis === 'y') {
-                            element.style.webkitTransform = getTranslate(0, offset);
+                            element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
                         } else {
-                            element.style.webkitTransform = getTranslate(offset, 0);
+                            element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
                         }
                     });
 
@@ -670,13 +682,15 @@ function Scroll(element, options){
                     scrollAnimation.play();
                 } else {
                     // css
-                    element.style.webkitTransition = '-webkit-transform ' + (t0 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction + ') 0';
+                    element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform ' + (t0 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction + ') 0s';
                     var offset = s.toFixed(0);
-                    if (that.axis === 'y') {
-                        element.style.webkitTransform = getTranslate(0, offset);
-                    } else {
-                        element.style.webkitTransform = getTranslate(offset, 0);
-                    }
+                    setTimeout(function(){
+                        if (that.axis === 'y') {
+                            element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+                        } else {
+                            element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+                        }    
+                    }, 0);
                     setTransitionEndHandler(scrollEnd, (t0 / 1000).toFixed(2) * 1000);
                 }
             }
@@ -712,7 +726,7 @@ function Scroll(element, options){
                     scrollAnimation && scrollAnimation.stop();
                     scrollAnimation = null;
                 } else {
-                    element.style.webkitTransition = '';    
+                    element.style[stylePrefix + 'Transition'] = '';    
                 }
                 fireEvent(that, 'scrollend');
             }
@@ -738,10 +752,10 @@ function Scroll(element, options){
             this.enabled = false;
 
             if (this.options.useFrameAnimation) {
-                this.animation && this.animation.stop();
+                scrollAnimation && scrollAnimation.stop();
             } else {
                 lib.animation.requestFrame(function() {
-                    el.style.webkitTransform = getComputedStyle(el).webkitTransform;
+                    el.style[stylePrefix + 'Transform'] = getComputedStyle(el)[stylePrefix + 'Transform'];
                 });
             }
 
@@ -777,6 +791,7 @@ function Scroll(element, options){
         },
 
         refresh: function() {
+            debugger;
             var el = this.element;
             var isVertical = (this.axis === 'y');
             var type = isVertical?'height':'width';
@@ -907,24 +922,52 @@ function Scroll(element, options){
 
             isScrolling = true;
             if (isSmooth === true) {
-                element.style.webkitTransition = '-webkit-transform 0.4s ease 0';
-                setTransitionEndHandler(scrollEnd, 400);
-
-                lib.animation.requestFrame(function() {
-                    if (isScrolling && that.enabled) {
+                if (this.options.useFrameAnimation) {
+                    var s0 = getTransformOffset(that)[this.axis];
+                    var _s = offset - s0;
+                    scrollAnimation = new lib.animation(400, lib.cubicbezier.ease, 0, function(i1, i2) {
+                        var offset = (s0 + _s * i2).toFixed(2);
+                        if (that.axis === 'y') {
+                            element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+                        } else {
+                            element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+                        }
                         fireEvent(that, 'scrolling');
-                        lib.animation.requestFrame(arguments.callee);
-                    }
-                });
-            } else {
-                element.style.webkitTransition = '';
-                setTransitionEndHandler(scrollEnd, 1);
-            }
+                    });
 
-            if (this.axis === 'y') {
-                element.style.webkitTransform = getTranslate(getTransformOffset(this).x, offset);
+                    scrollAnimation.onend(scrollEnd);
+
+                    scrollAnimation.play();
+                } else {
+                    element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform 0.4s ease 0s';
+                    setTimeout(function() {
+                        if (that.axis === 'y') {
+                            element.style[stylePrefix + 'Transform'] = getTranslate(getTransformOffset(that).x, offset);
+                        } else {
+                            element.style[stylePrefix + 'Transform'] = getTranslate(offset, getTransformOffset(that).y);
+                        }
+                    }, 0);
+                    setTransitionEndHandler(scrollEnd, 400);
+
+                    lib.animation.requestFrame(function() {
+                        if (isScrolling && that.enabled) {
+                            fireEvent(that, 'scrolling');
+                            lib.animation.requestFrame(arguments.callee);
+                        }
+                    });
+                }
             } else {
-                element.style.webkitTransform = getTranslate(offset, getTransformOffset(this).y);
+                if (!this.options.useFrameAnimation) {
+                    element.style[stylePrefix + 'Transition'] = '';
+                }
+                setTimeout(function() {
+                    if (that.axis === 'y') {
+                        element.style[stylePrefix + 'Transform'] = getTranslate(getTransformOffset(that).x, offset);
+                    } else {
+                        element.style[stylePrefix + 'Transform'] = getTranslate(offset, getTransformOffset(that).y);
+                    }
+                }, 0);
+                scrollEnd();
             }
 
             return this;

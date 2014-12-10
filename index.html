@@ -1,271 +1,1800 @@
-<html data-dpr="1">
+<html>
 <head>
-	<meta charset="utf-8">
-	<title>搜索宝贝</title>
-	<meta name="flexible" content="initial-dpr=1">
-    <script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.1/??flexible.js,flexible_css.js"></script>
-	<meta content="yes" name="apple-mobile-web-app-capable">
-	<meta content="black" name="apple-mobile-web-app-status-bar-style">
-	<meta name="format-detection" content="telephone=no">
-    <link href="http://gtms02.alicdn.com/tps/i2/TB1nmqyFFXXXXcQbFXXE5jB3XXX-114-114.png" rel="apple-touch-icon-precomposed">
-    <link href="http://gtms02.alicdn.com/tps/i2/TB1nmqyFFXXXXcQbFXXE5jB3XXX-114-114.png" rel="Shortcut Icon" type="image/x-icon" />
-    <link rel="stylesheet" type="text/css" href="http://g.tbcdn.cn/mtb/??ctrl-loading/0.1.2/loading.css,ctrl-tabheader/0.4.2/tabheader.css">
-    <link rel="stylesheet" type="text/css" href="index.css">
-    <style>
-    html {
-        font-size: 20px;
-    }
-
-    body {
-        font-size: 12px;
-    }
-
-    html,body,#wrap {
-        padding: 0;
-        margin: 0;
-        height: 100%;
-        overflow: hidden;
-        background: #FFF;
-    }
-
-    .J_FilterBarContainer {
-        width: 100%;
-        height:32px;
-    }
-    .filter-bar {
-        width: 100%;
-        height: 32px;
-    }
-    .filter-bar .sort-tab {
-        display: -webkit-box;
-    }
-    .filter-bar .sort-tab li {
-        display: block;
-        width: 80px;
-        box-sizing: border-box;
-    }
-    .filter-bar .sort-tab {
-        overflow: hidden;
-        display: -webkit-box;
-    }
-
-    .filter-bar .sort-tab li {
-        width: 80px;
-        display: block;
-    }
-    </style>
-</head>
-<body scroll="none">
-<div id="wrap">
-    <div id="tbh5v0" class="mytaobao">
-        <div class="toolbar">
-            <div class="J_RellkeyContainer">
-                <div class="rellkey">
-                    <ul>
-                        <li>港版</li>
-                        <li>日版</li>
-                        <li>苹果</li>
-                        <li>电信</li>
-                        <li>美版</li>
-                        <li>国行</li>
-                        <li>三网</li>
-                        <li>手机</li>
-                        <li>无锁</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="J_FilterBarContainer">
-                <div class="filter-bar sticky">
-
-                </div>
-            </div>
-        </div>
-
-        <div id="bodyCont" class="screen-wrap fullscreen searchlist">
-            <div class="search-content">
-                <div class="search-list list-view" id="J_SearchList">
-                    <ul id="list-wrap"></ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<script type="text/template" id="headerTpl">
-    <header class="top-bar" id="J_Header">
-        <div class="top-bar-w">
-            <a class="logo" href="http://m.taobao.com">
-                <div class="icons-taobao-logo"></div>
-            </a>
-            <div class="top-bar-c">
-                <div class="s-input-select">
-                    <div class="s-input-tab">
-                        <div class="s-input-tab-txt">宝贝</div>
-                        <div class="s-input-tab-nav off" id="J_TabNav">
-                            <ul>
-                                <li class="all">宝贝</li>
-                                <li class="shop">店铺</li>
-                                <li class="tmall">天猫</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="top-bar-e">
-                <span class="s-tab-btn sub" id="J_selt">分类</span>
-                <span class="s-tab-btn sort" id="J_sift">筛选</span>
-            </div>
-            <div class="top-bar-btn closed">取消</div>
-        </div>
-    </header>
-</script>
-<script type="text/template" id="itemTpl">
-    <li>
-        <div class="list-item">
-            <div class="p">
-                <a data-href="http://mclick.simba.taobao.com/cc_im?p=iphone5s&amp;s=384300457&amp;k=269&amp;e=Bf52Czfzg4zEzEYXHF1ZrjhZAekQJJP1K4M14jql2z%2F1lYR6JgolkyoCZbepooNsYHcE2byB58uPEB5nyzmdRlFplfhdyusoNBrETXawvQ6BF7KUbKK962nsBJEbCRNEQA7w4cN%2F10pIouaYhvJponIUuKyCq5k8UWTc1rhquXcHnpuCFIjDVpsXMwjxx%2BxkzeiRu%2Bi0WaRELmURVnaN47Cr9H8IhjN4YT2aULWczh7FPRTaiMoo3quVwCSMOmdelXji%2B%2BqulpI%3D" title=""><img class="p-pic lazy" data-src="http://gma.alicdn.com/tfscom/i2/11031028964676638/T1WMPDFlVbXXXXXXXX_!!0-item_pic.jpg_210x210.jpg" style="visibility: visible;"></a>
-            </div>
-            <div class="d">
-                <a href="http://mclick.simba.taobao.com/cc_im?p=iphone5s&amp;s=384300457&amp;k=269&amp;e=Bf52Czfzg4zEzEYXHF1ZrjhZAekQJJP1K4M14jql2z%2F1lYR6JgolkyoCZbepooNsYHcE2byB58uPEB5nyzmdRlFplfhdyusoNBrETXawvQ6BF7KUbKK962nsBJEbCRNEQA7w4cN%2F10pIouaYhvJponIUuKyCq5k8UWTc1rhquXcHnpuCFIjDVpsXMwjxx%2BxkzeiRu%2Bi0WaRELmURVnaN47Cr9H8IhjN4YT2aULWczh7FPRTaiMoo3quVwCSMOmdelXji%2B%2BqulpI%3D" title="">
-                    <h3 class="d-title"> iPhone 5s 香港商家 原封未激活 百分百原装</h3>
-                </a>
-                <p class="d-price">
-                    <em class="h">￥4198</em><del>￥4498</del>
-                </p>
-                <div class="d-main">
-                    <p class="d-freight">免运费</p>
-                    <p class="d-num">828人购买</p>
-                    <p class="d-area">香港</p>
-                </div>
-            </div>
-        </div>
-    </li>
-</script>
-<script src="build/combo.debug.js" type="text/javascript"></script>
-<script src="build/scroll.debug.js" type="text/javascript"></script>
-<script src="build/plugin.debug.js" type="text/javascript"></script>
-<script src="http://g.tbcdn.cn/mtb/??ctrl-loading/0.1.2/loading.debug.js,ctrl-tabheader/0.4.2/tabheader.debug.js" type="text/javascript"></script>
+<meta charset="utf-8">
+<link rel="dns-prefetch" href="//a.tbcdn.cn">
+<link rel="dns-prefetch" href="//g.tbcdn.cn">
+<link rel="dns-prefetch" href="//gw.alicdn.com">
+<link rel="dns-prefetch" href="//log.mmstat.com">
+<link rel="dns-prefetch" href="//api.m.taobao.com">
+<link rel="dns-prefetch" href="//cdn.tanx.com">
+<link rel="dns-prefetch" href="//ecpm.tanx.com">
+<link rel="dns-prefetch" href="//i.mmcdn.cn">
+<meta content="yes" name="apple-mobile-web-app-capable">
+<meta content="yes" name="apple-touch-fullscreen">
+<meta content="telephone=no,email=no" name="format-detection">
+<meta content="fullscreen=yes,preventMove=no" name="ML-Config">
+<link href="http://gtms02.alicdn.com/tps/i2/TB1nmqyFFXXXXcQbFXXE5jB3XXX-114-114.png"
+rel="apple-touch-icon-precomposed">
+<link href="http://gtms02.alicdn.com/tps/i2/TB1nmqyFFXXXXcQbFXXE5jB3XXX-114-114.png"
+rel="Shortcut Icon" type="image/x-icon">
 <script>
-// lib.scroll.outputDebugLog = true;
-
-function genItems() {
-    var html = new Array(10).join(tpl);
-    var wrap = document.createElement('div');
-    wrap.innerHTML = html;
-    var fragment = document.createDocumentFragment();
-
-    while (wrap.children.length) {
-        fragment.appendChild(wrap.firstElementChild);
+  // flexible.js
+  !
+  function(a) {
+    function b() {
+      var b = g.getBoundingClientRect().width;
+      b / c > 540 && (b = 540 * c),
+      a.rem = b / 16,
+      g.style.fontSize = a.rem + "px"
     }
-
-    return fragment;
-}
-
-// 初始化列表
-var tpl = document.getElementById('itemTpl').innerHTML;
-var listUl = document.getElementById('list-wrap');
-listUl.appendChild(genItems());
-
-// 列表的滚动功能
-var listScroller = lib.scroll({
-    scrollElement: document.getElementById('tbh5v0'),
-    padding: {
-        top: 48,
-        bottom: 40
+    var c, d, e, f = a.document,
+    g = f.documentElement,
+    h = f.querySelector('meta[name="viewport"]'),
+    i = f.querySelector('meta[name="flexible"]');
+    if (h) {
+      console.warn("将根据已有的meta标签来设置缩放比例");
+      var j = h.getAttribute("content").match(/initial\-scale=(["']?)([\d\.]+)\1?/);
+      j && (d = parseFloat(j[2]), c = parseInt(1 / d))
+    } else if (i) {
+      var j = i.getAttribute("content").match(/initial\-dpr=(["']?)([\d\.]+)\1?/);
+      j && (c = parseFloat(j[2]), d = parseFloat((1 / c).toFixed(2)))
+    }
+    if (!c && !d) {
+      var k = (a.navigator.appVersion.match(/android/gi), a.navigator.appVersion.match(/iphone/gi)),
+      c = a.devicePixelRatio;
+      c = k ? c >= 3 ? 3 : c >= 2 ? 2 : 1 : 1,
+      d = 1 / c
+    }
+    if (g.setAttribute("data-dpr", c), !h) if (h = f.createElement("meta"), h.setAttribute("name", "viewport"), h.setAttribute("content", "initial-scale=" + d + ", maximum-scale=" + d + ", minimum-scale=" + d + ", user-scalable=no"), g.firstElementChild) g.firstElementChild.appendChild(h);
+    else {
+      var l = f.createElement("div");
+      l.appendChild(h),
+      f.write(l.innerHTML)
+    }
+    a.dpr = c,
+    a.addEventListener("resize",
+    function() {
+      clearTimeout(e),
+      e = setTimeout(b, 300)
     },
-    inertia: 'slow'
+    !1),
+    a.addEventListener("pageshow",
+    function(a) {
+      a.persisted && (clearTimeout(e), e = setTimeout(b, 300))
+    },
+    !1),
+    "complete" === f.readyState ? f.body.style.fontSize = 12 * c + "px": f.addEventListener("DOMContentLoaded",
+    function() {
+      f.body.style.fontSize = 12 * c + "px"
+    },
+    !1),
+    b()
+  } (window);
+
+  // flexible_css.js
+  !
+  function() {
+    var a = '@charset "utf-8"; html{width:100%;height:100%;overflow:hidden;}html,body{font-family:sans-serif}.clearfix:before,.clearfix:after{content:" ";display:table}.clearfix:after{clear:both}.fn-hide{display:none}html{color:#000;background:#fff;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}html *{outline:0;-webkit-text-size-adjust:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td,hr,button,article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{margin:0;padding:0}input,select,textarea{font-size:100%}table{border-collapse:collapse;border-spacing:0}fieldset,img{border:0}abbr,acronym{border:0;font-variant:normal}del{text-decoration:line-through}address,caption,cite,code,dfn,em,th,var{font-style:normal;font-weight:500}ol,ul{list-style:none}caption,th{text-align:left}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:500}q:before,q:after{content:\'\'}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-.5em}sub{bottom:-.25em}a:hover{text-decoration:underline}ins,a{text-decoration:none}.grid{box-sizing:content-box;padding-left:.3rem;padding-right:.3rem;margin-left:-.2rem}.grid:before,.grid:after{content:" ";display:table}.grid:after{clear:both}.grid [class^=col-]{margin-left:.2rem;float:left}.grid .col-1{width:1.1rem}.grid .col-2{width:2.4rem}.grid .col-3{width:3.7rem}.grid .col-4{width:5rem}.grid .col-5{width:6.3rem}.grid .col-6{width:7.6000000000000005rem}.grid .col-7{width:8.900000000000002rem}.grid .col-8{width:10.200000000000001rem}.grid .col-9{width:11.500000000000002rem}.grid .col-10{width:12.8rem}.grid .col-11{width:14.100000000000001rem}.grid .col-12{width:15.400000000000002rem}.grid-thin{box-sizing:content-box;padding-left:.4rem;padding-right:.4rem;margin-left:-.4rem}.grid-thin:before,.grid-thin:after{content:" ";display:table}.grid-thin:after{clear:both}.grid-thin [class^=col-]{margin-left:.4rem;float:left}.grid-thin .col-1{width:.9rem}.grid-thin .col-2{width:2.2rem}.grid-thin .col-3{width:3.5000000000000004rem}.grid-thin .col-4{width:4.8rem}.grid-thin .col-5{width:6.1rem}.grid-thin .col-6{width:7.4rem}.grid-thin .col-7{width:8.7rem}.grid-thin .col-8{width:10rem}.grid-thin .col-9{width:11.299999999999999rem}.grid-thin .col-10{width:12.6rem}.grid-thin .col-11{width:13.9rem}.grid-thin .col-12{width:15.200000000000001rem}.grid-fat{box-sizing:content-box;padding-left:.2rem;padding-right:.2rem;margin-left:0rem}.grid-fat:before,.grid-fat:after{content:" ";display:table}.grid-fat:after{clear:both}.grid-fat [class^=col-]{margin-left:0rem;float:left}.grid-fat .col-1{width:1.3rem}.grid-fat .col-2{width:2.6rem}.grid-fat .col-3{width:3.9000000000000004rem}.grid-fat .col-4{width:5.2rem}.grid-fat .col-5{width:6.5rem}.grid-fat .col-6{width:7.800000000000001rem}.grid-fat .col-7{width:9.1rem}.grid-fat .col-8{width:10.4rem}.grid-fat .col-9{width:11.700000000000001rem}.grid-fat .col-10{width:13rem}.grid-fat .col-11{width:14.3rem}.grid-fat .col-12{width:15.600000000000001rem}',
+    b = document.createElement("style");
+    if (document.getElementsByTagName("head")[0].appendChild(b), b.styleSheet) b.styleSheet.disabled || (b.styleSheet.cssText = a);
+    else try {
+      b.innerHTML = a
+    } catch(c) {
+      b.innerText = a
+    }
+  } ();
+</script>
+<style>
+  @charset "utf-8"; html,body{width:100%;height:100%;overflow:hidden;}html,body{font-family:sans-serif}.clearfix:before,.clearfix:after{content:"
+  ";display:table}.clearfix:after{clear:both}.fn-hide{display:none}html{color:#000;background:#fff;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}html
+  *{outline:0;-webkit-text-size-adjust:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td,hr,button,article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{margin:0;padding:0}input,select,textarea{font-size:100%}table{border-collapse:collapse;border-spacing:0}fieldset,img{border:0}abbr,acronym{border:0;font-variant:normal}del{text-decoration:line-through}address,caption,cite,code,dfn,em,th,var{font-style:normal;font-weight:500}ol,ul{list-style:none}caption,th{text-align:left}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:500}q:before,q:after{content:''}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-.5em}sub{bottom:-.25em}a:hover{text-decoration:underline}ins,a{text-decoration:none}.grid{box-sizing:content-box;padding-left:.3rem;padding-right:.3rem;margin-left:-.2rem}.grid:before,.grid:after{content:"
+  ";display:table}.grid:after{clear:both}.grid [class^=col-]{margin-left:.2rem;float:left}.grid
+  .col-1{width:1.1rem}.grid .col-2{width:2.4rem}.grid .col-3{width:3.7rem}.grid
+  .col-4{width:5rem}.grid .col-5{width:6.3rem}.grid .col-6{width:7.6000000000000005rem}.grid
+  .col-7{width:8.900000000000002rem}.grid .col-8{width:10.200000000000001rem}.grid
+  .col-9{width:11.500000000000002rem}.grid .col-10{width:12.8rem}.grid .col-11{width:14.100000000000001rem}.grid
+  .col-12{width:15.400000000000002rem}.grid-thin{box-sizing:content-box;padding-left:.4rem;padding-right:.4rem;margin-left:-.4rem}.grid-thin:before,.grid-thin:after{content:"
+  ";display:table}.grid-thin:after{clear:both}.grid-thin [class^=col-]{margin-left:.4rem;float:left}.grid-thin
+  .col-1{width:.9rem}.grid-thin .col-2{width:2.2rem}.grid-thin .col-3{width:3.5000000000000004rem}.grid-thin
+  .col-4{width:4.8rem}.grid-thin .col-5{width:6.1rem}.grid-thin .col-6{width:7.4rem}.grid-thin
+  .col-7{width:8.7rem}.grid-thin .col-8{width:10rem}.grid-thin .col-9{width:11.299999999999999rem}.grid-thin
+  .col-10{width:12.6rem}.grid-thin .col-11{width:13.9rem}.grid-thin .col-12{width:15.200000000000001rem}.grid-fat{box-sizing:content-box;padding-left:.2rem;padding-right:.2rem;margin-left:0rem}.grid-fat:before,.grid-fat:after{content:"
+  ";display:table}.grid-fat:after{clear:both}.grid-fat [class^=col-]{margin-left:0rem;float:left}.grid-fat
+  .col-1{width:1.3rem}.grid-fat .col-2{width:2.6rem}.grid-fat .col-3{width:3.9000000000000004rem}.grid-fat
+  .col-4{width:5.2rem}.grid-fat .col-5{width:6.5rem}.grid-fat .col-6{width:7.800000000000001rem}.grid-fat
+  .col-7{width:9.1rem}.grid-fat .col-8{width:10.4rem}.grid-fat .col-9{width:11.700000000000001rem}.grid-fat
+  .col-10{width:13rem}.grid-fat .col-11{width:14.3rem}.grid-fat .col-12{width:15.600000000000001rem}
+</style>
+<script src="http://gw.alicdn.com/L1/584/575503/c95fbe7f43.js?_t=1418193796087">
+</script>
+<title>
+  淘宝网触屏版
+</title>
+<style>
+  [data-ctrl-name=loading]{width:100%;height:100%;display:-ms-flexbox;-ms-flex-align:center;-ms-flex-pack:center;display:-webkit-box;-webkit-box-align:center;-webkit-box-pack:center}[data-ctrl-name=loading]
+  div{position:relative}[data-ctrl-name=loading] .arrow{display:none;position:absolute;left:0;top:0;width:100%;height:100%;background-position:center
+  center;background-repeat:no-repeat;background-size:contain}[data-ctrl-name=loading]
+  .arrow.down{display:block;background-image:url(http://gtms03.alicdn.com/tps/i3/TB180mKFVXXXXXtXVXXmqjTHFXX-60-60.png)}[data-ctrl-name=loading]
+  .arrow.up{display:block;background-image:url(http://gtms04.alicdn.com/tps/i4/TB1ECWQFVXXXXaBXpXXmqjTHFXX-60-60.png)}[data-ctrl-name=loading]
+  .text{display:block;color:#999;margin-left:.3rem}[data-dpr="1"] [data-ctrl-name=loading]
+  div,[data-dpr="1"] [data-ctrl-name=loading] canvas{width:30px;height:30px}[data-dpr="2"]
+  [data-ctrl-name=loading] div,[data-dpr="2"] [data-ctrl-name=loading] canvas{width:60px;height:60px}[data-dpr="3"]
+  [data-ctrl-name=loading] div,[data-dpr="3"] [data-ctrl-name=loading] canvas{width:90px;height:90px}[data-dpr="1"]
+  [data-ctrl-name=loading] .text{height:30px;line-height:30px;font-size:12px}[data-dpr="2"]
+  [data-ctrl-name=loading] .text{height:60px;line-height:60px;font-size:24px}[data-dpr="3"]
+  [data-ctrl-name=loading] .text{height:90px;line-height:90px;font-size:36px}
+</style>
+<style>
+  [data-ctrl-name=pageview]{position:relative}[data-ctrl-name=pageview].fullscreen{width:100%;height:100%;overflow:hidden}[data-ctrl-name=pageview].fullscreen>.view{width:100%;height:100%;overflow:hidden}
+</style>
+<style>
+  [data-ctrl-name=scrollview]{position:relative}[data-ctrl-name=scrollview]
+  .scroll-view{width:100%;}
+</style>
+<style>
+  html{background-color:#EEE}@font-face{font-family:h5index-iconfont;src:url(data:;base64,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I0KyAAEBFRQTLrAqKi2wPiywABUgR7AAI0KyAAEBFRQTLrAqKi2wPyyxAAEUE7ArKi2wQCywLSotsEEssAAWRSMgLiBGiiNhOLEkARQrLbBCLLAJI0KwQSstsEMssgAAOistsEQssgABOistsEUssgEAOistsEYssgEBOistsEcssgAAOystsEgssgABOystsEkssgEAOystsEossgEBOystsEsssgAANystsEwssgABNystsE0ssgEANystsE4ssgEBNystsE8ssgAAOSstsFAssgABOSstsFEssgEAOSstsFIssgEBOSstsFMssgAAPCstsFQssgABPCstsFUssgEAPCstsFYssgEBPCstsFcssgAAOCstsFgssgABOCstsFkssgEAOCstsFossgEBOCstsFsssDArLrEkARQrLbBcLLAwK7A0Ky2wXSywMCuwNSstsF4ssAAWsDArsDYrLbBfLLAxKy6xJAEUKy2wYCywMSuwNCstsGEssDErsDUrLbBiLLAxK7A2Ky2wYyywMisusSQBFCstsGQssDIrsDQrLbBlLLAyK7A1Ky2wZiywMiuwNistsGcssDMrLrEkARQrLbBoLLAzK7A0Ky2waSywMyuwNSstsGossDMrsDYrLbBrLCuwCGWwAyRQeLABFTAtAABLuADIUlixAQGOWbkIAAgAYyCwASNEILADI3CwDkUgIEu4AA5RS7AGU1pYsDQbsChZYGYgilVYsAIlYbABRWMjYrACI0SzCgkFBCuzCgsFBCuzDg8FBCtZsgQoCUVSRLMKDQYEK7EGAUSxJAGIUViwQIhYsQYDRLEmAYhRWLgEAIhYsQYBRFlZWVm4Af+FsASNsQUARAAAAA==)
+  format('truetype')}.none{display:none}a:hover{text-decoration:none}.scroll-wrap{background-color:#EEE}.scroll-wrap
+  .scroll-view{width:100%}.gotop{display:none;box-sizing:border-box;width:2.2rem;height:2.2rem;line-height:3rem;text-align:center;color:#BBB;background-color:#FFF;position:absolute;z-index:9;border-radius:1.1rem;border:1px
+  solid #CCC;font-size:12px;right:.5rem;bottom:.6rem;-webkit-transform:translateZ(9px);-ms-transform:translateZ(9px)}.gotop
+  span{display:block;font-family:h5index-iconfont;position:absolute;width:2.2rem;height:2.2rem;line-height:1.2rem;content:"&#x33;";color:#999;font-size:20px}[data-dpr="1"]
+  .gotop{font-size:12px;width:44px;height:44px;line-height:60px;border-radius:22px;right:10px;bottom:70px}[data-dpr="1"]
+  .gotop span{font-size:20px;width:44px;height:44px;line-height:24px}[data-dpr="2"]
+  .gotop{font-size:24px;width:88px;height:88px;line-height:120px;border-radius:44px;right:20px;bottom:140px}[data-dpr="2"]
+  .gotop span{font-size:40px;width:88px;height:88px;line-height:48px}[data-dpr="3"]
+  .gotop{font-size:36px;width:132px;height:132px;line-height:180px;border-radius:66px;right:30px;bottom:210px}[data-dpr="3"]
+  .gotop span{font-size:60px;width:132px;height:132px;line-height:72px}header{width:100%;background-color:#ff6532;background-image:-webkit-gradient(linear,left
+  top,left bottom,from(#f74f38),to(#ff6532));background-size:100% 100%;background-position:0
+  0;background-repeat:no-repeat}header .header-wrap{width:100%;box-sizing:border-box;padding-right:.8rem;background:url(data:image/png;base64,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)
+  no-repeat}[data-dpr="1"] header .header-wrap{padding-left:60px;padding-top:8px;padding-bottom:8px;background-size:32px
+  24px;background-position:14px center}[data-dpr="2"] header .header-wrap{padding-left:120px;padding-top:16px;padding-bottom:16px;background-size:64px
+  48px;background-position:28px center}[data-dpr="3"] header .header-wrap{padding-left:180px;padding-top:24px;padding-bottom:24px;background-size:96px
+  72px;background-position:42px center}#search-placeholder{width:100%;color:#fffcf8;box-sizing:border-box;padding-left:3.8rem;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAjCAYAAADxG9hnAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAolJREFUeNrEmEFkHFEYx2ezlLAsy7KEpZSwhGEZegqJUnrqqYSQ69IqPfXUKqWEnnJqlVx7KqlUqpWQU5TGRldDtUqq1Uq0UqXVaEz/H/8n3463s+/t7kw+fuaZffPmP//35n3fbCGO48AxLoCLYBoUQQj+gF1wBF6Cp2A7GCRESAolcAt8j91jD7RAsc/YXRRSHJkH90FVndsBG+Ad+AlKdCeiY3XVV/pco1MDOSJPsqSe8BDcBRMOT9YAD8A/XivH6y6O2ESsKhFroOZjsRL0Ro2z5CtEO3HPd54t62tFjddyFbKgLlocQkDS4TWO+Rec7ydE1H/lBatDOpGkDN5y7Nf9hNxhx9+Oi9KXGeX2XC8h43wzzLoIMsK8BO1eQq4otfUMhVxS95lK/j7GLdtsVp+C7GKDKcGki64YY86QeBZkGyJik+3QJmSS7Q9B9rHLY90mpMT2QQ5CfvBYsQk5ZruYgxBzj2ObEKOyloOQasKZLiFmbTRyEBL2Wo8iZIvtmYxFjIMm25u2emQ6baMZIfMqjVRsO6skuI/stJyhkDbvsZKW9OZURRVm6IZElCakqBS/B9URiphSSfWxS2EUsXiRWGdWHlZETU37flqJkTzRUha+GrBe1U7sqeos8qlZhZtKzOdehUwK4uQNvh2xcmPSV4hZXHqgNmvaNIdkXV1VLsQsPw9VuzHIB9Y5sAguJ853WLd8Uf0mVBY3ueQhuA3OghegDL6BWZWFnT85zSJ+An45fG7KFDyyTEOknNm3OVPw+Ag/w8qqQRfKLHaO6FLHunWfhGzv67zugM50fBwZJc2EM2G/xZq7GJ+pGWU0uYArrE1mT0tIUszOaQoxYuQ/mOf/BRgAY1PCcPsj4uAAAAAASUVORK5CYII=)
+  no-repeat 2.75rem center;background-color:#e8512a}[data-dpr="1"] #search-placeholder{height:33px;line-height:33px;font-size:16px;border-radius:4px;background-size:17px
+  17px}[data-dpr="2"] #search-placeholder{height:66px;line-height:66px;font-size:32px;border-radius:8px;background-size:34px
+  34px}[data-dpr="3"] #search-placeholder{height:99px;line-height:99px;font-size:48px;border-radius:12px;background-size:51px
+  51px}.showoff #J_searchtext{padding-left:3.8rem;color:#fffcf8}.showoff
+  #J_searchtext::-webkit-input-placeholder{color:#fffcf8}.showoff #J_searchtext::-ms-input-placeholder{color:#fffcf8}#content{position:relative;width:16rem;margin:0
+  auto}#content>section:first-child *{background-size:contain;background-repeat:no-repeat}#content>section>div{width:100%;overflow:hidden}#content>section>div.invisible{display:none}@-webkit-keyframes
+  fadein{0%{opacity:0}100%{opacity:1}}.item-top{box-sizing:border-box;margin-left:.4rem;margin-right:.4rem;padding:.75rem
+  0;display:-ms-flexbox;-ms-flex-pack:center;-ms-flex-align:center;display:-webkit-box;-webkit-box-pack:center;-webkit-box-align:center;background:url(data:image/gif;base64,R0lGODlhAQABAIAAAN3d3QAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==)
+  repeat-x 0 center;background-size:1px}.item-top span{display:block;height:.7rem;padding:0
+  .3rem 0 1.2rem;background-color:#eee;color:#5f646e}.item-line{position:absolute;box-sizing:border-box;padding:0
+  .4rem;display:-ms-flexbox;-mx-flex-pack:justify;display:-webkit-box;-webkit-box-pack:justify}.item-wrap{width:7.35rem;height:100%;box-sizing:border-box;background-color:#ddd}.item{display:block;overflow:hidden;text-decoration:none;width:100%;height:100%;box-sizing:border-box;border:1px
+  solid #ccc;background-color:#fff}.item .pic{width:100%;height:7.35rem;overflow:hidden;background-position:center
+  0;background-repeat:no-repeat;background-size:contain}.item .pic.lazy{background-position:center
+  center;background-size:2.6rem 2.4rem;background-color:#ddd}.item .pic img{width:100%;height:100%}.item
+  .text{color:#666;margin:.35rem .45rem;height:2.4em;overflow:hidden;line-height:1.2em;position:relative;word-break:break-all}.item
+  .price{box-sizing:border-box;border-top:1px dashed #ddd;height:1.4rem;line-height:1.4rem;margin:0
+  .45rem;color:#ff5000}.item-bottom{margin-left:.4rem;margin-right:.4rem;line-height:2.25rem;box-sizing:border-box;border:1px
+  solid #DDD;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAUCAYAAACJfM0wAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAWhJREFUeNq0lTFLxDAYhpOIg4sgOPU/HAgeuBc5EE5xOFwUt3Zw6I/pILTjoYsgiBYEh+43ON3fEAQXB8H6piTS9suXdLnAy9fCkyfJ1xwni6KohRAHUspFkiT6mR1ZlrUsssjz3Msq5BDZa5qmKssyFv7RskiFReKQ+Ar5QXb0BMiPPHyPhZxlVZqmL/ponQlvnBzHJywn1zsWkD+jXCC/yG5ATliXXNkHyJ9QrgfyKSMnLORTp9jI7wcTXiGfMHLCQj5xih3yfaQeKW9ZK5e4Zs6vClmKUpjXDyTGomvmfhNWcdcFkhLlxrzq3VQci50TVokNDVZsWnHbOd7c81MnrLPHkF6iLM3Cof4SFq1Zq01ISSsG0i/kZKS0Za20d90gPUd57IAzSFeMlLCQrsjHg/QM5WGklLBDqR5bURSdmtW3kW/k2CMlrEtqd3zXAeec1Iwey0mt+B35NNI6cO//2dBf058AAwAPSc4cGjYZ0wAAAABJRU5ErkJggg==)
+  no-repeat 11.5rem center;background-size:.55rem .5rem;background-color:#FFF;color:#666;text-align:center}[data-dpr="1"]
+  .item-top{font-size:12px}[data-dpr="1"] .item-wrap{border-radius:4px;padding-bottom:1px}[data-dpr="1"]
+  .item-wrap .item{border-radius:4px}[data-dpr="1"] .item-wrap .item .text{font-size:12px}[data-dpr="1"]
+  .item-wrap .item .price{font-size:16px}[data-dpr="1"] .item-wrap:first-child{margin-right:8px}[data-dpr="1"]
+  .item-bottom{font-size:12px;border-radius:4px}[data-dpr="2"] .item-top{font-size:24px}[data-dpr="2"]
+  .item-wrap{border-radius:8px;padding-bottom:2px}[data-dpr="2"] .item-wrap
+  .item{border-radius:8px}[data-dpr="2"] .item-wrap .item .text{font-size:24px}[data-dpr="2"]
+  .item-wrap .item .price{font-size:32px}[data-dpr="2"] .item-wrap:first-child{margin-right:16px}[data-dpr="2"]
+  .item-bottom{font-size:24px;border-radius:8px}[data-dpr="3"] .item-top{font-size:36px}[data-dpr="3"]
+  .item-wrap{border-radius:12px;padding-bottom:3px}[data-dpr="3"] .item-wrap
+  .item{border-radius:12px}[data-dpr="3"] .item-wrap .item .text{font-size:36px}[data-dpr="3"]
+  .item-wrap .item .price{font-size:48px}[data-dpr="3"] .item-wrap:first-child{margin-right:24px}[data-dpr="3"]
+  .item-bottom{font-size:36px;border-radius:12px}#bottom{box-sizing:border-box;width:100%;border-top:1px
+  solid #292c33;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ8AAABHCAMAAAAujTK5AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAwBQTFRFPD5HNjhCMjQ7NzpCPUBKT1JgREZRREZSPkJKRkpWP0JMSk5ZQkVQNTg/MTM6VFhlNDY9Wl5sMDI5Oz1IQERNRUhUMzY8UlViUFNgPkBJRkhTNTdBNThAVFdlMDI6TlFeTE9bQENOTE9aQkZPPkBMQkZSTlBdNzpBOjtFODlCSEpVP0JLODpBNzlDMzU9UFRgUVViUFRhUlZjPUBJU1dkUVVhTVFdVVlnPD9JVFhmTlJfPD9ITFBcOz5HU1dlOj1FOTxEODtDOj1GOTxFS05aRklUSk1ZODpCVlpoOTtER0pVVVlmNzlBSEtWOjxFS09aODpDRUhTODtENTc/S09bNjhASU1YOz1GPT9JQ0ZQQENNQENMUlZiQUROOz5GT1JfOTtDPkFLTVBcNTc+VlpnSUxYQkVPSUxXPkFKNjlAV1tpUlZkQ0ZRRUhSNDY+TVBdSExXPT9IOjxENjhBREhSUVRhSEtXOjxGOz1HSk5aSk1YOj1HRkpUWFxqNzlAWFxrP0FLRUlTPkBKNjlCTFBbQUNNQEJMQUVORkpVQURPU1ZkQkRPOTxDR0tWT1JeWV1rQkVOPUBIWV1sPD5IV1tqQUVPRklVVVhmTVFcNDc+Oz1FREdROTpDS05bOj1EOTtFSExYU1ZjQkROQ0VQU1djSU1ZPD1HTlJdSEpWSExWWl1sP0FKR0pUODtCQEJNPEBITVFePT5IQkZQSU1XVlppTFBdOTxGPEBJR0lVRkhUPUFKNzhBREhTUVVjODpEOTtCR0lUQUNMREhRPkBLWFtqSUtXNDc/Q0dQOT1EWVxrUVRiS09cOz9HSk1aQUVQSkxYSUtWNzhANjdAOzxGV1poV1ppV1toP0BLNDY/ODlBPD5JOT1FODpFOTpEQEROVllnLzE3S01ZMzY+SElWQEFNVVhnOjxHRUlSOj5FPD9KP0BKUlZlNTY+NTY/PD1IPj9JOTtGOjtGSElVSUxZQkZRODxFSEpXNDU+SUpWSUxWOj5GR0hUQkNOSkxZT1NfTlJeSUKyDgAAGuNJREFUeNrsewd0G8mZJky0dbOApKbkGREaiibm5u40cxygczeARiPnRIAgSAIkmBOYg0iKiqQkKlM5tyZycs4z1ozH2bK9DruzyetN3r3di3s57MXqrQZAESApja21fPR7U+/xsQtdXV311f9/f6hqhfRrKuC1k63X1932dvXM2aOwUXNC1XOnXkyHR0dHeXDvhqm4d123j4hV9R1n8jVCn0hcTcOZAOu1a1azS+zlqW52sW3tFn3pl0XpVHxD6eY6SWJHYifS6eRLK/rEdEMd8RJCYqvVavMax8NsNmvVdS/t2ZFsRHZG4yWbN+pLv1vemF/MMqVCERExGZht39VnNpaUXh3Sb6nOC8+ZjLVe6ScGvYKjauTspxs3lpToS/QbS6h2+fZ87329aRO8UL8z5WhurklshuXLmzfHd46sXTzcP5dHmZ1J6dV4IhT12xw7d1vvI3K3yRqEah6ElbKDguBw+p31zc3WzNYcWuBBJ4I8f4Bs3U0ZnNs6Pqpxptb981iV8+BQhwveXdCXlv6U36ffvLHUOWpAnrfVXLc6bX677m83imsVD9CeedJf43TapqzWeofAG3pVc6l098UjMh4BccekDUGEuaOiOHGdovjHj/9FJYIg9fYcWlgZZTAY2LCORxB+589+Cz+9/0Jf3zktXx9SAgmb9Te/bwtllEobfyRQq/nq3+zdtGnTfg0iCMqMZq3iQWq+Sh4PBoPc73cjlFC96eVz586dPr03CFUEtJaUxB0GA+8tLdnIQmCaLUbUNw1/iOL5hzvf1FbQ3giCUAj1eouRxhmCIftSiDD+joTtcVANhtQD2v4L5/b2dRpRy7MkSdK+PTzFZ/C1qi9YP4pWoKjFwt1vQIR5C1nWhMNCQI2YMDgdUwY4V2G3VafxG6gpDQZwrYA01JC5h13tQc5ywGsY9YgUb9VgOWNCfiwYamIAO7qbQtKbLviMNAlxAiCrZECywS4Rcs3yKcgXvMpANcewgjtEJcFooSpQR3G88rKNomyngATUVgSx56YDvCUBYkdCMLzX7zxv6D6aXJBLt9ktGKbWY9hRB8VvVQf2zA7uEHfsyP7t2JFMtEL5uLJm5YMt0W/JlkSUR4RoPFfRv2KS1QHlArsbKD7sC9IoxKOmBeKxy0kt4hGL6/QX6WHV/+jjnZRQE9froXXRl3x9VkCa5whsz25ktKajRC4bS/JF/3dKHqEuBdcqf0hgSCmXg0p7M4XwVnu2pszcj2VFB7cJFCJsvwlAfytCObN43JIP8KqVt+mTnI8TdcLAq0K91ZocHBxMspfqEUHFYG4HRZ1NNcKS2ml1WiOpVKMq9dDcgDDiw9eqfZHwLvNvQw/kvfeG70cQw8fDsKb97fdq23OKM39QgBbEWeo9RCqhTYXaDzyQYZU5PGhO5CN6Nw4SjoG9nUIDJXz1Qt+7neilZur8KwwmDYMvTkByPn16U8qAULtfPn36+6e/v3cv5sPBmsWDsHTmSt8C1Je6vs6/6OQ6Oy+TOfKzWmXTccMxXsr6Ecov80ed45a+EJa9w7zzNWyiNmXBW2BTa6382MSsA+GrcIAbOQ4lZXZGb/AU4jTi2ULSzK/cc//V4dECsFzpn+GpZndTvpYb8UgGqgtl+K+UcDDqoAy2UyYoH3Dei/YF4L7vCEo8kKiJlwxZKWpnfOPPN/888LFA8QgO1Q1TK5X7Qvv2Tdl4A2Kz7vvdUGhfKBQ2/SbEL3iVgAiDRBG3tE7JjoWg/iKvYAUqxx+eCEIt4iGZcK1DQfdEGnZeE6AlMgj1DmuN65KA8A0yRYCuoUwmsy3jbUYoCnph2+TK1TBYs3iAki2LZbyVbxA+WbQvW7ZcBaakTnEEaWhoDvzBCH16N7S3Wf5Ysrey+/K69RjZv/flTef+ALoV/PFNxsdPBd3NFK/K4gH+ceXwcGVlZWMDJOsvwgvPjyq1YO3iwVxVLha7ADXDWiObmqy9STDSBqtQwRuo+lkapcucBsSpydnbJfmQwuPWrqbN+tKv0bjDgLxfiXeEeHq22SA0yniYCJSTS99Db1HI7j6uX7DXtNH42sWjSTWwsDCQLWIbhRhS+Qos6SY8LdTuhbNsjjEAVDoRgw3CAHY5CuSjutzmwIkNNbpRvAU6KBEtWe/cIMXqKf4Ek3f2MEhQpBzn2GjigG63U3fmHuRBfmXy0bl///69395/4cL+/esNFO85Ldf37t+7/9scwdBuzvhniMEBWQVM1lANspcN7e0t+yK1b3uUT1vK/Aj/PH6qpgFxuBuifE3yAcEgDDCF3NQAebmGJKh6irI2YmsXD0Dgi8VyGPLHq/236jDgIFG8345QjhghYTNWiv8mLuNhpRbtC6sMCedZnHyD4u22ORjVNYd0UL2mAs3UbnchM+Nv8VSDnWRGYETjqF3DeBQ6IhGeEtzEstCGtFMGOf9h3idQOwG8C7ROBPFDYCol1p8RkF4jwF80UII3Ksj25V9c4A1VVQJV78KK8DBQMAjEgrXJt9+sAL8JeOxSRBHD7hVrR9oR2Qq/4Pc3vPW/UDlvSEJD43ylsTQJvlfe3GBwkRLGHYVBDj/aJmq5Pt8l3Ph7EB/o0MWu206etJ1stdkVTh4+xD+iUIlJlWLM1lq3xvEAW0oy0N9GaLASD6r5Y61OJ/CP+7LCQ07z1M5QefwkDlJvUf/GiMle2bcrgsG+c3t9sV63x30SevT/hTSB5FB5orx8PFE+frBezhpEExmvza/LJMZL68DaxiNcboOi/4ClTFqBB2UQ3NWJ5pvGzpydxIItSYMwIz6F031aKiw79oAgLSjdT+JN/tLSeMJ5nprlIAUHhGyeCGmgetuq2lRILzRgct1AWbVrGw8gnWIYy/6+FeIh4dMAtAPjV/r3WojcTRNh3Ltp0/4+FAMkd7yMuEU1srlaUAmOZtUloq8JeiqWvec2ZcvL8t+5lxcvN23qI9c4HozFaLSQxMpRYjTHGZuaULTAicLwJhInMJMsF8WhGRHcDyH4fl+2tQnDSbk0yX9NixfZyhqObwuSZKvf0WC3v7micRaCJuYe7jz92uztb3T5HI/P8fgcj8/x+ByPz/H4HI/P8VhLeLCfcQKHHan97BdU3uXAqsP5i4WSqnvrpda5luFRJwbk2bHL2pmrRndo79TRoUjvSPULd36ZO33o7vz+3kdyqQ3T+fKQ+V7CMVmTBkV4sH+yMeSwh+LxR8fnCjZ4wCvlrSW29jst4Xh6h621+k4vmy7Xt+5g72aYoROBdHZVGofrre33Dg7W7nUV44F5vrmQPnZzTw/fIRbcUW9oeOiimbhTbG8bftY1NHqnVX5b2TK4cfAuttHAE/M4L58ZAxofyKj+gRrDhm+n2UBMgP5iPADt8/k4jmMdkwVpC/Z/e5+p9NF3GAhoeaQNcZ4V79SkF3E3N7bfxWyI3SJdGQ3IGQTc2KhYtYfqPek3VPOSJznr+gwR3LVxn/t2I0wbsWX8AQgpBphAJlCwXR6uH98VNN4pvWBOCsrnB7VlFUvdPXwt1b21sSClWe30Ux7j3eRsMIcbP57ukJfVhP+YWq0HkN7S8b639FqmpGRfTfG5OlPjf2SLkhBfF4Z6VyUybKuqKT9W7S370hLbwvYMzQZvTb+aio9f8pF3yOe/kIw/OWAY7kQLcj8gVZqwPx9KLFoGbaNXF7gcbLobYQeOm2/XO+5n10NEmIGtq40EsG+DyxUe3jA9P1q+rYj5wfqSRx8sSi9d7i5d1Uwxnu2O9BlKYUvEyz8dm8/hAcQxc2gdh0N1falRYusa4xHdMSgcdfMr5NDc+8e9aklyPRISLcE2F16Y38GeftZSEUQbDPJv7EszHQe9H+A0dle6Xze2vfXEBBfe0qMW6+aqVqMxQKJGmoaK7nv3D93KQOFrAG1q0xfMH2D05QOlt2ToECVUNTY+IwsysFSq/BEDouqe/co6bwhk8cBm21KjnCwdIKwXn9no9fy/GxpSqur4W+syIavTnWyM7qs2K0dx7mmSdxfNFTAkTTahbWniZhh0b/yCiM8ELEUtrlzJ/vvmnrxvcztD2kUl7KKRo8k/2ubtKB/KFO/EuW8uzlLexcRxgqBd0WI8GLTzRDL7Czs4P5tUQ4TCNYnAok/U0Kp87LFEogdqlnTFiFZ0dvq4Tq7vqI3J4eGuWs+r27OYu8cDgf6y+g9R7N+O16r/qnDGk4H58TnUd9yuOjV7nCYA+FlsmRybgAQGPgJ49Cprni3znWrdxdQmL6qXZmIbgY2Sm7tBD++SavnraqlufjkYtfMNWyJzzS0WAkzbrZS6K3lEVfgecObLvVkj3969aOuxHqereGkCM56K7NGyns3bajZagUS0qGKLmBFGI4eiEwKcnGlPFUGSOMMQBEGKPJ7D49gZen0iJMsTQbepLlveiPBuYlbD4daRAqFLH5if5GjceFhFkjJHYobYSr0O62M0zh4cJY00LirnRkKJUvuisQNuva4dUoOKxNz72B5dvPQmOLr8dD5Yr7d/eFmzuwuTAGU/5vFhvhd7i/DAZ+OZh6Em8xl5CffcXydpwraijYeR+qHSnmzyFXw99J1LB+dhX+T9lYvEDgicJPstb0JVNlWJt/omuhU5PAh+IRhsSXbAxQNloJd129PKdQxJMlr/OwV49FbRUCok/Buv52gDO/+vVuBRFz+BEgD1dKzHANHWupB8GDdvWxQyICraYqD9e10kNvnfGxNpbPQI0V6/zAcG5l00Z+lSqjBwZENz93OeubKBGaIIDw47PASfeuwVHLiFUn0XwAK2AvlgD3dE7WL+oJZYU8V3ySYVP6Mq3kPF5LOxk6FpeQ7VbogvUbWIR2sAZyxBpexKgKf7td7GPQc8BGAldaunAA/+phnpeIPFDarclrtGWCYfbpH1f0s20oSxWybVR6zhfqOR/pNL+U6wuWOT9Vj1+y4MuKJ/+g5nRM4wYCpQLCAAp0lCGvUTGHLwiMERiduIwzNFxwgBYQkOYyaMPyIp9N/11uEAe8pmzvXCXnG37UtMhqmJ/CMHIm2VQQZaCiJQv1wSZbiUlfBfIB6HVMbcQHJ41HldmITFIlJWwvAbkQUMcYuRkm7tkwWwt4wG5sa/lahzHezOAa3ZKRbhARSZBsEir4sJD/ZjIOB1BEgCw3LNWNf8TYXddj+utruwLqffzJFSZJDQUMsdOnlTIpkZ/cEH/x707B7tpmqxmSpmWRMc+gK4Sund1sr/syAhYfNjeacvFi/VpUnj+dkckYe/pkNINOsSYFLEtdJGzWTCZvcbpRsCcEoavjuLh1kYg5okdnhodyOkXHe0DVR6Q97UTKWrtbZADHd6SLp/Rl2vE/On8A3uIjwwXhdRT3bPu16ASwjpNl3fQGmvmDT8M3Kz+asbr9bMvUfjh16rm8+cFzAGeBIegkBSK0lIrdvp+M9PtnBn/6X2i8JJm/UYsTJYkJhDxwZ7DViQMEGzOMbm1MPc3UVylh0Rsj0MI80BfdvZi3n/ExBPzq4w/bsM6e2vPfY1+4vZRsJA1r5Uf5LqZ9NDDxjxm0MdHkmI/lOj+7yLfLdTXT8lLXlb1U+YyWfXpVRHemNM0pk2S4TwYNFUJmZ2CpS/VB8f25PTr4FjmUQrJQlvy8cbKncEtGd3cThm4g0Jt8vWDsDcExow8deGFaMEbaOz1hkcxZ5P/aVN9dSRmrlV/THad3xnLS2TE/bhWGUODxxaaQb7vcafDG05IR0riV2YW7+oa0zV4aU3qXsdcJDgwH/zjTzgTj2c9b2u+EVCjl8AVf/69kQPHCrJKnvcn1aV0VUpHy1RU23UkscOdummMdfB+tQftsXwAKX/3UbWUKwvxIFXtGzFj0dvKvfJjoXHPo2sdzXH2R/OQjxMDMoZRx/HTYCoitZxae8OwO77mAREStGyIjDZdjjFl9EYLiUfPWHs41QPrRpWArxdF24ogUYXe+nJvL4ADAMm9deEk2mlKqxfx5FPzC8+i6+buvUCqiP6JDRs03YTGtRQVbMymkD7yWAWD1YxtnVhIoi3mJjf+YDg/Waa4I9JjX/F47HDS0QGej4NQ4pLhR+3ijhpZAYjr31ULB+aRz5+1zhsNe+f39Yu203rsN/Vd+BbLbt/kj2zjRGsDaof6Ik+zFlmr1kHb0QIRsK+MbbcCQZHosLPFBOQ0ixgnqZxGp9YBQ8XG6Dmokr/uq/4XdhT/gKiA+4a5wODU5UPO2iyq1W7OEaipzVvytyZDTssrkkMzLxOY4QYdfU2V8LHXMoeTMajS6nt42iohhJrnUefuNhPgK1R76NdxmDbsSUiA3t0WuCt+neVraFZAuAWzmjmi+1Ly9QgWftam5FsS0Pxw4SHgbdrwNvN1uRJCNTp4JU6YjuBE3jF8HUnC8Nn7M/tw8sUplr5Jc1TVlOLHAHIwSDAV4krzaM/HCpVCgEjN6obxl6KThfgMf1K9cM1uzjXURpL+oGYd0sxrb0rp1QnFHgniuNYtdfMmOrGxqgpmU6BZ3sOj+TOp3NRmanrYEDSPtsEgOE//Ailm8C1gaWFwdbZAD5tQS2uNhlyQJDcsXVFeLBP8HMdYxgZ/tQMxcpd7gGvxT44cOYn9rwtBB54dWjfielIO2BoI21B4eOMOO5aNtuzytq+HqdkkhZPP5gKEyizaXM1JGzxG/MN6Zk/R9GFxAyOjZwslA8S7RNtQHrOQmBtBtfmfPYEHArN50nGgjKys1/Fk6DnMd3OblweCVB7u+T4BTSsfzb/hGZ9sz0tnx2eSnbSC/Ptyv9ZgMeHMXLiaRIjjCSd7/ZGd5GfVOlQCmeg2vf2wkU9ZPdib24fAcfFmfo8KQPWWY05IhUW/wB8BdbUlEXzQOvjxXiE4890ku7t5tXjwEMdJdf3hU1q77paC3DM0X/5BesNDBPthc0xhtz1vDguMIC4NhDI5D8pAMOZnKsDiNy5AXXiOTJQ/lHKQKMtVSm4XLoRGQ9tNJxnCROO4uoNMmE7YyQWU3j8ZqwAdTr3aRLG5H8kqLkiPNjmHRwH49mGFCmBkczcs2plHWr82PuzRTyG/cPuOKAt6Uw+TGSrk9ujruL8CPCIJE7Mjh+9zbGJp1KK73qAPf1AB4GPXdJ4VQFHO5E8yRY1x3oUD15kMclsr3Mr8hE2EEPhInlWILQ0LmgmeA1rLdEBsCv0IsQDTGaGsVtxIT1vIIBJUroJQCB2m7kwZl4euRM3kkV4SPXPyWd/iC7/vARetQf6A8oAwYzYVIQpD5gi5nVXaBj8S9tH040K28lox9BWECSWWQ3o0mGTymI3rW4xqUIYueqUZSZUwcY9LJ/8Iy/JjotMMrLkGMRmzJAbo1cg9YD5R98cieRMsdSY+XFZYZ+BchdJmGnf8NR0pPH1swToGvfIeIhf0iwZ1UBiFwlMhDiNAbzW6a+8jdBmQ1b8vnQxHmPZU5YY2nvNhH0YPYX3eF/EMLP/GXyxgUN3HvrigCbFyGN/fFIh/DB9ikOJZelVqNnQ9kWSMF6Qwh0xKEUxcUfH4mFkGHbcp50ccqG4tZEuq4+6jHijSDZabyVi2Oul17vAdMYFSRiIGRerU8u3qq2lA5fxwlfZTxiPBkiSnRnzpt89thUHz+mqZTxuqJaaxZR7ZE+Nkb1ugB49nH2LeUVWyPNEXdbfKMYDjM1kDetk63PYlfmvWAgzwgJAJLXQSLHZhGuD1ZM9NkdyvuOor+/CBZ9x9ezZM91dlb3r4DLrt/X02IZK9clbSmUaNNRtE40E+fX4q+6awxUMydHkqGNi8dF23aw7A2pD8scP2BGvOOGfA1Jtd2noKa5QMUHai5N8ySHAjDhE1Ni1ZwLyhwviMawU8+tXG35o6H4STp8FWdXAnz6OS9DKJ2IrsmxH5M+uibbDRaI+0RzNwhdqe1GRaE2pAfk0lDXcSLNq8cALWY/ocBl2K+Buyn99uUrR/t2RoLlkEAB8TmkvFSpBl2XJ5P6Z/5M0igOi/0T8tcGGMEQcA2OKxZGAWp3r950xKSRzJ/gn/sfRcEdbVaak7RRXZLXVQwGaYf9TdLBN9398OEFD3nsuBPUFalpdri9A6a9GhU8Sie3esdHGgTALebh6Qan3H65ePmqCqA/LH7p8UIQH3viv5XqvztrauyA6S5E61jWyR0zZQj8tKc/COEH+QrllsG4bS1ZFoBXAj69vrYKO7dIpPJM7E+lGs14JKhF7Y9nNKq1/cU1hBBN9yuJu1Y5lYys+0oIb55+smWv3oUyRXjrOwjCP1mxNOKa5JknswlrAri9A+QCTjjx9aDy/0/KDFs/kHjF92ODVd2TO3qcb6tg6XMGtcIcAKdoqJUbVWxR34gtPaCSpLX4+UMb5+tAXdRuu/rRjQ3yf4eJgoJ3IUuUveB7QP0MD3UI/nDT9I0cljRUcwwMDzvlcxh4SL03323gYzone9lvyASL2OtJptc9CPFj+LflrM7TCZywrfnMq0QI7wWhaYzEyABxtFWV7WwvxGFC8U52fpDGIokYu2MlxQSP+eH1Hx8EjgDOufnryxlbA3HdfER6MaCVA99BFiw9tYnCas7heDdSZGKOP80EznF3cXyyZ3JVQk1rdvNy55vD7E8VJBeIHvryQmeRj8ZUf/bAd67Xdsn0AX6fbRfdEnDcxqDvfO4bDJ5pIHBS9mqWG3GgW0yaalM97lpn5+thCaBgoiMY/3Vm9lHgAGowgCBwnLZxa5UJ9KL5qfhzg2MH/SyzLS2BmDw7EMxyay9QRpJGDkm7pxxnil0qygxsCTlT6He5wQHwj8VI/WJb6KDyFiVm021qTY6olPWRQmmSMXcI/gngAkWVW3bMt7T2ev5EDCiPpWZ5/hgAKps0Zw1eumwkwlk7f7T9gBHRtR5tzWd6KJOWjxreGBuQvDAH4pXcr1ZlLJCCHD2zTl8QVk0ZiRc66iMqMLVMJu7og7mTgEuJGF4bJ/uWqG4zgwQYNuTwrB1nKiEsKJmXAVo+msduxf25hUI+yhlrmSoFVvLZffivqhp0gYP8cqNUCY/CzKIdAv+oO09hy+c1+TAZWHwwgyiwrKBFjcLj6CgK00Hc1AyJoVv0Wcw923KuVjfKIsCY0GERl7f6srU3ad3kFaC13OggNzf3tth4VoIm8y8+MCI6k78EXSibwHQxfpMtfSNl+BTJZsJ999x9t3lmh7roQNPlrP7ZetL+/xgoA///gkP5egAEAof0cIWNxYwoAAAAASUVORK5CYII=)
+  no-repeat center 5.5rem;background-size:6.8rem 1.8rem;background-color:#4e525e;padding:.9rem
+  .4rem 4rem}#bottom .buttons{width:100%;display:-ms-flexbox;-ms-flex-pack:justify;display:-webkit-box;-webkit-box-pack:justify}#bottom
+  .buttons a{display:block;height:1.5rem;line-height:1.5rem;color:#c3c6ca;border:2px
+  solid #42454d;background-color:#555965;padding:0 .75rem}#bottom .buttons
+  a.text{width:3rem;padding:0;color:#eee;text-decoration:none;overflow:hidden;white-space:normal;text-overflow:ellipsis;border:0;background-color:transparent}#bottom
+  .copyright{width:100%;margin-top:.9rem;height:.9rem;line-height:.9rem;padding-left:4.85rem;box-sizing:border-box;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAhCAMAAABgOjJdAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAO1QTFRFhomSb3J8XGBrdnqDgYWNlJefV1tmfoGKU1diT1NfgISNgoWOYmZwio2Vi4+Wc3eAkJObZGhzUlZiaGt2U1djfYCKZGdyhYiQeHyFio6VgYWOVVllbHB6XWFsY2ZxaWx3jZCYXmFsfYCJcnZ/UVVham54V1tng4aPb3N8WV1pX2JtZWl0YWVvVlpmiYyUWVxohomRd3uEdHiBeX2GZ2t1hIeQVFhkf4OMbnJ8fYGKdnqEb3N9kJScY2dycnaAjpKZdHeBjpKajI+Yc3eBhYiRf4KLXmFtio6Wi4+XjZCZkJSbkZScjI+XlJifTlJe+rAZcwAAAZBJREFUeNp0lOeWgjAQhSdUBQRRbFjX7tpW3XUt23tL3v9xNigJIHh/zRk+5iR3ZgIkULWmwgv+A7VWDWWBR/nSt2gLUzIVbLH1lo8RRW1wEfqxPtCKUaKTMUhURuUhTIi6Q07l6LuAEFdpEld6tWNEx00CKKJ3jsR1xSHJcj4bB+LmkpxT49Yj8mqQUVBBciUk8ITepESJ+5AqY1+uwny5IjDPcADoN0BIwjLOsjKZOewtbi/9fvi338a44CetIai2H/cokPLj9tfEj2wVzD4rIWMlfpu+CXc5Pw4qh5X7AUw4gZIswUENGT8lAN1fMBVeAxIIxYR3Nin0imOe52emdxkyP8aY+0S9Y2d63cNoxvACRTaeI70slst+cjYCAnXmuuS1RKKmy1hKBX0hzaC3KOsxsmz2Ir2NzMcEbVCo+cf5oDOWOzNAucpxxoglnZlT1+KzXk4kymKwL4ttN+73dhHeuWV85zLL073Vw3v7MdDuE3a/JRrCmqwFQ2yV8gmvg/d+aPCMH0GLvB//AgwAo1MTpxsaxVoAAAAASUVORK5CYII=)
+  no-repeat 3.7rem center;background-size:.85rem .85rem;color:#c3c6ca}[data-dpr="1"]
+  #bottom .buttons a{border-radius:6px;font-size:14px}[data-dpr="1"] #bottom
+  .copyright{font-size:12px}[data-dpr="1"] #bottom .copyright span{font-size:18px}[data-dpr="2"]
+  #bottom .buttons a{border-radius:12px;font-size:28px}[data-dpr="2"] #bottom
+  .copyright{font-size:24px}[data-dpr="2"] #bottom .copyright span{font-size:36px}[data-dpr="3"]
+  #bottom .buttons a{border-radius:18px;font-size:42px}[data-dpr="3"] #bottom
+  .copyright{font-size:36px}[data-dpr="3"] #bottom .copyright span{font-size:54px}[data-ctrl=popad]{position:absolute;top:0;left:0;width:100%;height:100%;display:-ms-flexbox;display:-webkit-box;-ms-flex-pack:center;-webkit-box-pack:center;z-index:9999;-ms-transform:translateZ(39px);-webkit-transform:translateZ(39px)}[data-ctrl=popad]
+  .img{position:relative;background-size:contain;background-position:0 0;background-repeat:no-repeat}[data-ctrl=popad]
+  .close{position:absolute;top:0;right:0}[data-ctrl=popad] .back{position:absolute;left:0}[data-ctrl=popad]
+  .callapp{position:absolute}[data-dpr="1"] [data-ctrl=popad] .img{width:320px;height:416px}[data-dpr="1"]
+  [data-ctrl=popad] .close{width:40px;height:40px}[data-dpr="1"] [data-ctrl=popad]
+  .back{top:370px;width:120px;height:60px}[data-dpr="1"] [data-ctrl=popad]
+  .callapp{top:285px;left:50px;width:218px;height:44px}[data-dpr="2"] [data-ctrl=popad]
+  .img{width:640px;height:832px}[data-dpr="2"] [data-ctrl=popad] .close{width:80px;height:80px}[data-dpr="2"]
+  [data-ctrl=popad] .back{top:740px;width:240px;height:120px}[data-dpr="2"]
+  [data-ctrl=popad] .callapp{top:570px;left:100px;width:436px;height:88px}[data-dpr="3"]
+  [data-ctrl=popad] .img{width:960px;height:1248px}[data-dpr="3"] [data-ctrl=popad]
+  .close{width:120px;height:120px}[data-dpr="3"] [data-ctrl=popad] .back{top:1110px;width:360px;height:180px}[data-dpr="3"]
+  [data-ctrl=popad] .callapp{top:855px;left:150px;width:654px;height:132px}[data-ctrl=topsb]{width:100%;display:-ms-flexbox;-ms-flex-pack:center;display:-webkit-box;-webkit-box-pack:center;z-index:9998}[data-ctrl=topsb]
+  .img{position:relative;background-size:contain;background-position:0 0;background-repeat:no-repeat}[data-ctrl=topsb]
+  .close{position:absolute;top:0;right:0}[data-ctrl=topsb] .down{position:absolute}[data-ctrl=topsb]
+  .callapp{position:absolute}[data-dpr="1"] [data-ctrl=topsb] .img{width:320px;height:100px}[data-dpr="1"]
+  [data-ctrl=topsb] .close{width:29px;height:25px}[data-dpr="1"] [data-ctrl=topsb]
+  .down{top:34px;left:194px;width:98px;height:25px}[data-dpr="1"] [data-ctrl=topsb]
+  .callapp{top:64px;left:194px;width:98px;height:25px}[data-dpr="2"] [data-ctrl=topsb]
+  .img{width:640px;height:200px}[data-dpr="2"] [data-ctrl=topsb] .close{width:58px;height:50px}[data-dpr="2"]
+  [data-ctrl=topsb] .down{top:68px;left:388px;width:196px;height:50px}[data-dpr="2"]
+  [data-ctrl=topsb] .callapp{top:128px;left:388px;width:196px;height:50px}[data-dpr="3"]
+  [data-ctrl=topsb] .img{width:960px;height:300px}[data-dpr="3"] [data-ctrl=topsb]
+  .close{width:87px;height:75px}[data-dpr="3"] [data-ctrl=topsb] .down{top:102px;left:582px;width:294px;height:75px}[data-dpr="3"]
+  [data-ctrl=topsb] .callapp{top:192px;left:582px;width:294px;height:75px}[data-ctrl-name=counter]{height:1.2rem;padding:.2rem
+  0;position:absolute;z-index:3}[data-ctrl-name=counter] span{display:inline-block;width:.75rem;height:1.2rem;line-height:1.2rem;margin:0
+  .05rem;color:#fefefe;background:#4f4242;background:-webkit-gradient(linear,left
+  top,left bottom,color-stop(0,#4f4242),color-stop(0.49,#4f4242),color-stop(0.5,#645b5b));text-align:center;font-size:.6rem}[data-ctrl-name=counter]
+  span.dot{width:.2rem;color:#4f4242;background:transparent}#J_Shade{-ms-transform:translateZ(19px);-webkit-transform:translateZ(19px)}#J_Taojia{z-index:1001}[data-dpr="1"]
+  #J_Taojia{bottom:68px}[data-dpr="2"] #J_Taojia{bottom:136px}[data-dpr="3"]
+  #J_Taojia{bottom:204px}#J_search,#J_Taojia{-ms-transform:translateZ(29px);-webkit-transform:translateZ(29px)}
+</style>
+<style>
+  [data-ctrl-name=indicator] span{display:block;overflow:hidden;width:.4rem;height:.4rem;font-size:0;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAgCAYAAAAbifjMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAsZJREFUeNqkVE1oE1EQnrdJ2liaQyKNDRVBLU3SYhpSDRqVij2Ip4InqVisWOlBhBSVKOrBXgpKoRCaSw6KJxG8F2xJQSvtpfFifxI9KGnTGJrDWk0226wzy25MYlt368DwYHa+771975uPSZIElcEYM+FixbRg1inlAiaPmcN+sbKfqwEf8Pv97VNTU125XO40Np+lzGazgcnJyeMul8uNPfYqjHoC/NAciURcg4ODRw0YsE0Ui8WtcDi8Mjw8nEBcmmpGBWyfmJhwDg0NtcEuYTKZDMFg0C0IgoSYEpJkGNUDgUBHLBbrogbQEHQSj8czv7S0tEh3YB0ZGXFoBasnGR8fP0hYIrD4fL4m0Bler9eGSyMRmCwWS71eAqvVSpg6DvYeTNVBkef5gl406iSPi0AE/MLCQlYvQTwe38DlB928kEgk9vX39zejfjitz9jb27uICv3GoRiKs7Ozq9FoNKl197GxsWXUwDrNhaxEWVGMcaIoAqqxdSdN4M4igldCoVCSMKCAy4lhx2HqxMG5mE6n+7B2kzKVSl2mGg7TMeqpxLBtxtmojHMjplkp/8Lc/Oc4V7wvq/m24+Uaa/3gxmFoe9jOrjab4UI9B4eont+Cz6t5eHv3o/Qce76U/7/WD+Z62PUTNnjE/hy9KkoS/HyXhQfdMemV6gcyAfnBh/Ns4OR+GNXyjNMZuN0zI5NkOPLAW63Q7rfBY606ONcEo5da4AhduOwHd5ysj2PQoJWAep92smtlP6AL0zsLDjN0l/0Ah9qhlwBfqOV//cBQ9gOhBGt60YUSfC37QRpFopdgLQ8z5AdEkHu2LL0kkWgFUy+pkrCyH4ST8Gl+A55oJYh9h9CbFJCkRU71g1PT0ov3Wbi320nwG6+o8LU6D1XjTJLGYXLed7MrqI0zDQbooPqmCPH1AszRsZWd/x6mvfrBbwEGAEsWX34YFVnkAAAAAElFTkSuQmCC);background-repeat:none}[data-ctrl-name=indicator]
+  b{box-sizing:border-box;display:block;height:.5rem;line-height:.5rem;border:1px
+  solid rgba(0,0,0,.16);background-color:rgba(255,255,255,.4);border-radius:.25rem;padding:0
+  .3rem;margin:0 .35rem;font-weight:400;color:#999;overflow:hidden}[data-ctrl-name=indicator]
+  b.hide{display:none}[data-ctrl-name=indicator] b.show{display:block}[data-ctrl-name=indicator][data-dir=horizontal]{width:100%;padding-bottom:.4rem;display:-ms-flexbox;-ms-flex-align:center;-ms-flex-pack:center;display:-webkit-box;-webkit-box-align:center;-webkit-box-pack:center;text-align:center}[data-ctrl-name=indicator][data-dir=horizontal]
+  span{margin:0 .15rem}[data-ctrl-name=indicator][data-dir=vertical] span{margin:.15rem
+  0}[data-ctrl-name=indicator][data-dir=vertical] b.hide{display:none}[data-ctrl-name=indicator][data-dir=vertical]
+  b.show{display:none}[data-dpr="1"] [data-ctrl-name=indicator] b{font-size:7px}[data-dpr="2"]
+  [data-ctrl-name=indicator] b{font-size:14px}[data-dpr="3"] [data-ctrl-name=indicator]
+  b{font-size:21px}
+</style>
+<style>
+  [data-ctrl-name=carrousel]{position:relative;-webkit-transform:translateZ(1px);-ms-transform:translateZ(1px)}
+</style>
+<link href="http://g.tbcdn.cn/mtb/??lib-taoplus/0.3.1/taoplus2x.css,lib-autocomplete/0.2.1/autocomplete2x.css"
+type="text/css" rel="stylesheet">
+</head>
+
+<body>
+<div data-ctrl-name="pageview" data-ctrl-id="1418193796128-1">
+  <div class="view" id="view-1">
+    <div class="gotop" style="display: block;">
+      <span>
+        
+      </span>
+      顶部
+    </div>
+    <div data-ctrl-name="scrollview" data-ctrl-id="1418193796231-1" class="scroll-wrap">
+      <div class="scroll-view">
+        <div id="content" style="height: 391.6rem;">
+          <section data-group="1" style="height: 89.9rem;">
+            <div style="position: relative; height: 5rem;">
+              <div data-width="320" style="width: 16rem; height: 5rem; " class=" UIView">
+                <div class="slide-banner" style="height: 100%; width: 16rem; overflow: hidden; position: relative; z-index: 1;">
+                  <ul data-ctrl-name="carrousel" data-ctrl-id="1418193796389-1" style="height: 100%; width: 16rem; position: relative; -webkit-transform: translate3d(0px, 0px, 0px);">
+                    <li class="card" style="display: block; width: 16rem; height: 100%; position: absolute; top: 0px; left: 0px; float: left;">
+                      <a data-href="http://h5.m.taobao.com/hd/c1412-nvzhuang.html?locate=home-1-5-1&amp;spm=a215s.7406091.1.home-1-5-1&amp;actparam=1_39667_h32745_%E9%A6%96%E7%84%A6-%E5%A5%B3%E8%A3%85%E5%88%86%E4%BC%9A%E5%9C%BA-%E7%84%A61-1210"
+                      data-type="WXZC" style="display:block;width:100%;height:100%;vertical-align:middle;overflow:hidden;">
+                        <img style="width:100%;height:100%;" class="" src="http://gw.alicdn.com/tps/i4/TB1vP1UGFXXXXXNapXXdIns_XXX-1125-352.jpg_q50.jpg">
+                      </a>
+                    </li>
+                    <li class="card" style="display: block; width: 16rem; height: 100%; position: absolute; top: 0px; left: 640px; float: left;">
+                      <a data-href="http://click.mz.simba.taobao.com/ecpm?e=9AfeNZ9VWIlvf6qrb41ZXMr0kgqOI1XDqNW7rTvh36GT%2Fi7umY%2FU9DoJqu717Iet2mjRIA5JSj7p2JXaftVNp4xikeFUbEw5UK7RDtIZydUyXElRAMLwo62Qb3Xy%2B8KV0%2FdwKGUI1LXEcXicQixlNWOEbR9IBka9tFRN1y2tGWBAPeUXXms5Pts%2BglS5qcdMRoxGWqXQWv%2FbaohdnzJxERYuIqdFGx7n&amp;u=http%3A%2F%2Fshop.m.taobao.com%2Fshop%2Fshop_index.htm%3Fshop_id%3D111429300&amp;k=225"
+                      data-type="ZUANZHAN" style="display:block;width:100%;height:100%;vertical-align:middle;overflow:hidden;">
+                        <img style="width:100%;height:100%;" class="" src="http://i.mmcdn.cn/simba/img/TB1Zt1KGVXXXXb7XXXXSutbFXXX.jpg_q50.jpg">
+                      </a>
+                    </li>
+                    <li class="card" style="display: block; width: 16rem; height: 100%; position: absolute; top: 0px; left: 1280px; float: left;">
+                      <a data-href="http://click.mz.simba.taobao.com/ecpm?e=EBzy0MV3s%2F1vf6qrb41ZXMr0kgqOI1XDLBl0%2FVfO5RDACTscxvFAZZ0yQ8qusjnS2mjRIA5JSj53NL0BOMW9HJqcmFMwT0OKUK7RDtIZydUyXElRAMLwo4UI%2F6mtzqpwWZmO1S4wrVcddPnRipLY%2BSX6v5PQ1YIh34XUY1zXbFpibwmv8JwRtWVAcexDqK8EkcwZiXdnc2bbaohdnzJxERYuIqdFGx7n&amp;u=http%3A%2F%2Fa.m.taobao.com%2Fi40602474045.htm&amp;k=225"
+                      data-type="ZUANZHAN" style="display:block;width:100%;height:100%;vertical-align:middle;overflow:hidden;">
+                        <img style="width:100%;height:100%;" class="lazyimg" src="http://a.tbcdn.cn/mw/webapp/fav/img/grey.gif"
+                        dataimg="http://i.mmcdn.cn/simba/img/TB18sn8GpXXXXacapXXSutbFXXX.jpg_q50.jpg">
+                      </a>
+                    </li>
+                    <li class="card" style="display: block; width: 16rem; height: 100%; position: absolute; top: 0px; left: 1920px; float: left;">
+                      <a data-href="http://h5.m.taobao.com/hd/c1412-jiaju.html?locate=home-1-5-4&amp;spm=a215s.7406091.1.home-1-5-4&amp;actparam=1_39667_h32746_%E9%A6%96%E7%84%A6-%E5%AE%B6%E5%B1%85%E5%88%86%E4%BC%9A%E5%9C%BA-%E7%84%A64-1210"
+                      data-type="WXZC" style="display:block;width:100%;height:100%;vertical-align:middle;overflow:hidden;">
+                        <img style="width:100%;height:100%;" class="lazyimg" src="http://a.tbcdn.cn/mw/webapp/fav/img/grey.gif"
+                        dataimg="http://gw.alicdn.com/tps/i1/TB1prbqGVXXXXXdXFXXdIns_XXX-1125-352.jpg_q50.jpg">
+                      </a>
+                    </li>
+                    <li class="card" style="display: block; width: 16rem; height: 100%; position: absolute; top: 0px; left: 2560px; float: left;">
+                      <a data-href="http://www.tmall.com/go/market/promotion-act/1212tmall-m.php?locate=home-1-5-5&amp;spm=a215s.7406091.1.home-1-5-5&amp;actparam=1_39667_h32752_%E9%A6%96%E7%84%A6-%E5%A4%A9%E7%8C%AB-%E7%84%A65-1210"
+                      data-type="WXZC" style="display:block;width:100%;height:100%;vertical-align:middle;overflow:hidden;">
+                        <img style="width:100%;height:100%;" class="lazyimg" src="http://a.tbcdn.cn/mw/webapp/fav/img/grey.gif"
+                        dataimg="http://gw.alicdn.com/tps/i1/TB12VruGVXXXXaiXXXXdIns_XXX-1125-352.jpg_q50.jpg">
+                      </a>
+                    </li>
+                    <li class="card" style="display: block; width: 16rem; height: 100%; position: absolute; top: 0px; left: 3200px; float: left;">
+                      <a data-href="http://h5.m.taobao.com/hd/c1412-muying.html?locate=home-1-5-6&amp;spm=a215s.7406091.1.home-1-5-6&amp;actparam=1_39667_h32754_%E9%A6%96%E7%84%A6-%E6%AF%8D%E5%A9%B4%E5%88%86%E4%BC%9A%E5%9C%BA-%E7%84%A66-1210"
+                      data-type="WXZC" style="display:block;width:100%;height:100%;vertical-align:middle;overflow:hidden;">
+                        <img style="width:100%;height:100%;" class="lazyimg" src="http://a.tbcdn.cn/mw/webapp/fav/img/grey.gif"
+                        dataimg="http://gw.alicdn.com/tps/i1/TB1SUjuGVXXXXaAXXXXdIns_XXX-1125-352.jpg_q50.jpg">
+                      </a>
+                    </li>
+                    <li class="card" style="display: block; width: 16rem; height: 100%; position: absolute; top: 0px; left: -640px; float: left;">
+                      <a data-href="http://h5.m.taobao.com/market/2014/1212/jiazhuang2_1212.html?locate=home-1-5-7&amp;spm=a215s.7406091.1.home-1-5-7&amp;actparam=1_39667_h32756_%E9%A6%96%E7%84%A6-%E5%AE%B6%E8%A3%85%E5%88%86%E4%BC%9A%E5%9C%BA-%E7%84%A67-1210"
+                      data-type="WXZC" style="display:block;width:100%;height:100%;vertical-align:middle;overflow:hidden;">
+                        <img style="width:100%;height:100%;" class="lazyimg" src="http://a.tbcdn.cn/mw/webapp/fav/img/grey.gif"
+                        dataimg="http://gw.alicdn.com/tps/i3/TB1GvnuGVXXXXXtXpXXdIns_XXX-1125-352.jpg_q50.jpg">
+                      </a>
+                    </li>
+                  </ul>
+                  <div class="indicator" style="width: 16rem; height: 0.45rem; position: absolute; bottom: 0.4rem; text-align: center;">
+                    <div data-ctrl-name="indicator" data-ctrl-id="1418193796392-1" data-dir="horizontal">
+                      <span style="background-size: 0.4rem 0.8rem; background-position: 0px -0.4rem;"
+                      class="cur">
+                      </span>
+                      <span style="background-size: 0.4rem 0.8rem;background-position: 0 0;">
+                      </span>
+                      <span style="background-size: 0.4rem 0.8rem;background-position: 0 0;">
+                      </span>
+                      <span style="background-size: 0.4rem 0.8rem;background-position: 0 0;">
+                      </span>
+                      <span style="background-size: 0.4rem 0.8rem;background-position: 0 0;">
+                      </span>
+                      <span style="background-size: 0.4rem 0.8rem;background-position: 0 0;">
+                      </span>
+                      <span style="background-size: 0.4rem 0.8rem;background-position: 0 0;">
+                      </span>
+                      <b class="hide">
+                        1 / 7
+                      </b>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="position: relative; height: 7.45rem;">
+              <div data-width="320" style="width: 16rem; height: 7.45rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: rgb(213, 213, 213); background-position: initial initial; background-repeat: initial initial; ">
+                <div data-width="320" style="margin-top: 0.3rem; width: 16rem; height: 3.4rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); white-space: nowrap; background-position: initial initial; background-repeat: initial initial; ">
+                  <div data-width="80" style="width: 4rem; height: 3.4rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                    <div data-width="80" style="width: 4rem; height: 3.4rem; position: absolute; "
+                    data-href="http://www.tmall.com/?locate=icon-1&amp;spm=a215s.7406091.1.icon-1&amp;actparam=1_58053_h29725_%E5%85%A5%E5%8F%A3-%E5%A4%A9%E7%8C%ABH5&amp;force=m&amp;ttid=11huo010">
+                      <div data-width="60" style="margin-top: 0.3rem; margin-left: 1rem; width: 2rem; height: 2rem; background-image: url(http://gw.alicdn.com/tps/i1/TB1eSyDGFXXXXaRXVXXszjdGpXX-140-140.png?imgtag=avatar); background-size: contain;"
+                      id="a3933" class="">
+                      </div>
+                      <div data-width="80" style="text-align: center; font-size: 24px; color: rgb(102, 102, 102); margin-bottom: 0.2rem; width: 4rem; height: 0.9rem; line-height: 0.9rem;"
+                      id="a8892">
+                        天猫
+                      </div>
+                    </div>
+                  </div>
+                  <div data-width="80" style="width: 4rem; height: 3.4rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                    <div data-width="80" style="width: 4rem; height: 3.4rem; position: absolute; "
+                    data-href="http://tb.cn/x/ju/?locate=icon-2&amp;spm=a215s.7406091.1.icon-2&amp;actparam=1_46784_h17640_%E5%85%A5%E5%8F%A3-%E8%81%9A%E5%88%92%E7%AE%97">
+                      <div data-width="60" style="margin-top: 0.3rem; margin-left: 1rem; width: 2rem; height: 2rem; background-image: url(http://gw.alicdn.com/tps/i2/TB1mhqJGFXXXXaBXpXXszjdGpXX-140-140.png?imgtag=avatar); background-size: contain;"
+                      id="a2358" class="">
+                      </div>
+                      <div data-width="80" style="text-align: center; font-size: 24px; color: rgb(102, 102, 102); margin-bottom: 0.2rem; width: 4rem; height: 0.9rem; line-height: 0.9rem;"
+                      id="a243">
+                        聚划算
+                      </div>
+                    </div>
+                  </div>
+                  <div data-width="80" style="width: 4rem; height: 3.4rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                    <div data-width="80" style="width: 4rem; height: 3.4rem; position: absolute; "
+                    data-href="http://tb.cn/x/dd/?locate=icon-3&amp;spm=a215s.7406091.1.icon-3&amp;actparam=1_46784_h17641_%E5%85%A5%E5%8F%A3-%E6%B7%98%E7%82%B9%E7%82%B9">
+                      <div data-width="60" style="margin-top: 0.3rem; margin-left: 1rem; width: 2rem; height: 2rem; background-image: url(http://gw.alicdn.com/tps/i3/TB1QeiDGFXXXXb8XVXXszjdGpXX-140-140.png?imgtag=avatar); background-size: contain;"
+                      id="a3247" class="">
+                      </div>
+                      <div data-width="80" style="text-align: center; font-size: 24px; color: rgb(102, 102, 102); margin-bottom: 0.2rem; width: 4rem; height: 0.9rem; line-height: 0.9rem;"
+                      id="a7179">
+                        淘点点
+                      </div>
+                    </div>
+                  </div>
+                  <div data-width="80" style="width: 4rem; height: 3.4rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                    <div data-width="80" style="width: 4rem; height: 3.4rem; position: absolute; "
+                    data-href="http://h5.m.taobao.com/category/index.html?locate=icon-4&amp;spm=a215s.7406091.1.icon-4&amp;actparam=1_46784_h17642_%E5%85%A5%E5%8F%A3-%E7%B1%BB%E7%9B%AE">
+                      <div data-width="60" style="margin-top: 0.3rem; margin-left: 1rem; width: 2rem; height: 2rem; background-image: url(http://gw.alicdn.com/tps/i4/TB1Ed9LGFXXXXc3XXXXszjdGpXX-140-140.png?imgtag=avatar); background-size: contain;"
+                      id="a4239" class="">
+                      </div>
+                      <div data-width="80" style="text-align: center; font-size: 24px; color: rgb(102, 102, 102); margin-bottom: 0.2rem; width: 4rem; height: 0.9rem; line-height: 0.9rem;"
+                      id="a3562">
+                        类目
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div data-width="320" style="width: 16rem; height: 3.7rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); white-space: nowrap; background-position: initial initial; background-repeat: initial initial; ">
+                  <div data-width="80" style="width: 4rem; height: 3.4rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                    <div data-width="80" style="width: 4rem; height: 3.4rem; position: absolute; "
+                    data-href="http://h5.m.taobao.com/cz/index.html?locate=icon-5&amp;spm=a215s.7406091.1.icon-5&amp;actparam=1_27896_h22418_%E5%85%A5%E5%8F%A3-%E5%85%85%E5%80%BC520">
+                      <div data-width="60" style="margin-top: 0.3rem; margin-left: 1rem; width: 2rem; height: 2rem; background-image: url(http://gw.alicdn.com/tps/i1/TB1pXKIGFXXXXXqXFXXszjdGpXX-140-140.png?imgtag=avatar); background-size: contain;"
+                      id="a358" class="">
+                      </div>
+                      <div data-width="80" style="text-align: center; font-size: 24px; color: rgb(102, 102, 102); margin-bottom: 0.2rem; width: 4rem; height: 0.9rem; line-height: 0.9rem;"
+                      id="a6976">
+                        充值
+                      </div>
+                    </div>
+                  </div>
+                  <div data-width="80" style="width: 4rem; height: 3.4rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                    <div data-width="80" style="width: 4rem; height: 3.4rem; position: absolute; "
+                    data-href="http://h5.m.taobao.com/cph5/home/h5/index.html?locate=icon-6&amp;spm=a215s.7406091.1.icon-6&amp;actparam=1_58053_h29726_%E5%85%A5%E5%8F%A3-%E5%BD%A9%E7%A5%A8H5">
+                      <div data-width="60" style="margin-top: 0.3rem; margin-left: 1rem; width: 2rem; height: 2rem; background-image: url(http://gw.alicdn.com/tps/i2/TB1qiuOGFXXXXXaXXXXszjdGpXX-140-140.png?imgtag=avatar); background-size: contain;"
+                      id="a9589" class="">
+                      </div>
+                      <div data-width="80" style="text-align: center; font-size: 24px; color: rgb(102, 102, 102); margin-bottom: 0.2rem; width: 4rem; height: 0.9rem; line-height: 0.9rem;"
+                      id="a6732">
+                        彩票
+                      </div>
+                    </div>
+                  </div>
+                  <div data-width="80" style="width: 4rem; height: 3.4rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                    <div data-width="80" style="width: 4rem; height: 3.4rem; position: absolute; "
+                    data-href="http://h5.m.taobao.com/app/tjb/www/index3.html?locate=icon-7&amp;spm=a215s.7406091.1.icon-7&amp;actparam=1_46784_h17645_%E5%85%A5%E5%8F%A3-%E9%A2%86%E9%87%91%E5%B8%81">
+                      <div data-width="60" style="margin-top: 0.3rem; margin-left: 1rem; width: 2rem; height: 2rem; background-image: url(http://gw.alicdn.com/tps/i3/TB1hW9KGFXXXXXLXpXXszjdGpXX-140-140.png?imgtag=avatar); background-size: contain;"
+                      id="a9098" class="">
+                      </div>
+                      <div data-width="80" style="text-align: center; font-size: 24px; color: rgb(102, 102, 102); margin-bottom: 0.2rem; width: 4rem; height: 0.9rem; line-height: 0.9rem;"
+                      id="a3172">
+                        领金币
+                      </div>
+                    </div>
+                  </div>
+                  <div data-width="80" style="width: 4rem; height: 3.4rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                    <div data-width="80" style="width: 4rem; height: 3.4rem; position: absolute; "
+                    data-href="http://h5.m.taobao.com/hd/c1412-main.html?locate=icon-8&amp;spm=a215s.7406091.1.icon-8&amp;actparam=1_25950_h31959_1212%E4%B8%BB%E4%BC%9A%E5%9C%BA">
+                      <div data-width="60" style="margin-top: 0.3rem; margin-left: 1rem; width: 2rem; height: 2rem; background-image: url(http://gw.alicdn.com/tps/i2/TB159qjGVXXXXXUXVXXjzqtHFXX-142-142.png); background-size: contain;"
+                      id="a8973" class="">
+                      </div>
+                      <div data-width="80" style="text-align: center; font-size: 24px; color: rgb(102, 102, 102); margin-bottom: 0.2rem; width: 4rem; height: 0.9rem; line-height: 0.9rem;"
+                      id="a970">
+                        1212会场
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="position: relative; height: 8.6rem;">
+              <div data-width="320" style="width: 16rem; height: 8.6rem; position: relative; ">
+                <div data-width="320" style="margin-top: 0.6rem; width: 16rem; height: 8rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: rgb(213, 213, 213); border-top-style: solid; border-top-width: 1px; border-top-color: rgb(213, 213, 213); white-space: nowrap; position: absolute; background-position: initial initial; background-repeat: initial initial; ">
+                  <div data-width="128" style="margin-top: 1px; margin-bottom: 1px; width: 6.4rem; height: 7.95rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                    <div data-width="128" style="width: 6.4rem; height: 7.95rem; z-index: 1; position: absolute; background-image: url(http://gw.alicdn.com/tps/i1/TB1IhP_GFXXXXXtapXX9KhJ_XXX-447-563.png);"
+                    id="a1941" class="" data-href="taobao://m.taobao.com/go/QiangGou?locate=widget-1&amp;spm=a215s.7406091.1.widget-1&amp;actparam=1_25950_h32481_%E6%8A%A2%E8%B4%AD&amp;scm=2027.1.2.9&amp;query=TaoQiang&amp;homepage_native=y">
+                    </div>
+                    <div data-width="128" style="margin-top: 2.55rem; margin-left: 0.6rem; width: 5.8rem; height: 1.65rem; position: absolute; "
+                    class=" TBRushBuyCounterLabel">
+                      <div data-ctrl-name="counter" data-enddate="Wed Dec 10 2014 16:59:59 GMT+0800 (中国标准时间)"
+                      data-server-timestamp="1418193672069" style="visibility: hidden;">
+                        <span role="h0">
+                          0
+                        </span>
+                        <span role="h1">
+                          2
+                        </span>
+                        <span class="dot">
+                          :
+                        </span>
+                        <span role="m0">
+                          1
+                        </span>
+                        <span role="m1">
+                          8
+                        </span>
+                        <span class="dot">
+                          :
+                        </span>
+                        <span role="s0">
+                          4
+                        </span>
+                        <span role="s1">
+                          4
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div data-width="0.5" style="background-color: rgb(213, 213, 213); margin-top: 0.3rem; margin-bottom: 0.3rem; width: 1px; height: 7.4rem; display: inline-block; vertical-align: top; "
+                  class=" UIView">
+                  </div>
+                  <div data-width="192" style="margin-top: 1px; margin-bottom: 1px; width: 9.6rem; height: 7.95rem; display: inline-block; vertical-align: top; ">
+                    <div data-width="192" style="width: 9.6rem; height: 4rem; z-index: 1; background-image: url(http://gw.alicdn.com/tps/i2/TB1fwl0GVXXXXchXFXXkiDILXXX-678-282.jpg_q50.jpg);"
+                    id="a4813" class="" data-href="http://h5.m.taobao.com/lanlan/index.html?locate=widget-2&amp;spm=a215s.7406091.1.widget-2&amp;actparam=1_77857_h31886_%E5%AF%BC%E8%B4%AD%E4%BA%A7%E5%93%81-%E6%9C%89%E5%A5%BD%E8%B4%A71210&amp;scm=2027.1.2.10">
+                    </div>
+                    <div data-width="192" style="background-color: rgb(213, 213, 213); margin-right: 0.3rem; width: 9.3rem; height: 1px; "
+                    class=" UIView">
+                    </div>
+                    <div data-width="192" style="width: 9.6rem; height: 3.925rem; white-space: nowrap; ">
+                      <div data-width="96" style="width: 4.8rem; height: 3.925rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i1/TB13PLmGVXXXXc2XVXXr9238VXX-338-282.png);"
+                      id="a9026" class="" data-href="http://h5.m.taobao.com/guang/index.html?locate=widget-3&amp;spm=a215s.7406091.1.widget-3&amp;actparam=1_21605_h32755_%E5%AF%BC%E8%B4%AD%E4%BA%A7%E5%93%81-%E7%88%B1%E9%80%9B%E8%A1%971210%E8%80%81&amp;scm=2027.1.2.129">
+                      </div>
+                      <div data-width="0.5" style="background-color: rgb(213, 213, 213); margin-bottom: 0.3rem; width: 1px; height: 3.625rem; display: inline-block; vertical-align: top; "
+                      class=" UIView">
+                      </div>
+                      <div data-width="96" style="width: 4.8rem; height: 3.925rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i2/TB1CA1OGVXXXXakXVXXr9238VXX-338-282.png);"
+                      id="a9409" class="" data-href="http://h5.m.taobao.com/scan/xinpin.html?locate=widget-4&amp;spm=a215s.7406091.1.widget-4&amp;actparam=1_42917_h32231_%E5%AF%BC%E8%B4%AD%E4%BA%A7%E5%93%81-%E6%AF%8F%E6%97%A5%E6%96%B0%E5%93%8112.10&amp;scm=2027.1.2.12">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="position: relative; height: 8.2rem;">
+              <div data-width="320" style="margin-top: 0.6rem; width: 16rem; height: 7.6rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: rgb(213, 213, 213); border-top-style: solid; border-top-width: 1px; border-top-color: rgb(213, 213, 213); white-space: nowrap; background-position: initial initial; background-repeat: initial initial; ">
+                <div data-width="320" style="margin-top: 0.4rem; margin-left: 0.4rem; margin-right: 0.4rem; width: 15.2rem; height: 6.8rem; white-space: nowrap; display: inline-block; vertical-align: top; ">
+                  <div data-width="148" style="width: 7.4rem; height: 6.8rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i1/TB1LSnsGVXXXXcDXXXX3AQAUpXX-521-479.jpg_q50.jpg);"
+                  id="a5793" class="" data-href="http://h5.m.taobao.com/hd/c1412-main.html?locate=pre3-1&amp;spm=a215s.7406091.1.pre3-1&amp;actparam=1_58053_h32747_%E6%B0%9B%E5%9B%B4card1210-%E5%A4%A7%E5%9B%BE&amp;scm=2027.1.9.155">
+                  </div>
+                  <div data-width="156" style="margin-left: 0.4rem; width: 7.4rem; height: 6.8rem; display: inline-block; vertical-align: top; ">
+                    <div data-width="148" style="width: 7.4rem; height: 3.2rem; z-index: 1; background-image: url(http://gw.alicdn.com/tps/i1/TB161DoGVXXXXcwXFXXEOH4UpXX-521-225.jpg_q50.jpg);"
+                    id="a6152" class="" data-href="http://act.yun.taobao.com/market/yunos/mohe_12h5.php?locate=pre3-2&amp;spm=a215s.7406091.1.pre3-2&amp;actparam=1_58053_h32751_%E6%B0%9B%E5%9B%B4card1210-%E5%8F%B3%E4%B8%8AH5&amp;scm=2027.1.5.158">
+                    </div>
+                    <div data-width="148" style="margin-top: 0.4rem; width: 7.4rem; height: 3.2rem; z-index: 1; background-image: url(http://gw.alicdn.com/tps/i4/TB1IrrtGVXXXXbLXXXXEOH4UpXX-521-225.jpg_q50.jpg);"
+                    id="a3829" class="" data-href="http://h5.m.taobao.com/hd/c1412-yundong.html?locate=pre3-3&amp;spm=a215s.7406091.1.pre3-3&amp;actparam=1_58053_h32748_%E6%B0%9B%E5%9B%B4card-1210-%E5%8F%B3%E4%B8%8B&amp;scm=2027.1.9.157">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="position: relative; height: 15.8rem;">
+              <div data-width="320" style="width: 16rem; height: 15.8rem; position: relative; ">
+                <div data-width="320" style="margin-top: 0.6rem; width: 16rem; height: 15.2rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: rgb(213, 213, 213); border-top-style: solid; border-top-width: 1px; border-top-color: rgb(213, 213, 213); position: absolute; background-position: initial initial; background-repeat: initial initial; ">
+                  <div data-width="320" style="margin-top: 0.05rem; width: 16rem; height: 1.95rem; white-space: nowrap; ">
+                    <div data-width="120" style="width: 6rem; height: 1.95rem; position: relative; display: inline-block; vertical-align: top; ">
+                      <div data-width="fill_parent" style="font-weight: bold; font-size: 32px; color: rgb(61, 66, 69); margin-left: 0.6rem; width: 5.4rem; height: 1.95rem; line-height: 1.95rem; position: absolute; background-color: transparent;"
+                      id="a5138">
+                        特色市场
+                      </div>
+                    </div>
+                    <div data-width="200" style="margin-left: 5.5rem; width: 4.5rem; height: 1.95rem; position: relative; display: inline-block; vertical-align: top; ">
+                      <div data-width="78" style="text-align: right; font-size: 26px; color: rgb(102, 102, 102); width: 3.9rem; height: 1.95rem; line-height: 1.95rem; position: absolute; background-color: transparent;"
+                      id="a8060" data-href="taobao://h5.m.taobao.com/moreapp/index.html?locate=special-2&amp;spm=a215s.7406091.1.special-2&amp;homepage_native=y#1">
+                        更多
+                      </div>
+                    </div>
+                  </div>
+                  <div data-width="320" style="margin-left: 0.3rem; margin-right: 0.3rem; width: 15.4rem; height: 9.6rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: rgb(213, 213, 213); white-space: nowrap; background-position: initial initial; background-repeat: initial initial; ">
+                    <div data-width="122" style="margin-bottom: 1px; width: 6.1rem; height: 9.575rem; position: relative; display: inline-block; vertical-align: top; ">
+                      <div data-width="122" style="width: 6.1rem; height: 9.6rem; position: absolute; "
+                      data-href="http://h5.m.taobao.com/tejia/index.html?locate=special-3&amp;spm=a215s.7406091.1.special-3&amp;actparam=1_25950_h32676_%E5%A4%A9%E5%A4%A9%E7%89%B9%E4%BB%B7&amp;scm=2027.1.3.17#/-top/1">
+                        <div data-width="122" style="width: 6.1rem; height: 6.6rem; background-image: url(http://gw.alicdn.com/tps/i3/TB1SG2nGVXXXXXrXpXXEXFd1XXX-426-465.jpg_q50.jpg); background-size: contain;"
+                        id="a3769" class="">
+                        </div>
+                        <div data-width="fill_parent" style="font-weight: bold; font-size: 28px; color: rgb(61, 66, 69); margin-top: 0.5rem; margin-left: 1.2rem; width: 4.9rem; height: 0.8rem; line-height: 0.8rem; background-color: transparent;"
+                        id="a3940">
+                          天天特价
+                        </div>
+                        <div data-width="fill_parent" style="font-size: 22px; color: rgb(102, 102, 102); margin-left: 1.2rem; width: 4.9rem; height: 0.9rem; line-height: 0.9rem; background-color: transparent;"
+                        id="a5286">
+                          免单特权开抢
+                        </div>
+                      </div>
+                    </div>
+                    <div data-width="93" style="margin-bottom: 1px; width: 4.65rem; height: 9.275rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); border-left-style: solid; border-left-width: 1px; border-left-color: rgb(213, 213, 213); border-right-style: solid; border-right-width: 1px; border-right-color: rgb(213, 213, 213); display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                      <div data-width="93" style="margin-left: 1px; margin-right: 1px; width: 4.6rem; height: 4.8rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: rgb(213, 213, 213); position: relative; background-position: initial initial; background-repeat: initial initial; ">
+                        <div data-width="93" style="width: 4.65rem; height: 4.65rem; position: absolute; "
+                        data-href="http://chaoshi.m.tmall.com/?locate=special-4&amp;spm=a215s.7406091.1.special-4&amp;actparam=1_25950_h32675_%E5%A4%A9%E7%8C%AB%E8%B6%85%E5%B8%82&amp;scm=2027.1.3.14&amp;hybrid=true">
+                          <div data-width="fill_parent" style="font-weight: bold; font-size: 28px; color: rgb(61, 66, 69); margin-left: 0.8rem; width: 3.85rem; height: 0.8rem; line-height: 0.8rem; background-color: transparent;"
+                          id="a1626">
+                            天猫超市
+                          </div>
+                          <div data-width="fill_parent" style="font-size: 22px; color: rgb(102, 102, 102); margin-left: 0.8rem; width: 3.85rem; height: 0.9rem; line-height: 0.9rem; background-color: transparent;"
+                          id="a8677">
+                            低至2折起
+                          </div>
+                          <div data-width="76" style="margin-top: 0.4rem; margin-bottom: 0.3rem; margin-left: 0.8rem; width: 3rem; height: 2.4rem; background-image: url(http://gw.alicdn.com/tps/i1/TB1roDiGVXXXXXMXFXX6sGmYVXX-211-183.jpg_q50.jpg); background-size: contain;"
+                          id="a4320" class="">
+                          </div>
+                        </div>
+                      </div>
+                      <div data-width="93" style="width: 4.65rem; height: 4.5rem; position: relative; ">
+                        <div data-width="93" style="width: 4.65rem; height: 4.5rem; position: absolute; "
+                        data-href="http://market.m.taobao.com/go/market/miao/m.php?locate=special-5&amp;spm=a215s.7406091.1.special-5&amp;actparam=1_25950_h32680_%E5%96%B5%E9%B2%9C%E7%94%9F1022&amp;scm=2027.1.3.18">
+                          <div data-width="fill_parent" style="font-weight: bold; font-size: 28px; color: rgb(61, 66, 69); margin-top: 0.2rem; margin-left: 0.8rem; width: 3.85rem; height: 0.8rem; line-height: 0.8rem; background-color: transparent;"
+                          id="a4890">
+                            喵鲜生
+                          </div>
+                          <div data-width="fill_parent" style="font-size: 22px; color: rgb(102, 102, 102); margin-left: 0.8rem; width: 3.85rem; height: 0.9rem; line-height: 0.9rem; background-color: transparent;"
+                          id="a4413">
+                            点开有惊喜
+                          </div>
+                          <div data-width="76" style="margin-top: 0.2rem; margin-bottom: 0.3rem; margin-left: 0.8rem; width: 3rem; height: 2.4rem; background-image: url(http://img03.taobaocdn.com/imgextra/i3/2217550171/TB2prpbbpXXXXXAXpXXXXXXXXXX_!!2217550171.jpg_q50.jpg); background-size: contain;"
+                          id="a513" class="">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div data-width="93" style="margin-bottom: 1px; width: 4.65rem; height: 9.425rem; display: inline-block; vertical-align: top; ">
+                      <div data-width="93" style="width: 4.65rem; height: 4.8rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: rgb(213, 213, 213); position: relative; background-position: initial initial; background-repeat: initial initial; ">
+                        <div data-width="93" style="width: 4.65rem; height: 4.65rem; position: absolute; "
+                        data-href="http://go.m.taobao.com/h5/index.htm?locate=special-6&amp;spm=a215s.7406091.1.special-6&amp;actparam=1_25950_h32673_%E5%85%A8%E7%90%83%E8%B4%AD1022&amp;scm=2027.1.3.16">
+                          <div data-width="fill_parent" style="font-weight: bold; font-size: 28px; color: rgb(61, 66, 69); margin-left: 0.8rem; width: 3.85rem; height: 0.8rem; line-height: 0.8rem; background-color: transparent;"
+                          id="a4227">
+                            全球购
+                          </div>
+                          <div data-width="fill_parent" style="font-size: 22px; color: rgb(102, 102, 102); margin-left: 0.8rem; width: 3.85rem; height: 0.9rem; line-height: 0.9rem; background-color: transparent;"
+                          id="a8020">
+                            潮包特别配色
+                          </div>
+                          <div data-width="76" style="margin-top: 0.4rem; margin-bottom: 0.3rem; margin-left: 0.8rem; width: 3rem; height: 2.4rem; background-image: url(http://gw.alicdn.com/tps/i1/TB1F4jnGVXXXXXHXXXX6sGmYVXX-211-183.jpg_q50.jpg); background-size: contain;"
+                          id="a5061" class="">
+                          </div>
+                        </div>
+                      </div>
+                      <div data-width="93" style="width: 4.65rem; height: 4.5rem; position: relative; ">
+                        <div data-width="93" style="width: 4.65rem; height: 4.5rem; position: absolute; "
+                        data-href="http://h5.m.taobao.com/paimai/v2/home/index.html?locate=special-7&amp;spm=a215s.7406091.1.special-7&amp;actparam=1_25950_h32679_%E6%8B%8D%E5%8D%961022&amp;scm=2027.1.3.21&amp;from_where=1">
+                          <div data-width="fill_parent" style="font-weight: bold; font-size: 28px; color: rgb(61, 66, 69); margin-top: 0.2rem; margin-left: 0.8rem; width: 3.85rem; height: 0.8rem; line-height: 0.8rem; background-color: transparent;"
+                          id="a3621">
+                            拍卖
+                          </div>
+                          <div data-width="fill_parent" style="font-size: 22px; color: rgb(102, 102, 102); margin-left: 0.8rem; width: 3.85rem; height: 0.9rem; line-height: 0.9rem; background-color: transparent;"
+                          id="a6918">
+                            双12疯狂拍
+                          </div>
+                          <div data-width="76" style="margin-top: 0.2rem; margin-bottom: 0.3rem; margin-left: 0.8rem; width: 3rem; height: 2.4rem; background-image: url(http://gw.alicdn.com/tps/i1/TB1wgevGVXXXXbTXpXXJtamYVXX-211-183.png); background-size: contain;"
+                          id="a1560" class="">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div data-width="320" style="width: 16rem; height: 3.6rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: rgb(213, 213, 213); white-space: nowrap; background-position: initial initial; background-repeat: initial initial; ">
+                    <div data-width="160" style="margin-bottom: 1px; width: 8rem; height: 3.575rem; position: relative; display: inline-block; vertical-align: top; ">
+                      <div data-width="fill_parent" style="width: 8rem; height: 3.575rem; white-space: nowrap; position: absolute; "
+                      data-href="http://brand.tmall.com/mobilestreet/index.htm?locate=special-8&amp;spm=a215s.7406091.1.special-8&amp;actparam=1_25950_h32674_%E5%93%81%E7%89%8C%E8%A1%971022&amp;scm=2027.1.3.15#/brand/fashion">
+                        <div data-width="70" style="margin-top: 0.5rem; margin-left: 0.5rem; width: 3rem; height: 2.6rem; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i4/TB1PV2rGVXXXXbqXXXX6sGmYVXX-211-183.jpg_q50.jpg); background-size: contain;"
+                        id="a8700" class="">
+                        </div>
+                        <div data-width="84" style="margin-left: 0.5rem; width: 3.7rem; height: 3.6rem; display: inline-block; vertical-align: top; ">
+                          <div data-width="fill_parent" style="font-weight: bold; font-size: 28px; color: rgb(61, 66, 69); margin-top: 0.9rem; width: 3.7rem; height: 0.9rem; line-height: 0.9rem; background-color: transparent;"
+                          id="a8403">
+                            品牌街
+                          </div>
+                          <div data-width="fill_parent" style="font-size: 22px; color: rgb(102, 102, 102); width: 3.7rem; height: 1rem; line-height: 1rem; background-color: transparent;"
+                          id="a2274">
+                            英伦浓情圣诞
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div data-width="0.5" style="background-color: rgb(213, 213, 213); margin-top: 0.3rem; margin-bottom: 0.3rem; width: 1px; height: 3rem; display: inline-block; vertical-align: top; "
+                    class=" UIView">
+                    </div>
+                    <div data-width="160" style="margin-bottom: 1px; width: 8rem; height: 3.575rem; position: relative; display: inline-block; vertical-align: top; ">
+                      <div data-width="fill_parent" style="width: 8rem; height: 3.575rem; white-space: nowrap; position: absolute; "
+                      data-href="http://h5.m.taobao.com/movie/tbm/home.html?locate=special-9&amp;spm=a215s.7406091.1.special-9&amp;actparam=1_25950_h32682_%E6%B7%98%E5%AE%9D%E7%94%B5%E5%BD%B11022&amp;scm=2027.1.3.130&amp;from=nearby">
+                        <div data-width="70" style="margin-top: 0.5rem; margin-left: 0.5rem; width: 3rem; height: 2.6rem; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i4/TB1Z1SDGFXXXXXkXFXXJtamYVXX-211-183.png); background-size: contain;"
+                        id="a4623" class="">
+                        </div>
+                        <div data-width="84" style="margin-left: 0.5rem; width: 3.7rem; height: 3.6rem; display: inline-block; vertical-align: top; ">
+                          <div data-width="undefined" style="font-weight: bold; font-size: 28px; color: rgb(61, 66, 69); margin-top: 0.9rem; height: 0.9rem; line-height: 0.9rem; background-color: transparent;"
+                          id="a2683">
+                            淘宝电影
+                          </div>
+                          <div data-width="undefined" style="font-size: 22px; color: rgb(102, 102, 102); height: 1rem; line-height: 1rem; background-color: transparent;"
+                          id="a9360">
+                            4折起
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="position: relative; height: 3.8rem;">
+              <div data-width="320" style="width: 16rem; height: 3.8rem; white-space: nowrap; ">
+                <div data-width="314" style="margin-top: 0.6rem; margin-left: 0.3rem; width: 15.4rem; height: 3.2rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i3/TB1r0YkGVXXXXXqaXXXipOd5pXX-1084-225.jpg_q50.jpg);"
+                id="a6234" class="" data-href="http://h5.m.taobao.com/market/sport/yundongfudapai.html?locate=banner2-1&amp;spm=a215s.7406091.1.banner2-1&amp;actparam=1_43939_h32726_%E4%BA%8C%E7%84%A61210-12%E7%82%B9-24%E7%82%B9&amp;scm=2027.1.5.35">
+                </div>
+              </div>
+            </div>
+            <div style="position: relative; height: 28.55rem;">
+              <div data-width="320" style="width: 16rem; height: 28.55rem; position: relative; ">
+                <div data-width="320" style="margin-top: 0.6rem; width: 16rem; height: 27.95rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: rgb(213, 213, 213); border-top-style: solid; border-top-width: 1px; border-top-color: rgb(213, 213, 213); position: absolute; background-position: initial initial; background-repeat: initial initial; ">
+                  <div data-width="320" style="margin-top: 0.05rem; width: 16rem; height: 1.95rem; white-space: nowrap; ">
+                    <div data-width="120" style="width: 6rem; height: 1.95rem; position: relative; display: inline-block; vertical-align: top; ">
+                      <div data-width="fill_parent" style="font-weight: bold; font-size: 32px; color: rgb(61, 66, 69); margin-left: 0.6rem; width: 5.4rem; height: 1.95rem; line-height: 1.95rem; position: absolute; background-color: transparent;"
+                      id="a4194">
+                        热门市场
+                      </div>
+                    </div>
+                    <div data-width="200" style="margin-left: 5.5rem; width: 4.5rem; height: 1.95rem; position: relative; display: inline-block; vertical-align: top; ">
+                      <div data-width="78" style="text-align: right; font-size: 26px; color: rgb(102, 102, 102); width: 3.9rem; height: 1.95rem; line-height: 1.95rem; position: absolute; background-color: transparent;"
+                      id="a7868" data-href="http://h5.m.taobao.com/category/index.html?locate=industry-2&amp;spm=a215s.7406091.1.industry-2">
+                        更多
+                      </div>
+                    </div>
+                  </div>
+                  <div data-width="320" style="margin-left: 0.3rem; margin-right: 0.3rem; width: 15.4rem; height: 6.25rem; white-space: nowrap; ">
+                    <div data-width="204" style="width: 10.2rem; height: 6.25rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i4/TB1uwvsGVXXXXcFXXXXDtjkPpXX-718-440.jpg_q50.jpg);"
+                    id="a7664" class="" data-href="http://h5.m.taobao.com/app/category/www/home/index.html?locate=industry-3&amp;spm=a215s.7406091.1.industry-3&amp;actparam=1_25950_h32765_%E5%AE%B6%E5%B1%85%E7%94%9F%E6%B4%BB%E2%80%941210">
+                    </div>
+                    <div data-width="103" style="margin-left: 0.1rem; width: 5.05rem; height: 6.25rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i1/TB1hOwsGFXXXXXOapXXtZ2LJXXX-356-440.jpg_q50.jpg);"
+                    id="a2759" class="" data-href="http://h5.m.taobao.com/app/category/www/woman/index.html?locate=industry-4&amp;spm=a215s.7406091.1.industry-4&amp;actparam=1_25950_h32757_%E6%BD%AE%E6%B5%81%E5%A5%B3%E4%BA%BA1210&amp;scm=2027.1.8.136">
+                    </div>
+                  </div>
+                  <div data-width="320" style="margin-top: 0.1rem; margin-left: 0.3rem; margin-right: 0.3rem; width: 15.4rem; height: 6.25rem; white-space: nowrap; ">
+                    <div data-width="101" style="width: 5.05rem; height: 6.25rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i1/TB1kjrnGVXXXXacXVXXtZ2LJXXX-356-440.jpg_q50.jpg);"
+                    id="a1552" class="" data-href="http://h5.m.taobao.com/app/category/www/shoesbag/index.html?locate=industry-5&amp;spm=a215s.7406091.1.industry-5&amp;actparam=1_25950_h32758_%E9%9E%8B%E2%80%94%E8%A1%8C%E4%B8%9A1210&amp;scm=2027.1.8.131">
+                    </div>
+                    <div data-width="103" style="margin-left: 0.1rem; width: 5.05rem; height: 6.25rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i3/TB1opzsGVXXXXXfXpXXtZ2LJXXX-356-440.jpg_q50.jpg);"
+                    id="a471" class="" data-href="http://h5.m.taobao.com/app/category/www/baby/index.html?locate=industry-6&amp;spm=a215s.7406091.1.industry-6&amp;actparam=1_25950_h32760_%E6%AF%8D%E5%A9%B4%E2%80%94%E8%A1%8C%E4%B8%9A1210&amp;scm=2027.1.8.133">
+                    </div>
+                    <div data-width="103" style="margin-left: 0.1rem; width: 5.05rem; height: 6.25rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i4/TB11eLuGVXXXXXIXXXXtZ2LJXXX-356-440.jpg_q50.jpg);"
+                    id="a9373" class="" data-href="http://h5.m.taobao.com/app/category/www/man/index.html?locate=industry-7&amp;spm=a215s.7406091.1.industry-7&amp;actparam=1_25950_h32763_%E7%94%B7%E8%A3%85%E2%80%94%E8%A1%8C%E4%B8%9A1210&amp;scm=2027.1.8.136">
+                    </div>
+                  </div>
+                  <div data-width="320" style="margin-top: 0.1rem; margin-left: 0.3rem; margin-right: 0.3rem; width: 15.4rem; height: 6.25rem; white-space: nowrap; ">
+                    <div data-width="101" style="width: 5.05rem; height: 6.25rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i2/TB18AEfGFXXXXb9aXXXtZ2LJXXX-356-440.jpg_q50.jpg);"
+                    id="a5735" class="" data-href="http://h5.m.taobao.com/category/mei/index.html?locate=industry-8&amp;spm=a215s.7406091.1.industry-8&amp;actparam=1_25950_h32762_%E7%BE%8E%E5%A6%86%E2%80%94%E8%A1%8C%E4%B8%9A1210&amp;scm=2027.1.8.135">
+                    </div>
+                    <div data-width="103" style="margin-left: 0.1rem; width: 5.05rem; height: 6.25rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i3/TB19t_tGVXXXXahXXXXtZ2LJXXX-356-440.jpg_q50.jpg);"
+                    id="a5428" class="" data-href="http://h5.m.taobao.com/app/category/www/jiadian/index.html?locate=industry-9&amp;spm=a215s.7406091.1.industry-9&amp;actparam=1_25950_h32767_%E5%AE%B6%E7%94%B5%E7%B2%BE%E5%93%81-%E6%96%B01210">
+                    </div>
+                    <div data-width="103" style="margin-left: 0.1rem; width: 5.05rem; height: 6.25rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i3/TB1S7nqGVXXXXagXpXXtZ2LJXXX-356-440.jpg_q50.jpg);"
+                    id="a6233" class="" data-href="http://h5.m.taobao.com/channel/act/integrated/shuma.html?locate=industry-10&amp;spm=a215s.7406091.1.industry-10&amp;actparam=1_25950_h32759_%E6%95%B0%E7%A0%81%E2%80%94%E8%A1%8C%E4%B8%9A1210&amp;scm=2027.1.8.132">
+                    </div>
+                  </div>
+                  <div data-width="320" style="margin-top: 0.1rem; margin-left: 0.3rem; margin-right: 0.3rem; width: 15.4rem; height: 6.25rem; white-space: nowrap; ">
+                    <div data-width="101" style="width: 5.05rem; height: 6.25rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i2/TB1Z_6oGVXXXXXfXFXXtZ2LJXXX-356-440.jpg_q50.jpg);"
+                    id="a6553" class="" data-href="http://h5.m.taobao.com/app/category/www/sports/index.html?locate=industry-11&amp;spm=a215s.7406091.1.industry-11&amp;actparam=1_25950_h32766_%E6%BD%AE%E6%B5%81%E8%BF%90%E5%8A%A8-%E6%96%B01210">
+                    </div>
+                    <div data-width="103" style="margin-left: 0.1rem; width: 5.05rem; height: 6.25rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i1/TB1A7YsGVXXXXXrXXXXtZ2LJXXX-356-440.jpg_q50.jpg);"
+                    id="a2392" class="" data-href="http://h5.m.taobao.com/category/food/index.html?locate=industry-12&amp;spm=a215s.7406091.1.industry-12&amp;actparam=1_25950_h32761_%E7%BE%8E%E9%A3%9F%E2%80%94%E8%A1%8C%E4%B8%9A1210&amp;scm=2027.1.8.134">
+                    </div>
+                    <div data-width="103" style="margin-left: 0.1rem; width: 5.05rem; height: 6.25rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i2/TB1AV_sGVXXXXc9XXXXtZ2LJXXX-356-440.jpg_q50.jpg);"
+                    id="a2869" class="" data-href="http://h5.m.taobao.com/trip/home/index.html?locate=industry-13&amp;spm=a215s.7406091.1.industry-13&amp;actparam=1_25950_h32764_%E8%88%AA%E6%97%85%E2%80%94%E8%A1%8C%E4%B8%9A1210&amp;scm=2027.1.8.137&amp;hideSM=true&amp;ttid=12mtb0000105">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="position: relative; height: 3.8rem;">
+              <div data-width="320" style="width: 16rem; height: 3.8rem; white-space: nowrap; ">
+                <div data-width="314" style="margin-top: 0.6rem; margin-left: 0.3rem; width: 15.4rem; height: 3.2rem; z-index: 1; display: inline-block; vertical-align: top; background-image: url(http://gw.alicdn.com/tps/i1/TB1kRfnGVXXXXXsXVXXipOd5pXX-1084-225.jpg_q50.jpg);"
+                id="a2977" class="" data-href="http://h5.m.taobao.com/hd/c1412-nanzhuang.html?locate=banner3-1&amp;spm=a215s.7406091.1.banner3-1&amp;actparam=1_43939_h32733_%E4%B8%89%E7%84%A61210&amp;scm=2027.1.6.38">
+                </div>
+              </div>
+            </div>
+            <div style="position: relative; height: 8.7rem;">
+              <div data-width="320" style="width: 16rem; height: 8.7rem; position: relative; ">
+                <div data-width="320" style="margin-top: 0.6rem; width: 16rem; height: 8.1rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); border-bottom-style: solid; border-bottom-width: 1px; border-bottom-color: rgb(213, 213, 213); border-top-style: solid; border-top-width: 1px; border-top-color: rgb(213, 213, 213); position: absolute; background-position: initial initial; background-repeat: initial initial; ">
+                  <div data-width="320" style="margin-top: 0.05rem; width: 16rem; height: 1.95rem; white-space: nowrap; ">
+                    <div data-width="120" style="width: 6rem; height: 1.95rem; position: relative; display: inline-block; vertical-align: top; ">
+                      <div data-width="fill_parent" style="font-weight: bold; font-size: 32px; color: rgb(61, 66, 69); margin-left: 0.6rem; width: 5.4rem; height: 1.95rem; line-height: 1.95rem; position: absolute; background-color: transparent;"
+                      id="a7107">
+                        每日好店
+                      </div>
+                    </div>
+                    <div data-width="200" style="margin-left: 5.5rem; width: 4.5rem; height: 1.95rem; position: relative; display: inline-block; vertical-align: top; ">
+                      <div data-width="78" style="text-align: right; font-size: 26px; color: rgb(102, 102, 102); width: 3.9rem; height: 1.95rem; line-height: 1.95rem; position: absolute; background-color: transparent;"
+                      id="a7527" data-href="taobao://h5.m.taobao.com/app/eveday/www/goodshop.html?locate=goodshop-9&amp;spm=a215s.7406091.1.goodshop-9&amp;homepage_native=y">
+                        更多
+                      </div>
+                    </div>
+                  </div>
+                  <div data-width="320" style="background-color: rgb(255, 255, 255); width: 16rem; height: 6.05rem; "
+                  class=" UIView">
+                    <div style="height: 100%; width: 16rem; overflow: hidden; position: relative;">
+                      <div class="slide-pager" style="height:100%; width: 16rem; overflow: hidden; position: relative; z-index:1;">
+                        <ul style="height: 100%; width: 16rem; position: relative; -webkit-transform: translate3d(0px, 0px, 0px);"
+                        data-ctrl-name="carrousel" data-ctrl-id="1418193796393-2">
+                          <li class="card" style="position: absolute; top: 0px; left: 0px; float: left;">
+                            <div style="position: relative;">
+                              <div data-width="320" style="width: 16rem; height: 5.1rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); white-space: nowrap; background-position: initial initial; background-repeat: initial initial; ">
+                                <div data-width="160" style="margin-left: 0.3rem; width: 7.7rem; height: 5.1rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                                  <div data-width="154" style="width: 7.7rem; height: 5.1rem; white-space: nowrap; position: absolute; "
+                                  data-href="taobao://h5.m.taobao.com/app/eveday/www/goodshop.html?locate=goodshop&amp;spm=a215s.7406091.1.goodshop&amp;homepage_native=y">
+                                    <div data-width="100" style="width: 5rem; height: 5.1rem; display: inline-block; vertical-align: top; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1JKQEGXXXXXbxXVXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg); background-size: contain;"
+                                    id="a6573" class="">
+                                    </div>
+                                    <div data-width="52" style="margin-left: 0.1rem; width: 2.5rem; height: 5.1rem; display: inline-block; vertical-align: top; ">
+                                      <div data-width="50" style="width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1glGwGXXXXXXtaXXXXXXXXXXX_!!0-item_pic.jpg); background-size: contain;"
+                                      id="a4197" class="">
+                                      </div>
+                                      <div data-width="50" style="margin-top: 0.1rem; width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB18R7UFFXXXXX0XpXXXXXXXXXX_!!0-item_pic.jpg); background-size: contain;"
+                                      id="a1668" class="">
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div data-width="152" style="background-color: rgba(0, 0, 0, 0.496094); margin-top: 3.9rem; width: 7.6rem; height: 1.2rem; position: absolute; "
+                                  class=" UIView">
+                                  </div>
+                                  <div data-width="152" style="font-size: 28px; color: rgb(255, 255, 255); margin-top: 3.9rem; margin-left: 0.4rem; width: 7.2rem; height: 1.2rem; line-height: 1.2rem; position: absolute; background-color: transparent;"
+                                  id="a8049">
+                                    今日推荐
+                                  </div>
+                                </div>
+                                <div data-width="160" style="margin-left: 0.1rem; width: 7.9rem; height: 5.1rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                                  <div data-width="152" style="width: 7.6rem; height: 5.1rem; white-space: nowrap; position: absolute; "
+                                  data-href="taobao://h5.m.taobao.com/app/eveday/www/goodshop.html?locate=goodshop-1&amp;spm=a215s.7406091.1.goodshop-1&amp;homepage_native=y#cat=1&amp;tag=0">
+                                    <div data-width="100" style="width: 5rem; height: 5.1rem; display: inline-block; vertical-align: top; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/TB1QIjPGFXXXXb.XXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg); background-size: contain;"
+                                    id="a8205" class="">
+                                    </div>
+                                    <div data-width="52" style="margin-left: 0.1rem; width: 2.5rem; height: 5.1rem; display: inline-block; vertical-align: top; ">
+                                      <div data-width="50" style="width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/TB1RO.tFVXXXXcAXpXXXXXXXXXX_!!0-item_pic.jpg); background-size: contain;"
+                                      id="a2272" class="">
+                                      </div>
+                                      <div data-width="50" style="margin-top: 0.1rem; width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/TB1G5ewGXXXXXXkXpXXXXXXXXXX_!!0-item_pic.jpg); background-size: contain;"
+                                      id="a1775" class="">
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div data-width="152" style="background-color: rgba(0, 0, 0, 0.496094); margin-top: 3.9rem; width: 7.6rem; height: 1.2rem; position: absolute; "
+                                  class=" UIView">
+                                  </div>
+                                  <div data-width="152" style="font-size: 28px; color: rgb(255, 255, 255); margin-top: 3.9rem; margin-left: 0.4rem; width: 7.2rem; height: 1.2rem; line-height: 1.2rem; position: absolute; background-color: transparent;"
+                                  id="a9248">
+                                    潮流女装
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                          <li class="card" style="position: absolute; top: 0px; left: 640px; float: left;">
+                            <div style="position: relative;">
+                              <div data-width="320" style="width: 16rem; height: 5.1rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); white-space: nowrap; background-position: initial initial; background-repeat: initial initial; ">
+                                <div data-width="160" style="margin-left: 0.3rem; width: 7.7rem; height: 5.1rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                                  <div data-width="154" style="width: 7.7rem; height: 5.1rem; white-space: nowrap; position: absolute; "
+                                  data-href="taobao://h5.m.taobao.com/app/eveday/www/goodshop.html?locate=goodshop-2&amp;spm=a215s.7406091.1.goodshop-2&amp;homepage_native=y#cat=3&amp;tag=0">
+                                    <div data-width="100" style="width: 5rem; height: 5.1rem; display: inline-block; vertical-align: top; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1g7lpGFXXXXbtXFXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg); background-size: contain;"
+                                    id="a6573" class="">
+                                    </div>
+                                    <div data-width="52" style="margin-left: 0.1rem; width: 2.5rem; height: 5.1rem; display: inline-block; vertical-align: top; ">
+                                      <div data-width="50" style="width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/13339028835553099/T1pDR4FnFhXXXXXXXX_!!0-item_pic.jpg); background-size: contain;"
+                                      id="a4197" class="">
+                                      </div>
+                                      <div data-width="50" style="margin-top: 0.1rem; width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1GJxEGXXXXXb8XVXXXXXXXXXX_!!0-item_pic.jpg); background-size: contain;"
+                                      id="a1668" class="">
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div data-width="152" style="background-color: rgba(0, 0, 0, 0.496094); margin-top: 3.9rem; width: 7.6rem; height: 1.2rem; position: absolute; "
+                                  class=" UIView">
+                                  </div>
+                                  <div data-width="152" style="font-size: 28px; color: rgb(255, 255, 255); margin-top: 3.9rem; margin-left: 0.4rem; width: 7.2rem; height: 1.2rem; line-height: 1.2rem; position: absolute; background-color: transparent;"
+                                  id="a8049">
+                                    优雅女鞋
+                                  </div>
+                                </div>
+                                <div data-width="160" style="margin-left: 0.1rem; width: 7.9rem; height: 5.1rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                                  <div data-width="152" style="width: 7.6rem; height: 5.1rem; white-space: nowrap; position: absolute; "
+                                  data-href="taobao://h5.m.taobao.com/app/eveday/www/goodshop.html?locate=goodshop-3&amp;spm=a215s.7406091.1.goodshop-3&amp;homepage_native=y#cat=6&amp;tag=0">
+                                    <div data-width="100" style="width: 5rem; height: 5.1rem; display: inline-block; vertical-align: top; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/14741024467343498/T14gyWXy4dXXXXXXXX_!!0-item_pic.jpg_q50.jpg); background-size: contain;"
+                                    id="a8205" class="">
+                                    </div>
+                                    <div data-width="52" style="margin-left: 0.1rem; width: 2.5rem; height: 5.1rem; display: inline-block; vertical-align: top; ">
+                                      <div data-width="50" style="width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/14741024406636920/T1dWNjFoRdXXXXXXXX_!!0-item_pic.jpg); background-size: contain;"
+                                      id="a2272" class="">
+                                      </div>
+                                      <div data-width="50" style="margin-top: 0.1rem; width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/14741036362372349/T18bX3Xs0XXXXXXXXX_!!0-item_pic.jpg); background-size: contain;"
+                                      id="a1775" class="">
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div data-width="152" style="background-color: rgba(0, 0, 0, 0.496094); margin-top: 3.9rem; width: 7.6rem; height: 1.2rem; position: absolute; "
+                                  class=" UIView">
+                                  </div>
+                                  <div data-width="152" style="font-size: 28px; color: rgb(255, 255, 255); margin-top: 3.9rem; margin-left: 0.4rem; width: 7.2rem; height: 1.2rem; line-height: 1.2rem; position: absolute; background-color: transparent;"
+                                  id="a9248">
+                                    童装童鞋
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                          <li class="card" style="position: absolute; top: 0px; left: 1280px; float: left;">
+                            <div style="position: relative;">
+                              <div data-width="320" style="width: 16rem; height: 5.1rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); white-space: nowrap; background-position: initial initial; background-repeat: initial initial; ">
+                                <div data-width="160" style="margin-left: 0.3rem; width: 7.7rem; height: 5.1rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                                  <div data-width="154" style="width: 7.7rem; height: 5.1rem; white-space: nowrap; position: absolute; "
+                                  data-href="taobao://h5.m.taobao.com/app/eveday/www/goodshop.html?locate=goodshop-4&amp;spm=a215s.7406091.1.goodshop-4&amp;homepage_native=y#cat=7&amp;tag=0">
+                                    <div data-width="100" style="width: 5rem; height: 5.1rem; display: inline-block; vertical-align: top; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1.FlHFVXXXXaFXVXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg); background-size: contain;"
+                                    id="a6573" class="">
+                                    </div>
+                                    <div data-width="52" style="margin-left: 0.1rem; width: 2.5rem; height: 5.1rem; display: inline-block; vertical-align: top; ">
+                                      <div data-width="50" style="width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/TB14fCkGXXXXXaFaXXXXXXXXXXX_!!0-item_pic.jpg); background-size: contain;"
+                                      id="a4197" class="">
+                                      </div>
+                                      <div data-width="50" style="margin-top: 0.1rem; width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/TB1LX4oGXXXXXarXFXXXXXXXXXX_!!0-item_pic.jpg); background-size: contain;"
+                                      id="a1668" class="">
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div data-width="152" style="background-color: rgba(0, 0, 0, 0.496094); margin-top: 3.9rem; width: 7.6rem; height: 1.2rem; position: absolute; "
+                                  class=" UIView">
+                                  </div>
+                                  <div data-width="152" style="font-size: 28px; color: rgb(255, 255, 255); margin-top: 3.9rem; margin-left: 0.4rem; width: 7.2rem; height: 1.2rem; line-height: 1.2rem; position: absolute; background-color: transparent;"
+                                  id="a8049">
+                                    好孕妈咪
+                                  </div>
+                                </div>
+                                <div data-width="160" style="margin-left: 0.1rem; width: 7.9rem; height: 5.1rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                                  <div data-width="152" style="width: 7.6rem; height: 5.1rem; white-space: nowrap; position: absolute; "
+                                  data-href="taobao://h5.m.taobao.com/app/eveday/www/goodshop.html?locate=goodshop-5&amp;spm=a215s.7406091.1.goodshop-5&amp;homepage_native=y#cat=2&amp;tag=0">
+                                    <div data-width="100" style="width: 5rem; height: 5.1rem; display: inline-block; vertical-align: top; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/TB1cdLxFVXXXXadXVXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg); background-size: contain;"
+                                    id="a8205" class="">
+                                    </div>
+                                    <div data-width="52" style="margin-left: 0.1rem; width: 2.5rem; height: 5.1rem; display: inline-block; vertical-align: top; ">
+                                      <div data-width="50" style="width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/TB1LHT6GpXXXXc9XVXXXXXXXXXX_!!0-item_pic.jpg); background-size: contain;"
+                                      id="a2272" class="">
+                                      </div>
+                                      <div data-width="50" style="margin-top: 0.1rem; width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/TB1.P_6GXXXXXXzXFXXXXXXXXXX_!!0-item_pic.jpg); background-size: contain;"
+                                      id="a1775" class="">
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div data-width="152" style="background-color: rgba(0, 0, 0, 0.496094); margin-top: 3.9rem; width: 7.6rem; height: 1.2rem; position: absolute; "
+                                  class=" UIView">
+                                  </div>
+                                  <div data-width="152" style="font-size: 28px; color: rgb(255, 255, 255); margin-top: 3.9rem; margin-left: 0.4rem; width: 7.2rem; height: 1.2rem; line-height: 1.2rem; position: absolute; background-color: transparent;"
+                                  id="a9248">
+                                    品质男装
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                          <li class="card" style="position: absolute; top: 0px; left: 1920px; float: left;">
+                            <div style="position: relative;">
+                              <div data-width="320" style="width: 16rem; height: 5.1rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); white-space: nowrap; background-position: initial initial; background-repeat: initial initial; ">
+                                <div data-width="160" style="margin-left: 0.3rem; width: 7.7rem; height: 5.1rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                                  <div data-width="154" style="width: 7.7rem; height: 5.1rem; white-space: nowrap; position: absolute; "
+                                  data-href="taobao://h5.m.taobao.com/app/eveday/www/goodshop.html?locate=goodshop-6&amp;spm=a215s.7406091.1.goodshop-6&amp;homepage_native=y#cat=4&amp;tag=0">
+                                    <div data-width="100" style="width: 5rem; height: 5.1rem; display: inline-block; vertical-align: top; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/TB1CknrGpXXXXXQXFXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg); background-size: contain;"
+                                    id="a6573" class="">
+                                    </div>
+                                    <div data-width="52" style="margin-left: 0.1rem; width: 2.5rem; height: 5.1rem; display: inline-block; vertical-align: top; ">
+                                      <div data-width="50" style="width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/TB1WOPnGpXXXXbuXXXXXXXXXXXX_!!0-item_pic.jpg); background-size: contain;"
+                                      id="a4197" class="">
+                                      </div>
+                                      <div data-width="50" style="margin-top: 0.1rem; width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/T1IidlFzVdXXXXXXXX_!!0-item_pic.jpg); background-size: contain;"
+                                      id="a1668" class="">
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div data-width="152" style="background-color: rgba(0, 0, 0, 0.496094); margin-top: 3.9rem; width: 7.6rem; height: 1.2rem; position: absolute; "
+                                  class=" UIView">
+                                  </div>
+                                  <div data-width="152" style="font-size: 28px; color: rgb(255, 255, 255); margin-top: 3.9rem; margin-left: 0.4rem; width: 7.2rem; height: 1.2rem; line-height: 1.2rem; position: absolute; background-color: transparent;"
+                                  id="a8049">
+                                    时尚男鞋
+                                  </div>
+                                </div>
+                                <div data-width="160" style="margin-left: 0.1rem; width: 7.9rem; height: 5.1rem; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: rgb(255, 255, 255); position: relative; display: inline-block; vertical-align: top; background-position: initial initial; background-repeat: initial initial; ">
+                                  <div data-width="152" style="width: 7.6rem; height: 5.1rem; white-space: nowrap; position: absolute; "
+                                  data-href="taobao://h5.m.taobao.com/app/eveday/www/goodshop.html?locate=goodshop-7&amp;spm=a215s.7406091.1.goodshop-7&amp;homepage_native=y#cat=5&amp;tag=0">
+                                    <div data-width="100" style="width: 5rem; height: 5.1rem; display: inline-block; vertical-align: top; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/T1tLtCFztuXXXXXXXX_!!0-item_pic.jpg_q50.jpg); background-size: contain;"
+                                    id="a8205" class="">
+                                    </div>
+                                    <div data-width="52" style="margin-left: 0.1rem; width: 2.5rem; height: 5.1rem; display: inline-block; vertical-align: top; ">
+                                      <div data-width="50" style="width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/T1gTLbXeFgXXaQTGE__105339.jpg); background-size: contain;"
+                                      id="a2272" class="">
+                                      </div>
+                                      <div data-width="50" style="margin-top: 0.1rem; width: 2.5rem; height: 2.5rem; background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/T1S21YXg4mXXaM6pZ2_043053.jpg); background-size: contain;"
+                                      id="a1775" class="">
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div data-width="152" style="background-color: rgba(0, 0, 0, 0.496094); margin-top: 3.9rem; width: 7.6rem; height: 1.2rem; position: absolute; "
+                                  class=" UIView">
+                                  </div>
+                                  <div data-width="152" style="font-size: 28px; color: rgb(255, 255, 255); margin-top: 3.9rem; margin-left: 0.4rem; width: 7.2rem; height: 1.2rem; line-height: 1.2rem; position: absolute; background-color: transparent;"
+                                  id="a9248">
+                                    人气箱包
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                        </ul>
+                        <div class="indicator" style="width: 16rem; height: 0.45rem; position: absolute; bottom: 0.2rem; text-align: center;">
+                          <div data-ctrl-name="indicator" data-ctrl-id="1418193796397-2" data-dir="horizontal">
+                            <span style="background-size: 0.4rem 0.8rem; background-position: 0px -0.4rem;"
+                            class="cur">
+                            </span>
+                            <span style="background-size: 0.4rem 0.8rem;background-position: 0 0;">
+                            </span>
+                            <span style="background-size: 0.4rem 0.8rem;background-position: 0 0;">
+                            </span>
+                            <span style="background-size: 0.4rem 0.8rem;background-position: 0 0;">
+                            </span>
+                            <b class="hide">
+                              1 / 4
+                            </b>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section data-group="2" style="height: 292.05rem;">
+            <div style="height: 3rem;">
+              <div class="item-top" style="width: 15.2rem; height: 2.2rem; margin-top: 0.4rem; margin-bottom: 0.4rem">
+                <span>
+                  猜你喜欢
+                </span>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i42477565652.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1JDivGpXXXXajaXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      【Uwowo】Love Live！小鸟婚纱 学园偶像...
+                    </div>
+                    <div class="price">
+                      ¥279.0
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i42477793284.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/TB11geGGpXXXXbSXVXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      【Uwowo】Love Live！海未婚纱 学园偶像...
+                    </div>
+                    <div class="price">
+                      ¥279.0
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i42528951976.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1W91BGVXXXXXKXFXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      2014冬装新款毛呢外套韩版中长款女装双排...
+                    </div>
+                    <div class="price">
+                      ¥84.15
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i41735231171.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/TB1PUj2GFXXXXapXXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      外贸原单 2014秋装新款女装 做旧风 磨白...
+                    </div>
+                    <div class="price">
+                      ¥39.99
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i39045161278.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/TB1EBI_FFXXXXcLXFXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      正品法国原装Pasha遮暇膏遮盖黑眼圈熊猫...
+                    </div>
+                    <div class="price">
+                      ¥9.90
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i42468230259.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/TB1wSnIGpXXXXc1XFXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      YUKI 日本CANMAKE唇部专用滋润 打底唇棒...
+                    </div>
+                    <div class="price">
+                      ¥49.0
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i24379584310.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/15706036095136280/T1DAiFXvxjXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      时尚海贼王潮拖夏季一字拖男韩版个性男士...
+                    </div>
+                    <div class="price">
+                      ¥25.0
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i39589845681.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1CIt4GFXXXXX9aXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      秋冬新款男女韩国N字男鞋低帮鞋男土休闲...
+                    </div>
+                    <div class="price">
+                      ¥68.0
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i10700339377.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/TB1E4icFVXXXXXOXpXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      包邮国货 护肤品 老牌 大宝洗面奶 洁面乳...
+                    </div>
+                    <div class="price">
+                      ¥13.5
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i41373469754.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/TB1hflpGXXXXXX6XXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      外贸原单尾货没剪标 秋冬 水洗破洞修身立...
+                    </div>
+                    <div class="price">
+                      ¥149.0
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i16328073892.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/TB1xuzNGXXXXXamXpXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      正品中老年冬季防寒保暖羽绒裤 高腰小脚...
+                    </div>
+                    <div class="price">
+                      ¥80.00
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i38283193534.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/T1Te7HFpBbXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      小米2a硅胶套 小米2a保护套 M2A手机壳 2...
+                    </div>
+                    <div class="price">
+                      ¥5.00
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i35410403385.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/15136029040460879/T1KX6kFXNhXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      三支包邮 曼秀雷敦天然植物润唇膏 无香料...
+                    </div>
+                    <div class="price">
+                      ¥19.60
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i40530268722.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1lXn1FVXXXXc3XFXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      男装/女装 针织布起居拖鞋(图案) 131557...
+                    </div>
+                    <div class="price">
+                      ¥79.0
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i38262857603.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/TB12XdSGVXXXXcpXVXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      2014韩国新款男女情侣家居拖鞋春秋四季室...
+                    </div>
+                    <div class="price">
+                      ¥9.90
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i36103704360.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/14582030538650283/T125Q3FhNeXXXXXXXX_!!2-item_pic.png);">
+                    </div>
+                    <div class="text">
+                      纤维包塑柄 羊角锤 榔头 锤子 精品钢锻打...
+                    </div>
+                    <div class="price">
+                      ¥16.00
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i36346785704.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/TB19hTYGFXXXXcOXXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      钻石秀钻粘画 最新滴水玫瑰娇艳欲滴钻石...
+                    </div>
+                    <div class="price">
+                      ¥6.00
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i25254484603.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/TB1Fm_xGVXXXXbgXXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      婚庆十字绣印花抱枕一对包邮桃心型新款喜...
+                    </div>
+                    <div class="price">
+                      ¥25.97
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i38225865977.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/T152ArFCJaXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      假人头模练习盘发模特假人头化妆练习头真...
+                    </div>
+                    <div class="price">
+                      ¥62.00
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i39076299403.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1Gwy5FVXXXXcyXXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      模特头真发假发教习头公仔头美发头模盘发...
+                    </div>
+                    <div class="price">
+                      ¥56.8
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i12464952521.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/T157ubXiByXXcU1pcY_024919.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      儿时回忆的手工麦芽糖 80后零食 纯正乡下...
+                    </div>
+                    <div class="price">
+                      ¥17.5
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i38612283725.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB18w_dGVXXXXXFXFXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      纯正手工麦芽糖 儿时糖果饴糖浆糖稀纯正...
+                    </div>
+                    <div class="price">
+                      ¥15.90
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i41186300694.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/T1ui05FuxXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      2014新款海宁兔毛皮草外套女短款 貉子毛...
+                    </div>
+                    <div class="price">
+                      ¥650.00
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i40572338645.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1Jv3nGFXXXXaqaXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      外单 新加坡小ck女包 蝴蝶结斜挎包信封链...
+                    </div>
+                    <div class="price">
+                      ¥95.0
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i41194831216.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB16W.hGXXXXXbhXXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      爱爱丸 冬装新款 精致小淑女蝴蝶结PU皮链...
+                    </div>
+                    <div class="price">
+                      ¥85.0
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i42263770119.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1QGvbGpXXXXcIaXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      买二送一个加厚大号钥匙扣可爱碳钢指甲剪...
+                    </div>
+                    <div class="price">
+                      ¥12.38
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i42157216880.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/T1KuB5FSRXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      【天天特价】碳钢美容套装8件美容套装指...
+                    </div>
+                    <div class="price">
+                      ¥11.00
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i42176251415.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/TB1zAPyGpXXXXckXFXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      官方授字大宝SOD蜜100ml青花香型 乳液面...
+                    </div>
+                    <div class="price">
+                      ¥12.50
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i7224767508.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/13750032008720473/T1G3A.Xg8cXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      进口韩国饰品PUCH Style百搭必备人造发丝...
+                    </div>
+                    <div class="price">
+                      ¥15.0
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i42666765202.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/TB1yTB4GVXXXXbRXFXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      纯手工 网面蕾丝波点大蝴蝶结 发箍头花发...
+                    </div>
+                    <div class="price">
+                      ¥29.0
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i16691001640.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/14890020120127731/T1oLIsXcJbXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      包邮 宠物用品 软皮宠物胸前包 宠物背包...
+                    </div>
+                    <div class="price">
+                      ¥30.80
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i42200937228.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/TB1eucDGXXXXXX7aXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      2014新款牛仔加绒打底裤外穿加厚牛仔裤女...
+                    </div>
+                    <div class="price">
+                      ¥78.21
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i38219689186.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/T10wkgFwNeXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      马代海滩必备 拍照罩衫 网格衫沙滩装 沙...
+                    </div>
+                    <div class="price">
+                      ¥66.64
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i18010678660.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/15084023794179562/T1HC8.XDhgXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      新款海边度假沙滩裤 古典花情侣裤 套装速...
+                    </div>
+                    <div class="price">
+                      ¥13.0
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i9006410069.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/TB1f7piFVXXXXaPXFXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      曼秀雷敦润唇膏 天然植物润唇膏 无香料佛...
+                    </div>
+                    <div class="price">
+                      ¥19.50
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i41461572921.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/TB1z5ljGpXXXXatXXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      折叠晾衣架晒被架X型伸缩晒衣架落地室内...
+                    </div>
+                    <div class="price">
+                      ¥30.00
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i7790621381.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/T1HNwPFilfXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      折叠晾衣架室内外带挂钩晒衣撑阳台晾晒架...
+                    </div>
+                    <div class="price">
+                      ¥30.40
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i42158077751.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i1/TB149GFGpXXXXcEXVXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      情侣装冬装2014新款连帽情侣棉衣韩版羊羔...
+                    </div>
+                    <div class="price">
+                      ¥159.00
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i39569112551.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/T1Y1puFApgXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      韩国正品 3CE 猪油膏25g 光滑肌肤打底霜...
+                    </div>
+                    <div class="price">
+                      ¥80.00
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i42541462076.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB13mqDGpXXXXcKaXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      安都韩版小脚裤女2014新款冬加绒休闲裤外...
+                    </div>
+                    <div class="price">
+                      ¥99.00
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i39687810526.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/TB1MjZ2FFXXXXbjXVXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      包邮春天韩版女生潮帽子 羊毛呢圆顶翻卷...
+                    </div>
+                    <div class="price">
+                      ¥18.80
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i20868783804.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i2/12343024060533441/T16Ay2XzNdXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      【包邮】2米长线入耳式电脑耳机耳麦 笔记...
+                    </div>
+                    <div class="price">
+                      ¥17.00
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i23085468247.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/TB18DzHFVXXXXXMXVXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      包邮运动长裤 男秋冬收口运动裤 男针织卫...
+                    </div>
+                    <div class="price">
+                      ¥65.00
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i42643184517.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1jC01GVXXXXXdXXXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      太阳镜 女士2014新款大框复古偏光镜 近视...
+                    </div>
+                    <div class="price">
+                      ¥118.00
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i38262482318.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i4/TB1NAyqFVXXXXb2XFXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      TOLLN男女透气一脚蹬懒人鞋平底布鞋韩版...
+                    </div>
+                    <div class="price">
+                      ¥30.05
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i37519610946.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1DC5SGVXXXXXtXpXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      14韩版秋冬女加绒加厚纯色全棉不起球弹力...
+                    </div>
+                    <div class="price">
+                      ¥29.00
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i41724924864.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1Kv9nGVXXXXa.XFXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      秋冬超厚打底裤外穿2014新七彩棉高腰加绒...
+                    </div>
+                    <div class="price">
+                      ¥13.72
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i19196890721.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1Y78BGFXXXXXhXpXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      专柜正品施蒂亮采净白粉底液45ml自然美白...
+                    </div>
+                    <div class="price">
+                      ¥16.80
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 11.4rem;">
+              <div class="item-line" style="width: 16rem; height: 11rem; margin-top: 0.4rem; ">
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i39544172994.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB1fGJSGXXXXXb.XVXXXXXXXXXX_!!2-item_pic.png);">
+                    </div>
+                    <div class="text">
+                      3支18元 正品包邮 口红唇彩笔唇膏滋润保...
+                    </div>
+                    <div class="price">
+                      ¥9.90
+                    </div>
+                  </a>
+                </div>
+                <div class="item-wrap">
+                  <a class="item" href="http://a.m.taobao.com/i41144536179.htm?locate=guessitem&amp;spm=a215s.7406091.1.guessitem&amp;scm=2027.6.0.0">
+                    <div class="pic" style="background-image: url(http://img02.taobaocdn.com/bao/uploaded/i3/TB189SRGFXXXXaLXpXXXXXXXXXX_!!0-item_pic.jpg_q50.jpg);">
+                    </div>
+                    <div class="text">
+                      红蜻蜓男鞋正品 2014新品春秋新款英伦商...
+                    </div>
+                    <div class="price">
+                      ¥168.00
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div style="height: 4.05rem;">
+              <div class="item-bottom" style="width:15.2rem; height: 2.25rem; margin-top: 0.9rem; margin-bottom: 0.9rem;"
+              data-href="taobao://m.taobao.com">
+                去手机淘宝看更多
+              </div>
+            </div>
+          </section>
+          <section data-group="3" style="height: 9.65rem;">
+            <div style="height: 9.65rem;">
+              <div id="bottom" style="width: 16rem; height: 9.65rem; display: block;">
+                <div class="buttons">
+                  <a class="text" href="http://h5.m.taobao.com/awp/mtb/mtb.htm?spm=0.0.0.0#!/awp/mtb/mtb.htm">
+                    yumei0115
+                  </a>
+                  <a href="http://login.m.taobao.com/logout.htm?tpl_redirect_url=http%3A%2F%2Fzx.wireless.m.taobao.com%2Fapp%2Fh5index%2Findex.html">
+                    退出
+                  </a>
+                  <a href="http://www.taobao.com/index.php?from=wap">
+                    电脑版
+                  </a>
+                  <a href="http://h5.m.taobao.com/other/feedback.html?alphatext=new_h5_index">
+                    用户反馈
+                  </a>
+                </div>
+                <div class="copyright">
+                  2014 浙 B2-20080224
+                  <a>
+                    服务中心
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+      <div class="top-fixed" style="z-index: 9; position: absolute; top: 0px; left: 0px; width: 100%; -webkit-transform: translateZ(9px);">
+        <header>
+          <div class="header-wrap">
+            <div id="search-placeholder" style="font-family:&quot;iconfont&quot;">
+            </div>
+          </div>
+        </header>
+      </div>
+      <div class="bottom-fxied" style="z-index: 9; position: absolute; bottom: 0px; left: 0px; width: 100%; -webkit-transform: translateZ(9px);">
+      </div>
+      <div class="force-repaint" style="position: absolute; top: 0px; left: 0px; width: 0px; height: 0px; font-size: 0px; opacity: 1;">
+      </div>
+      <div class="refresh" style="position: absolute; top: 98px; left: 0px; width: 100%; height: 120px; -webkit-transform: translateY(-14746px) translateZ(9px); display: none;">
+        <div data-ctrl-name="loading" data-ctrl-id="1418193796239-1">
+          <div>
+            <canvas width="0" height="0">
+            </canvas>
+            <span class="arrow down" style="display: block;">
+            </span>
+          </div>
+          <span class="text" style="display: block;">
+            下拉即可刷新...
+          </span>
+        </div>
+      </div>
+    </div>
+    <div style="position: absolute; width: 100%; height: 100%; top: 0px; left: 0px; display: none; -webkit-box-pack: center; -webkit-box-align: center; background-color: rgba(0, 0, 0, 0.298039);">
+      <div class="box" style="padding:0.5rem 1rem; background-color:#FFF; border-radius: 8px;">
+        <p style="padding: 0.5rem; text-align: center; font-size: 28px; line-height: 1.5em; color: #333;">
+        </p>
+        <div style="padding: 0.5rem; display: none;">
+          <a class="prime" style="display: inline-block; color: #FFF; font-size: 28px; margin-right: 0.5rem; background: #ff5000; padding: 0.25rem 0.5rem; border-radius: 8px;">
+            下载手机淘宝
+          </a>
+          <a class="secondary" style="display: inline-block; color: #FFF; font-size: 28px; background: #5f646e; padding: 0.25rem 0.5rem; border-radius: 8px;">
+            逛逛别的
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="build/combo.js"></script>
+<script src="build/scroll.debug.js"></script>
+<script>
+document.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+    return false;
+}, false);
+document.querySelector('.slide-banner').style.display = 'none';
+document.querySelector('.slide-pager').style.display = 'none';
+window.scroller = new lib.scroll({
+    useFrameAnimation: true,
+    scrollElement: document.querySelector('div[data-ctrl-name="pageview"]')
 }).init();
-
-// 顶部固定
-listScroller.enablePlugin('fixed', {
-    topElement: document.getElementById('headerTpl').innerHTML
-})
-
-// 懒加载
-listScroller.enablePlugin('lazyload', {
-    realTimeLoad: true
-});
-
-
-// 吸顶元素
-listScroller.enablePlugin('sticky');
-
-// 下拉刷新
-var refreshLoading = new ctrl.loading();
-refreshLoading.arrowDirection = 'down';
-refreshLoading.mode = 'draw';
-refreshLoading.text = '下拉即可刷新...';
-
-listScroller.enablePlugin('refresh', {
-    element: refreshLoading.element,    
-    height: 60,
-    onpull: function(top) {
-        refreshLoading.per = Math.round(top/60 * 100);
-    },
-    onrefresh: function(done) {
-        var that = this;
-        refreshLoading.text = '正在刷新...';
-        refreshLoading.mode = 'spin';
-        setTimeout(function() {
-            listUl.innerHTML = '';
-            listUl.appendChild(genItems());
-            done();
-            refreshLoading.text = '下拉即可刷新...';
-            refreshLoading.mode = 'draw';
-        }, 1000);
-    }
-});
-
-// 上拉加载更多
-var updateLoading = new ctrl.loading();
-updateLoading.arrowDirection = 'up';
-updateLoading.text = '上拉加载更多...';
-updateLoading.mode = 'draw';
-updateLoading.per = 100;
-
-listScroller.enablePlugin('update', {
-    element: updateLoading.element,
-    height: 40,
-    onupdate: function(done) {
-        var that = this;
-        updateLoading.text = '正在加载...';
-        updateLoading.mode = 'spin';
-        setTimeout(function() {
-            //that.disable();
-            listUl.appendChild(genItems());
-            //that.enable();
-            done();
-            updateLoading.text = '上拉加载更多...';
-            updateLoading.mode = 'draw';
-            updateLoading.per = 100;
-        }, 1000);
-    }
-});
-
-listScroller.addEventListener('niceclick', function(e) {
-    var target = e.target;
-    while (target && target !== this) {
-        var href;
-        if ((href = target.getAttribute('data-href'))) {
-            location.href = href;
-            break;
-        } else {
-            target = target.parentNode;
-        }
-    }
-});
-
-// 筛选的bar
-var tabheader = new ctrl.tabheader();
-document.querySelector('.filter-bar').appendChild(tabheader.root);
-tabheader.viewModel = [
-    {text: '默认'},
-    {text: '销量'},
-    {text: '价格'},
-    {text: '信用'},
-    {text: '相关'},
-    {text: '最近'}
-]
 </script>
 </body>
 </html>

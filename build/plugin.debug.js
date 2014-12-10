@@ -1,7 +1,10 @@
 ;(function(win, lib, undef) {
 var doc = win.document;
-var isIE = window.navigator.userAgent.match(/IEMobile\/([\d\.]+)/);
-var stylePrefix = isIE?'ms':'webkit';
+var ua = win.navigator.userAgent;
+var Firefox = !!ua.match(/Firefox/i);
+var IEMobile = !!ua.match(/IEMobile/i);
+var cssPrefix = Firefox?'-moz-':IEMobile?'-ms-':'-webkit-';
+var stylePrefix = Firefox?'Moz':IEMobile?'ms':'webkit';
 
 function getTransformOffset(element) {
     var offset = {x: 0, y: 0}; 
@@ -72,11 +75,11 @@ lib.scroll.plugin('fixed', function(name, pluginOptions) {
 
         var topFixedElement = this.topFixedElement = doc.createElement('div');
         topFixedElement.className = 'top-fixed';
-        topFixedElement.style.cssText = 'z-index:9; position: absolute; top: ' + topOffset + 'px; left: 0; width: 100%; -' + stylePrefix + '-transform: translateZ(9px);';
+        topFixedElement.style.cssText = 'z-index:9; position: absolute; top: ' + topOffset + 'px; left: 0; width: 100%; ' + cssPrefix + 'transform: translateZ(9px);';
 
         var bottomFixedElement = this.bottomFixedElement = doc.createElement('div');
         bottomFixedElement.className = 'bottom-fxied';
-        bottomFixedElement.style.cssText = 'z-index:9; position: absolute; bottom: ' + bottomOffset + 'px; left: 0; width: 100%; -' + stylePrefix + '-transform: translateZ(9px);';
+        bottomFixedElement.style.cssText = 'z-index:9; position: absolute; bottom: ' + bottomOffset + 'px; left: 0; width: 100%; ' + cssPrefix + 'transform: translateZ(9px);';
 
         if (pluginOptions.topElement) {
             setElement(pluginOptions.topElement, topFixedElement);
@@ -94,11 +97,11 @@ lib.scroll.plugin('fixed', function(name, pluginOptions) {
 
         var leftFixedElement = this.leftFixedElement = doc.createElement('div');
         leftFixedElement.className = 'left-fixed';
-        leftFixedElement.style.cssText = 'z-index:9; position: absolute; top: 0; left: ' + leftOffset + 'px; height: 100%; -' + stylePrefix + '-transform: translateZ(9px);';
+        leftFixedElement.style.cssText = 'z-index:9; position: absolute; top: 0; left: ' + leftOffset + 'px; height: 100%; ' + cssPrefix + 'transform: translateZ(9px);';
 
         var rightFixedElement = this.rightFixedElement = doc.createElement('div');
         rightFixedElement.className = 'right-fxied';
-        rightFixedElement.style.cssText = 'z-index:9; position: absolute; top: 0; right: ' + rightOffset + 'px; height: 100%; -' + stylePrefix + '-transform: translateZ(9px);';
+        rightFixedElement.style.cssText = 'z-index:9; position: absolute; top: 0; right: ' + rightOffset + 'px; height: 100%; ' + cssPrefix + 'transform: translateZ(9px);';
 
         if (pluginOptions.leftElement) {
             setElement(pluginOptions.leftElement, leftFixedElement);
@@ -240,7 +243,7 @@ lib.scroll.plugin('sticky', function(name, pluginOptions) {
     var top = (pluginOptions.offset || 0) + (scrollOptions.padding.top || 0);
     var stickyWrapElement = this.stickyWrapElement = doc.createElement('div');
     stickyWrapElement.className = 'stick-wrap';
-    stickyWrapElement.style.cssText = 'z-index:9; position: absolute; top: ' + top + 'px; left: 0; width: 100%; -' + stylePrefix + '-transform: translateZ(9px);';
+    stickyWrapElement.style.cssText = 'z-index:9; position: absolute; top: ' + top + 'px; left: 0; width: 100%; ' + cssPrefix + 'transform: translateZ(9px);';
     this.viewport.appendChild(stickyWrapElement)
 
     this.makeSticky = function(childEl){
@@ -302,7 +305,7 @@ lib.scroll.plugin('refresh', function(name, pluginOptions) {
         'left: 0',
         'width: 100%',
         'height: ' + pluginOptions.height + 'px',
-        '-' + stylePrefix + '-transform: translateY(-' + pluginOptions.height + 'px) translateZ(9px)'
+        cssPrefix + 'transform: translateY(-' + pluginOptions.height + 'px) translateZ(9px)'
     ].join(';');
     
     if (pluginOptions.html || typeof pluginOptions.element === 'string') {
@@ -405,7 +408,7 @@ lib.scroll.plugin('update', function(name, pluginOptions) {
         'left: 0',
         'width: 100%',
         'height: ' + pluginOptions.height + 'px',
-        '-' + stylePrefix + '-transform: translateY(' + (that.getMaxScrollTop() + pluginOptions.height) + 'px) translateZ(9px)'
+        cssPrefix + 'transform: translateY(' + (that.getMaxScrollTop() + pluginOptions.height) + 'px) translateZ(9px)'
     ].join(';');    
 
     if (typeof pluginOptions.element === 'string') {
