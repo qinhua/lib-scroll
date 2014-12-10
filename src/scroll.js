@@ -2,7 +2,7 @@
 var doc = win.document;
 var ua = win.navigator.userAgent;
 var scrollObjs = {};
-var plugins = {};
+//var plugins = {};
 var dpr = win.dpr || (!!win.navigator.userAgent.match(/iPhone|iPad|iPod/)?document.documentElement.clientWidth/win.screen.availWidth:1);
 var inertiaCoefficient = {
     'normal': [2 * dpr, 0.0015 * dpr],
@@ -133,6 +133,22 @@ function getTranslate(x, y) {
     }
 }
 
+function setTransitionStyle(scrollObj, duration, timingFunction) {
+    if (arguments.length === 1) {
+        scrollObj.element.style[stylePrefix + 'Transition'] = '';    
+    } else {
+        scrollObj.element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform ' + duration + ' ' + timingFunction + ' 0s';
+    }
+}
+
+function setTransformStyle(scrollObj, offset) {
+    if (scrollObj.axis === 'y') {
+        scrollObj.element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+    } else {
+        scrollObj.element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+    }
+}
+
 var panning = false;
 doc.addEventListener('touchmove', function(e){
     if (panning) {
@@ -192,7 +208,7 @@ function Scroll(element, options){
     that.axis = options.direction;
     this.element = element;
     this.viewport = element.parentNode;
-    this.plugins = {};
+    //this.plugins = {};
 
     this.viewport.addEventListener('touchstart', touchstartHandler, false);
     this.viewport.addEventListener('touchend', touchendHandler, false);
@@ -332,9 +348,9 @@ function Scroll(element, options){
             scrollAnimation && scrollAnimation.stop();
             scrollAnimation = null;
         } else {
-            var transform = getComputedStyle(element)[stylePrefix + 'Transform'];
-            element.style[stylePrefix + 'Transform'] = transform;
-            element.style[stylePrefix + 'Transition'] = '';
+            //var transform = getComputedStyle(element)[stylePrefix + 'Transform'];
+            element.style[stylePrefix + 'Transform'] = getComputedStyle(element)[stylePrefix + 'Transform'];
+            setTransitionStyle(that, '', '');
             transitionEndHandler = null;
             clearTimeout(transitionEndTimeoutId);
         }
@@ -362,26 +378,24 @@ function Scroll(element, options){
                 var _s = s1 - s0;
                 scrollAnimation = new lib.animation(400, lib.cubicbezier.ease, 0, function(i1, i2) {
                     var offset = (s0 + _s * i2).toFixed(2);
-                    if (that.axis === 'y') {
-                        element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                    } else {
-                        element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                    }
+                    setTransformStyle(that, offset);
                     fireEvent(that, 'scrolling');
                 });
                 scrollAnimation.onend(scrollEnd);
                 scrollAnimation.play();
             } else {
                 // css
-                element.style[stylePrefix + 'Transition'] =  cssPrefix + 'transform 0.4s ease 0s';
                 var offset =  s1.toFixed(0);
-                setTimeout(function(){
-                    if (that.axis === 'y') {
-                        element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                    } else {
-                        element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                    }
-                }, 0);
+                setTransitionStyle(that, '0.4s', 'ease');
+                setTransformStyle(that, offset);
+                // element.style[stylePrefix + 'Transition'] =  cssPrefix + 'transform 0.4s ease 0s';
+                // setTimeout(function(){
+                //     if (that.axis === 'y') {
+                //         element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+                //     } else {
+                //         element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+                //     }
+                // }, 0);
                 setTransitionEndHandler(scrollEnd, 400);
 
                 lib.animation.requestFrame(function() {
@@ -452,11 +466,12 @@ function Scroll(element, options){
             }
         }
 
-        if (that.axis === 'y') {
-            element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
-        } else {
-            element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
-        }
+        setTransformStyle(that, offset.toFixed(2));
+        // if (that.axis === 'y') {
+        //     element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
+        // } else {
+        //     element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
+        // }
         fireEvent(that, 'scrolling');
     }
 
@@ -547,15 +562,16 @@ function Scroll(element, options){
                             var _s = s1 - s0;
                             var bezier = lib.cubicbezier(timeFunction1[0][0], timeFunction1[0][1], timeFunction1[1][0], timeFunction1[1][1]);
                             scrollAnimation = new lib.animation(t1.toFixed(0), bezier, 0, function(i1, i2) {
+                                var offset = (s0 + _s * i2);
+                                getTransformOffset(that, offset.toFixed(2));
+                                // if (that.axis === 'y') {
+                                //     element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
+                                // } else {
+                                //     element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
+                                // }
                                 fireEvent(that, 'scrolling',{
                                     afterFlick: true
                                 });
-                                var offset = (s0 + _s * i2);
-                                if (that.axis === 'y') {
-                                    element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
-                                } else {
-                                    element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
-                                }
                             });
 
                             scrollAnimation.onend(scrollEnd);
@@ -563,15 +579,18 @@ function Scroll(element, options){
                             scrollAnimation.play();
                         } else {
                             // css
-                            element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform ' + (t1/1000).toFixed(2) + 's cubic-bezier(' + timeFunction1 + ') 0s';
                             var offset = s1.toFixed(0);
-                            setTimeout(function(){
-                                if (that.axis === 'y') {
-                                    element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                                } else {
-                                    element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                                }
-                            }, 0);
+                            setTransitionStyle(that, (t1/1000).toFixed(2) + 's', 'cubic-bezier(' + timeFunction1 + ')');
+                            setTransformStyle(that, offset);
+                            //element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform ' + (t1/1000).toFixed(2) + 's cubic-bezier(' + timeFunction1 + ') 0s';
+                            
+                            // setTimeout(function(){
+                            //     if (that.axis === 'y') {
+                            //         element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+                            //     } else {
+                            //         element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+                            //     }
+                            // }, 0);
                             setTransitionEndHandler(scrollEnd, (t1/1000).toFixed(2) * 1000);
                         }
                     } else {
@@ -584,15 +603,16 @@ function Scroll(element, options){
                         var _s = s2 - s0;
                         var bezier = lib.cubicbezier.easeOut;
                         scrollAnimation = new lib.animation((t1 + t2).toFixed(0), bezier, 0, function(i1, i2) {
+                            var offset = s0 + _s * i2;
+                            setTransformStyle(that, offset.toFixed(2));
+                            // if (that.axis === 'y') {
+                            //     element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
+                            // } else {
+                            //     element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
+                            // }
                             fireEvent(that, 'scrolling',{
                                 afterFlick: true
                             });
-                            var offset = s0 + _s * i2;
-                            if (that.axis === 'y') {
-                                element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
-                            } else {
-                                element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
-                            }
                         });
 
                         scrollAnimation.onend(function() {
@@ -603,15 +623,16 @@ function Scroll(element, options){
                             var _s = s1 - s2;
                             var bezier = lib.cubicbezier.ease;
                             scrollAnimation = new lib.animation(400, bezier, 0, function(i1, i2) {
+                                var offset = s2 + _s * i2;
+                                setTransformStyle(that, offset.toFixed(2));
+                                // if (that.axis === 'y') {
+                                //     element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
+                                // } else {
+                                //     element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
+                                // }
                                 fireEvent(that, 'scrolling',{
                                     afterFlick: true
                                 });
-                                var offset = s2 + _s * i2;
-                                if (that.axis === 'y') {
-                                    element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
-                                } else {
-                                    element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
-                                }
                             });
 
                             scrollAnimation.onend(scrollEnd);
@@ -621,15 +642,17 @@ function Scroll(element, options){
 
                         scrollAnimation.play();
                     } else {
-                        element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0s';                
                         var offset = s2.toFixed(0);
-                        setTimeout(function(){
-                            if (that.axis === 'y') {
-                                element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                            } else {
-                                element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                            }
-                        }, 0);
+                        setTransitionStyle(that, ((t1 + t2) / 1000).toFixed(2) + 's', 'ease-out');
+                        setTransformStyle(that, offset);
+                        // element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0s';                
+                        // setTimeout(function(){
+                        //     if (that.axis === 'y') {
+                        //         element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+                        //     } else {
+                        //         element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+                        //     }
+                        // }, 0);
 
                         setTransitionEndHandler(function(e) {
                             if (!that.enabled) {
@@ -639,15 +662,17 @@ function Scroll(element, options){
                             debugLog('惯性回弹', 's=' + s1.toFixed(0), 't=400');
 
                             if (s2 !== s1) {
-                                element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform 0.4s ease 0s';
                                 var offset = s1.toFixed(0);
-                                setTimeout(function(){
-                                    if (that.axis === 'y') {
-                                        element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                                    } else {
-                                        element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                                    }
-                                }, 0);
+                                setTransitionStyle(that, '0.4s', 'ease');
+                                setTransformStyle(that, offset);
+                                // element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform 0.4s ease 0s';
+                                // setTimeout(function(){
+                                //     if (that.axis === 'y') {
+                                //         element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+                                //     } else {
+                                //         element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+                                //     }
+                                // }, 0);
                                 setTransitionEndHandler(scrollEnd, 400);
                             } else {
                                 scrollEnd();
@@ -666,15 +691,16 @@ function Scroll(element, options){
                     var _s = s - s0;
                     var bezier = lib.cubicbezier(timeFunction[0][0], timeFunction[0][1], timeFunction[1][0], timeFunction[1][1]);
                     scrollAnimation = new lib.animation(t0.toFixed(0), bezier, 0, function(i1, i2) {
+                        var offset = (s0 + _s * i2).toFixed(2);
+                        setTransformStyle(that, offset);
+                        // if (that.axis === 'y') {
+                        //     element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+                        // } else {
+                        //     element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+                        // }
                         fireEvent(that, 'scrolling',{
                             afterFlick: true
                         });
-                        var offset = (s0 + _s * i2).toFixed(2);
-                        if (that.axis === 'y') {
-                            element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                        } else {
-                            element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                        }
                     });
 
                     scrollAnimation.onend(scrollEnd);
@@ -682,15 +708,17 @@ function Scroll(element, options){
                     scrollAnimation.play();
                 } else {
                     // css
-                    element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform ' + (t0 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction + ') 0s';
                     var offset = s.toFixed(0);
-                    setTimeout(function(){
-                        if (that.axis === 'y') {
-                            element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                        } else {
-                            element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                        }    
-                    }, 0);
+                    setTransitionStyle(that, (t0 / 1000).toFixed(2) + 's', 'cubic-bezier(' + timeFunction + ')');
+                    setTransformStyle(that, offset);
+                    // element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform ' + (t0 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction + ') 0s';                    
+                    // setTimeout(function(){
+                    //     if (that.axis === 'y') {
+                    //         element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+                    //     } else {
+                    //         element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+                    //     }    
+                    // }, 0);
                     setTransitionEndHandler(scrollEnd, (t0 / 1000).toFixed(2) * 1000);
                 }
             }
@@ -726,7 +754,8 @@ function Scroll(element, options){
                     scrollAnimation && scrollAnimation.stop();
                     scrollAnimation = null;
                 } else {
-                    element.style[stylePrefix + 'Transition'] = '';    
+                    setTransitionStyle(that, '', '');
+                    //element.style[stylePrefix + 'Transition'] = '';    
                 }
                 fireEvent(that, 'scrollend');
             }
@@ -791,7 +820,6 @@ function Scroll(element, options){
         },
 
         refresh: function() {
-            debugger;
             var el = this.element;
             var isVertical = (this.axis === 'y');
             var type = isVertical?'height':'width';
@@ -904,7 +932,7 @@ function Scroll(element, options){
         },
 
         isInView: function(childEl) {
-            var viewRect = getBoundingClientRect(this.viewport);
+            var viewRect = this.getRect(this.viewport);
             var childRect = this.getRect(childEl);
             if (this.axis === 'y') {
                 return viewRect.top < childRect.bottom && viewRect.bottom > childRect.top;
@@ -927,11 +955,12 @@ function Scroll(element, options){
                     var _s = offset - s0;
                     scrollAnimation = new lib.animation(400, lib.cubicbezier.ease, 0, function(i1, i2) {
                         var offset = (s0 + _s * i2).toFixed(2);
-                        if (that.axis === 'y') {
-                            element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                        } else {
-                            element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                        }
+                        setTransformStyle(that, offset);
+                        // if (that.axis === 'y') {
+                        //     element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+                        // } else {
+                        //     element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+                        // }
                         fireEvent(that, 'scrolling');
                     });
 
@@ -939,14 +968,16 @@ function Scroll(element, options){
 
                     scrollAnimation.play();
                 } else {
-                    element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform 0.4s ease 0s';
-                    setTimeout(function() {
-                        if (that.axis === 'y') {
-                            element.style[stylePrefix + 'Transform'] = getTranslate(getTransformOffset(that).x, offset);
-                        } else {
-                            element.style[stylePrefix + 'Transform'] = getTranslate(offset, getTransformOffset(that).y);
-                        }
-                    }, 0);
+                    setTransitionStyle(that, '0.4s', 'ease');
+                    setTransformStyle(that, offset);
+                    //element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform 0.4s ease 0s';
+                    // setTimeout(function() {
+                    //     if (that.axis === 'y') {
+                    //         element.style[stylePrefix + 'Transform'] = getTranslate(getTransformOffset(that).x, offset);
+                    //     } else {
+                    //         element.style[stylePrefix + 'Transform'] = getTranslate(offset, getTransformOffset(that).y);
+                    //     }
+                    // }, 0);
                     setTransitionEndHandler(scrollEnd, 400);
 
                     lib.animation.requestFrame(function() {
@@ -958,15 +989,15 @@ function Scroll(element, options){
                 }
             } else {
                 if (!this.options.useFrameAnimation) {
-                    element.style[stylePrefix + 'Transition'] = '';
+                    setTransitionStyle(that, '', '');
+                    // element.style[stylePrefix + 'Transition'] = '';
                 }
-                setTimeout(function() {
-                    if (that.axis === 'y') {
-                        element.style[stylePrefix + 'Transform'] = getTranslate(getTransformOffset(that).x, offset);
-                    } else {
-                        element.style[stylePrefix + 'Transform'] = getTranslate(offset, getTransformOffset(that).y);
-                    }
-                }, 0);
+                setTransformStyle(that, offset);
+                // if (that.axis === 'y') {
+                //     element.style[stylePrefix + 'Transform'] = getTranslate(getTransformOffset(that).x, offset);
+                // } else {
+                //     element.style[stylePrefix + 'Transform'] = getTranslate(offset, getTransformOffset(that).y);
+                // }
                 scrollEnd();
             }
 
@@ -1041,6 +1072,13 @@ function Scroll(element, options){
             return this;
         },
 
+        addContentrenfreshHandler: function(handler) {
+            var that = this;
+            this.element.addEventListener('contentrefresh', function(e){
+                handler.call(that, e);
+            }, false);
+        },
+
         addEventListener: function(name, handler, useCapture) {
             var that = this;
             this.element.addEventListener(name, function(e){
@@ -1053,17 +1091,17 @@ function Scroll(element, options){
             this.element.removeEventListener(name, function(e){
                 handler.call(that, e);
             });
-        },
-
-        enablePlugin: function(name, options) {
-            var plugin = plugins[name];
-            if (plugin && !this.plugins[name]) {
-                this.plugins[name] = true;
-                options = options || {};
-                plugin.call(this, name, options);
-            }
-            return this;
         }
+
+        // enablePlugin: function(name, options) {
+        //     var plugin = plugins[name];
+        //     if (plugin && !this.plugins[name]) {
+        //         this.plugins[name] = true;
+        //         options = options || {};
+        //         plugin.call(this, name, options);
+        //     }
+        //     return this;
+        // }
     }
 
     for (var k in proto) {
@@ -1100,15 +1138,15 @@ lib.scroll = function(el, options) {
     return scroll;
 }
 
-lib.scroll.plugin = function(name, constructor) {
-    if (constructor) {
-        name = name.split(',');
-        name.forEach(function(n) {
-            plugins[n] = constructor;
-        });
-    } else {
-        return plugins[name];
-    }
-}
+// lib.scroll.plugin = function(name, constructor) {
+//     if (constructor) {
+//         name = name.split(',');
+//         name.forEach(function(n) {
+//             plugins[n] = constructor;
+//         });
+//     } else {
+//         return plugins[name];
+//     }
+// }
 
 })(window, window['lib']||(window['lib']={}));
