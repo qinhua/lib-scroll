@@ -2,7 +2,7 @@
 var doc = win.document;
 var ua = win.navigator.userAgent;
 var scrollObjs = {};
-//var plugins = {};
+var plugins = {};
 var dpr = win.dpr || (!!win.navigator.userAgent.match(/iPhone|iPad|iPod/)?document.documentElement.clientWidth/win.screen.availWidth:1);
 var inertiaCoefficient = {
     'normal': [2 * dpr, 0.0015 * dpr],
@@ -208,7 +208,7 @@ function Scroll(element, options){
     that.axis = options.direction;
     this.element = element;
     this.viewport = element.parentNode;
-    //this.plugins = {};
+    this.plugins = {};
 
     this.viewport.addEventListener('touchstart', touchstartHandler, false);
     this.viewport.addEventListener('touchend', touchendHandler, false);
@@ -368,11 +368,7 @@ function Scroll(element, options){
         if (boundaryOffset) {   
             // 拖动超出边缘，需要回弹
             var s1 = touchBoundary(that, s0);
-            if (boundaryOffset > 0) {
-                fireEvent(that, that.axis === 'y'?'pulldownend':'pullrightend');
-            } else if (boundaryOffset < 0) {
-                fireEvent(that, that.axis === 'y'?'pullupend':'pullleftend');
-            }
+
             if (options.useFrameAnimation) {
                 // frame
                 var _s = s1 - s0;
@@ -388,14 +384,6 @@ function Scroll(element, options){
                 var offset =  s1.toFixed(0);
                 setTransitionStyle(that, '0.4s', 'ease');
                 setTransformStyle(that, offset);
-                // element.style[stylePrefix + 'Transition'] =  cssPrefix + 'transform 0.4s ease 0s';
-                // setTimeout(function(){
-                //     if (that.axis === 'y') {
-                //         element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                //     } else {
-                //         element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                //     }
-                // }, 0);
                 setTransitionEndHandler(scrollEnd, 400);
 
                 lib.animation.requestFrame(function() {
@@ -404,6 +392,12 @@ function Scroll(element, options){
                         lib.animation.requestFrame(arguments.callee);
                     }
                 });                
+            }
+
+            if (boundaryOffset > 0) {
+                fireEvent(that, that.axis === 'y'?'pulldownend':'pullrightend');
+            } else if (boundaryOffset < 0) {
+                fireEvent(that, that.axis === 'y'?'pullupend':'pullleftend');
             }
         } else if (isScrolling) {
             // 未超出边缘，直接结束
@@ -467,11 +461,6 @@ function Scroll(element, options){
         }
 
         setTransformStyle(that, offset.toFixed(2));
-        // if (that.axis === 'y') {
-        //     element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
-        // } else {
-        //     element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
-        // }
         fireEvent(that, 'scrolling');
     }
 
@@ -564,11 +553,6 @@ function Scroll(element, options){
                             scrollAnimation = new lib.animation(t1.toFixed(0), bezier, 0, function(i1, i2) {
                                 var offset = (s0 + _s * i2);
                                 getTransformOffset(that, offset.toFixed(2));
-                                // if (that.axis === 'y') {
-                                //     element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
-                                // } else {
-                                //     element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
-                                // }
                                 fireEvent(that, 'scrolling',{
                                     afterFlick: true
                                 });
@@ -582,15 +566,6 @@ function Scroll(element, options){
                             var offset = s1.toFixed(0);
                             setTransitionStyle(that, (t1/1000).toFixed(2) + 's', 'cubic-bezier(' + timeFunction1 + ')');
                             setTransformStyle(that, offset);
-                            //element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform ' + (t1/1000).toFixed(2) + 's cubic-bezier(' + timeFunction1 + ') 0s';
-                            
-                            // setTimeout(function(){
-                            //     if (that.axis === 'y') {
-                            //         element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                            //     } else {
-                            //         element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                            //     }
-                            // }, 0);
                             setTransitionEndHandler(scrollEnd, (t1/1000).toFixed(2) * 1000);
                         }
                     } else {
@@ -605,11 +580,6 @@ function Scroll(element, options){
                         scrollAnimation = new lib.animation((t1 + t2).toFixed(0), bezier, 0, function(i1, i2) {
                             var offset = s0 + _s * i2;
                             setTransformStyle(that, offset.toFixed(2));
-                            // if (that.axis === 'y') {
-                            //     element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
-                            // } else {
-                            //     element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
-                            // }
                             fireEvent(that, 'scrolling',{
                                 afterFlick: true
                             });
@@ -625,11 +595,6 @@ function Scroll(element, options){
                             scrollAnimation = new lib.animation(400, bezier, 0, function(i1, i2) {
                                 var offset = s2 + _s * i2;
                                 setTransformStyle(that, offset.toFixed(2));
-                                // if (that.axis === 'y') {
-                                //     element.style[stylePrefix + 'Transform'] = getTranslate(0, offset.toFixed(2));
-                                // } else {
-                                //     element.style[stylePrefix + 'Transform'] = getTranslate(offset.toFixed(2), 0);
-                                // }
                                 fireEvent(that, 'scrolling',{
                                     afterFlick: true
                                 });
@@ -645,14 +610,6 @@ function Scroll(element, options){
                         var offset = s2.toFixed(0);
                         setTransitionStyle(that, ((t1 + t2) / 1000).toFixed(2) + 's', 'ease-out');
                         setTransformStyle(that, offset);
-                        // element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform ' + ((t1 + t2) / 1000).toFixed(2) + 's ease-out 0s';                
-                        // setTimeout(function(){
-                        //     if (that.axis === 'y') {
-                        //         element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                        //     } else {
-                        //         element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                        //     }
-                        // }, 0);
 
                         setTransitionEndHandler(function(e) {
                             if (!that.enabled) {
@@ -665,14 +622,6 @@ function Scroll(element, options){
                                 var offset = s1.toFixed(0);
                                 setTransitionStyle(that, '0.4s', 'ease');
                                 setTransformStyle(that, offset);
-                                // element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform 0.4s ease 0s';
-                                // setTimeout(function(){
-                                //     if (that.axis === 'y') {
-                                //         element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                                //     } else {
-                                //         element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                                //     }
-                                // }, 0);
                                 setTransitionEndHandler(scrollEnd, 400);
                             } else {
                                 scrollEnd();
@@ -693,11 +642,6 @@ function Scroll(element, options){
                     scrollAnimation = new lib.animation(t0.toFixed(0), bezier, 0, function(i1, i2) {
                         var offset = (s0 + _s * i2).toFixed(2);
                         setTransformStyle(that, offset);
-                        // if (that.axis === 'y') {
-                        //     element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                        // } else {
-                        //     element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                        // }
                         fireEvent(that, 'scrolling',{
                             afterFlick: true
                         });
@@ -711,14 +655,6 @@ function Scroll(element, options){
                     var offset = s.toFixed(0);
                     setTransitionStyle(that, (t0 / 1000).toFixed(2) + 's', 'cubic-bezier(' + timeFunction + ')');
                     setTransformStyle(that, offset);
-                    // element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform ' + (t0 / 1000).toFixed(2) + 's cubic-bezier(' + timeFunction + ') 0s';                    
-                    // setTimeout(function(){
-                    //     if (that.axis === 'y') {
-                    //         element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                    //     } else {
-                    //         element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                    //     }    
-                    // }, 0);
                     setTransitionEndHandler(scrollEnd, (t0 / 1000).toFixed(2) * 1000);
                 }
             }
@@ -754,8 +690,7 @@ function Scroll(element, options){
                     scrollAnimation && scrollAnimation.stop();
                     scrollAnimation = null;
                 } else {
-                    setTransitionStyle(that, '', '');
-                    //element.style[stylePrefix + 'Transition'] = '';    
+                    setTransitionStyle(that, '', ''); 
                 }
                 fireEvent(that, 'scrollend');
             }
@@ -956,11 +891,6 @@ function Scroll(element, options){
                     scrollAnimation = new lib.animation(400, lib.cubicbezier.ease, 0, function(i1, i2) {
                         var offset = (s0 + _s * i2).toFixed(2);
                         setTransformStyle(that, offset);
-                        // if (that.axis === 'y') {
-                        //     element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
-                        // } else {
-                        //     element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
-                        // }
                         fireEvent(that, 'scrolling');
                     });
 
@@ -970,14 +900,6 @@ function Scroll(element, options){
                 } else {
                     setTransitionStyle(that, '0.4s', 'ease');
                     setTransformStyle(that, offset);
-                    //element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform 0.4s ease 0s';
-                    // setTimeout(function() {
-                    //     if (that.axis === 'y') {
-                    //         element.style[stylePrefix + 'Transform'] = getTranslate(getTransformOffset(that).x, offset);
-                    //     } else {
-                    //         element.style[stylePrefix + 'Transform'] = getTranslate(offset, getTransformOffset(that).y);
-                    //     }
-                    // }, 0);
                     setTransitionEndHandler(scrollEnd, 400);
 
                     lib.animation.requestFrame(function() {
@@ -990,14 +912,8 @@ function Scroll(element, options){
             } else {
                 if (!this.options.useFrameAnimation) {
                     setTransitionStyle(that, '', '');
-                    // element.style[stylePrefix + 'Transition'] = '';
                 }
                 setTransformStyle(that, offset);
-                // if (that.axis === 'y') {
-                //     element.style[stylePrefix + 'Transform'] = getTranslate(getTransformOffset(that).x, offset);
-                // } else {
-                //     element.style[stylePrefix + 'Transform'] = getTranslate(offset, getTransformOffset(that).y);
-                // }
                 scrollEnd();
             }
 
@@ -1024,6 +940,7 @@ function Scroll(element, options){
                 that.disable();
                 handler.call(that, e, function() {
                     that.scrollTo(0, true);
+                    that.refresh();
                     that.enable();
                 });
             }, false);
@@ -1038,6 +955,7 @@ function Scroll(element, options){
                 that.disable();
                 handler.call(that, e, function() {
                     that.scrollTo(that.getScrollHeight(), true);
+                    that.refresh();
                     that.enable();
                 });
             }, false);
@@ -1091,17 +1009,17 @@ function Scroll(element, options){
             this.element.removeEventListener(name, function(e){
                 handler.call(that, e);
             });
-        }
+        },
 
-        // enablePlugin: function(name, options) {
-        //     var plugin = plugins[name];
-        //     if (plugin && !this.plugins[name]) {
-        //         this.plugins[name] = true;
-        //         options = options || {};
-        //         plugin.call(this, name, options);
-        //     }
-        //     return this;
-        // }
+        enablePlugin: function(name, options) {
+            var plugin = plugins[name];
+            if (plugin && !this.plugins[name]) {
+                this.plugins[name] = true;
+                options = options || {};
+                plugin.call(this, name, options);
+            }
+            return this;
+        }
     }
 
     for (var k in proto) {
@@ -1138,15 +1056,15 @@ lib.scroll = function(el, options) {
     return scroll;
 }
 
-// lib.scroll.plugin = function(name, constructor) {
-//     if (constructor) {
-//         name = name.split(',');
-//         name.forEach(function(n) {
-//             plugins[n] = constructor;
-//         });
-//     } else {
-//         return plugins[name];
-//     }
-// }
+lib.scroll.plugin = function(name, constructor) {
+    if (constructor) {
+        name = name.split(',');
+        name.forEach(function(n) {
+            plugins[n] = constructor;
+        });
+    } else {
+        return plugins[name];
+    }
+}
 
 })(window, window['lib']||(window['lib']={}));
