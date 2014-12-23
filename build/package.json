@@ -34,7 +34,7 @@
     "lib.motion": "1.0.5",
     "lib.gesture": "1.1.11",
     "lib.cubicbezier": "1.0.0",
-    "lib.animation": "2.0.4"
+    "lib.animation": "2.0.5"
   },
   "keywords": [
     "lib",
