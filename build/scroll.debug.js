@@ -113,7 +113,8 @@ function getTransformOffset(scrollObj) {
     return offset;
 }
 
-var has3d = 'WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix();
+var CSSMatrix = IEMobile?'MSCSSMatrix':'WebKitCSSMatrix';
+var has3d = !!Firefox || CSSMatrix in win && 'm11' in new win[CSSMatrix]();
 function getTranslate(x, y) {
     x = parseFloat(x);
     y = parseFloat(y);
