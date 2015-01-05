@@ -348,8 +348,8 @@ function Scroll(element, options){
             scrollAnimation && scrollAnimation.stop();
             scrollAnimation = null;
         } else {
-            //var transform = getComputedStyle(element)[stylePrefix + 'Transform'];
-            element.style[stylePrefix + 'Transform'] = getComputedStyle(element)[stylePrefix + 'Transform'];
+            var offset = getTransformOffset(that);
+            setTransformStyle(that, offset);
             setTransitionStyle(that, '', '');
             transitionEndHandler = null;
             clearTimeout(transitionEndTimeoutId);

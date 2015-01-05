@@ -1792,7 +1792,7 @@ document.addEventListener('touchmove', function(e) {
 document.querySelector('.slide-banner').style.display = 'none';
 document.querySelector('.slide-pager').style.display = 'none';
 window.scroller = new lib.scroll({
-    // useFrameAnimation: true,
+    useFrameAnimation: true,
     scrollElement: document.querySelector('div[data-ctrl-name="pageview"]')
 }).init();
 </script>
