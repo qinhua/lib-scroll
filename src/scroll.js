@@ -50,7 +50,7 @@ function getBoundingClientRect(el) {
 }
 
 function getMinScrollOffset(scrollObj) {
-    return 0 - scrollObj.options[scrollObj.axis + 'Padding1'];
+    return 0 - scrollObj.options[scrollObj.axis + 'PaddingTop'];
 }
 
 function getMaxScrollOffset(scrollObj) {
@@ -62,7 +62,7 @@ function getMaxScrollOffset(scrollObj) {
     } else {
         var max = 0 - rect.width + pRect.width;
     }
-    return Math.min(max + scrollObj.options[scrollObj.axis + 'Padding2'], min);
+    return Math.min(max + scrollObj.options[scrollObj.axis + 'PaddingBottom'], min);
 }
 
 function getBoundaryOffset(scrollObj, offset) {
@@ -135,7 +135,7 @@ function getTranslate(x, y) {
 }
 
 function setTransitionStyle(scrollObj, duration, timingFunction) {
-    if (arguments.length === 1) {
+    if (duration === '' && timingFunction === '') {
         scrollObj.element.style[stylePrefix + 'Transition'] = '';    
     } else {
         scrollObj.element.style[stylePrefix + 'Transition'] = cssPrefix + 'transform ' + duration + ' ' + timingFunction + ' 0s';
@@ -143,11 +143,18 @@ function setTransitionStyle(scrollObj, duration, timingFunction) {
 }
 
 function setTransformStyle(scrollObj, offset) {
-    if (scrollObj.axis === 'y') {
-        scrollObj.element.style[stylePrefix + 'Transform'] = getTranslate(0, offset);
+    var x = 0, y = 0;
+    if (typeof offset === 'object') {
+        x = offset.x;
+        y = offset.y;
     } else {
-        scrollObj.element.style[stylePrefix + 'Transform'] = getTranslate(offset, 0);
+        if (scrollObj.axis === 'y') {
+            y = offset;
+        } else {
+            x = offset;
+        }
     }
+    scrollObj.element.style[stylePrefix + 'Transform'] = getTranslate(x, y);
 }
 
 var panning = false;
@@ -179,27 +186,15 @@ function Scroll(element, options){
     }
 
     if (options.padding) {
-        options.yPadding1 = -options.padding.top || 0;
-        options.yPadding2 = -options.padding.bottom || 0;
-        options.xPadding1 = -options.padding.left || 0;
-        options.xPadding2 = -options.padding.right || 0;
+        options.yPaddingTop = -options.padding.top || 0;
+        options.yPaddingBottom = -options.padding.bottom || 0;
+        options.xPaddingTop = -options.padding.left || 0;
+        options.xPaddingBottom = -options.padding.right || 0;
     } else {
-        options.yPadding1 = 0;
-        options.yPadding2 = 0;
-        options.xPadding1 = 0;
-        options.xPadding2 = 0;
-    }
-
-    if (options.margin) {
-        options.yMargin1 = -options.margin.top || 0;
-        options.yMargin2 = -options.margin.bottom || 0;
-        options.xMargin1 = -options.margin.left || 0;
-        options.xMargin2 = -options.margin.right || 0;
-    } else {
-        options.yMargin1 = 0;
-        options.yMargin2 = 0;
-        options.xMargin1 = 0;
-        options.xMargin2 = 0;
+        options.yPaddingTop = 0;
+        options.yPaddingBottom = 0;
+        options.xPaddingTop = 0;
+        options.xPaddingBottom = 0;
     }
 
     options.direction = options.direction || 'y';
@@ -211,16 +206,16 @@ function Scroll(element, options){
     this.viewport = element.parentNode;
     this.plugins = {};
 
+    this.element.scrollId = setTimeout(function(){
+        scrollObjs[that.element.scrollId + ''] = that;
+    }, 1);
+
     this.viewport.addEventListener('touchstart', touchstartHandler, false);
     this.viewport.addEventListener('touchend', touchendHandler, false);
     this.viewport.addEventListener('touchcancel', touchendHandler, false);
     this.viewport.addEventListener('panstart', panstartHandler, false);
     this.viewport.addEventListener('pan', panHandler, false);
     this.viewport.addEventListener('panend', panendHandler, false);
-
-    this.element.scrollId = setTimeout(function(){
-        scrollObjs[that.element.scrollId + ''] = that;
-    }, 1);
 
     if (options.isPrevent) {
         this.viewport.addEventListener('touchstart', function(e) {
@@ -230,6 +225,16 @@ function Scroll(element, options){
             panning = false;
         }, false);
     }
+
+    // if (options.isPrevent) { 
+    //     var d = this.axis === 'y'?'vertical':'horizontal'; 
+    //     this.viewport.addEventListener(d + 'panstart', function(e) { 
+    //         panning = true; 
+    //     }, false); 
+    //     that.viewport.addEventListener('panend', function(e){
+    //         panning = false; 
+    //     }, false); 
+    // }
 
     if (options.isFixScrollendClick) {
         var preventScrollendClick;
@@ -349,8 +354,8 @@ function Scroll(element, options){
             scrollAnimation && scrollAnimation.stop();
             scrollAnimation = null;
         } else {
-            var offset = getTransformOffset(that);
-            setTransformStyle(that, offset);
+            var transform = getTransformOffset(that);
+            setTransformStyle(that, transform);
             setTransitionStyle(that, '', '');
             transitionEndHandler = null;
             clearTimeout(transitionEndTimeoutId);
@@ -691,13 +696,12 @@ function Scroll(element, options){
                     scrollAnimation && scrollAnimation.stop();
                     scrollAnimation = null;
                 } else {
-                    setTransitionStyle(that, '', ''); 
+                    setTransitionStyle(that, '', '');
                 }
                 fireEvent(that, 'scrollend');
             }
         }, 50);
     }
-
 
     var proto = {
         init: function() {
@@ -736,19 +740,19 @@ function Scroll(element, options){
         },
 
         getScrollLeft: function() {
-            return -getTransformOffset(this).x - this.options.xPadding1;
+            return -getTransformOffset(this).x - this.options.xPaddingTop;
         },
 
         getScrollTop: function() {
-            return -getTransformOffset(this).y - this.options.yPadding1;
+            return -getTransformOffset(this).y - this.options.yPaddingTop;
         },
 
         getMaxScrollLeft: function() {
-            return -that.maxScrollOffset - this.options.xPadding1;
+            return -that.maxScrollOffset - this.options.xPaddingTop;
         },
 
         getMaxScrollTop: function() {
-            return -that.maxScrollOffset - this.options.yPadding1;
+            return -that.maxScrollOffset - this.options.yPaddingTop;
         },
 
         getBoundaryOffset: function() {
@@ -807,7 +811,7 @@ function Scroll(element, options){
             this.transformOffset = getTransformOffset(this);
             this.minScrollOffset = getMinScrollOffset(this);
             this.maxScrollOffset = getMaxScrollOffset(this);
-            this.scrollTo(-this.transformOffset[this.axis] - this.options[this.axis + 'Padding1']);
+            this.scrollTo(-this.transformOffset[this.axis] - this.options[this.axis + 'PaddingTop']);
             fireEvent(this, 'contentrefresh');
 
             return this;
@@ -818,7 +822,7 @@ function Scroll(element, options){
             var childRect = getBoundingClientRect(childEl);
             if (this.axis === 'y') {
                 var offsetRect = {
-                        top: childRect.top - elRect.top - this.options.yPadding1,
+                        top: childRect.top - elRect.top - this.options.yPaddingTop,
                         left: childRect.left - elRect.left,
                         right: elRect.right - childRect.right,
                         width: childRect.width,
@@ -830,7 +834,7 @@ function Scroll(element, options){
                 var offsetRect = {
                         top: childRect.top - elRect.top,
                         bottom: elRect.bottom - childRect.bottom,
-                        left: childRect.left - elRect.left - this.options.xPadding1,
+                        left: childRect.left - elRect.left - this.options.xPaddingTop,
                         width: childRect.width,
                         height: childRect.height
                     };
@@ -881,7 +885,7 @@ function Scroll(element, options){
             var that = this;
             var element = this.element;
 
-            offset = -offset - this.options[this.axis + 'Padding1'];
+            offset = -offset - this.options[this.axis + 'PaddingTop'];
             offset = touchBoundary(this, offset);
 
             isScrolling = true;
@@ -1049,10 +1053,14 @@ lib.scroll = function(el, options) {
     }
 
     var scroll;
-    if (el.scrollId) {
-        scroll = scrollObjs[el.scrollId];
+    if (options.downgrade === true && lib.scroll.downgrade) {
+        scroll = lib.scroll.downgrade(el, options);
     } else {
-        scroll = new Scroll(el, options);
+        if (el.scrollId) {
+            scroll = scrollObjs[el.scrollId];
+        } else {
+            scroll = new Scroll(el, options);
+        }
     }
     return scroll;
 }

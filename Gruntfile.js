@@ -31,9 +31,9 @@ module.exports = function(grunt) {
                 dest: '<%= distPath %>/<%= name %>.debug.js'
             },
 
-            plugin: {
-                src: ['<%= srcPath %>/plugin.js'],
-                dest: '<%= distPath %>/plugin.debug.js'
+            downgrade: {
+                src: ['<%= srcPath %>/downgrade.js'],
+                dest: '<%= distPath %>/downgrade.debug.js'
             }
         },
 

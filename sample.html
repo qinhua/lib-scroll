@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+<style>
+    html,body {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    #scroll-wrap {
+        width:100%;
+        height:100%;
+        overflow:hidden;
+        background-color:#CCC;
+    }
+
+    #scroll-content {
+        width:100%;
+        background: -webkit-linear-gradient(top, red, orange, yellow, green, cyan, blue, purple);
+    }
+
+    #scroll-content > div {
+        height: 2000px;
+    }
+</style>
+</head>
+<body>
+<div id="scroll-wrap" style="">
+    <div id="scroll-content">
+        <div></div>
+    </div>
+</div>
+
+<script src="build/combo.js"></script>
+<script src="build/scroll.debug.js"></script>
+<script src="build/downgrade.debug.js"></script>
+<script>
+    var scroll = lib.scroll({
+        downgrade: false,
+        useFrameAnimation: false,
+        scrollWrap: document.getElementById('scroll-wrap')
+    });
+    scroll.init();
+</script>
+</body>

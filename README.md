@@ -2,7 +2,7 @@
 
 ## 最新版本
 
-**2.5.2**
+**2.6.0**
 
 ## 依赖库
 
@@ -21,12 +21,10 @@
 
 运行 `grunt`，来对项目进行打包。关于Grunt的知识，请参见[gruntjs](http://gruntjs.com/);
 
-## 如何使用
+## 初始化
 
 	var Scroll = lib.scroll;
-    var scroller = new Scroll({
-        scrollElement: someElement
-    });
+    var scroller = new Scroll(options);
     scroller.init();
 
 ### 参数
@@ -71,126 +69,72 @@
 
 ![Scroll图示](http://gtms04.alicdn.com/tps/i4/TB1rRumFVXXXXX_XVXXzVfsGpXX-700-654.jpg)
 
+### 代码示例
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <style>
+        html,body {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #scroll-wrap {
+            width:100%;
+            height:100%;
+            overflow:hidden;
+            background-color:#CCC;
+        }
+
+        #scroll-content {
+            width:100%;
+            background: -webkit-linear-gradient(top, red, orange, yellow, green, cyan, blue, purple);
+        }
+
+        #scroll-content > div {
+            height: 2000px;
+        }
+    </style>
+    </head>
+    <body>
+    <div id="scroll-wrap">
+        <div id="scroll-content">
+            <div></div>
+        </div>
+    </div>
+
+    <script src="http://g.tbcdn.cn/mtb/lib-scroll/{{version}}/??combo.js,scroll.js"></script>
+    <script>
+        var scroll = lib.scroll({
+            scrollWrap: document.getElementById('scroll-wrap')
+        });
+        scroll.init();
+    </script>
+    </body>
+
 ## 使用插件
 
-需额外引入一个js：
+**注意：从2.6.0版本开始，lib.scroll不再提供插件机制，如需使用原来插件的功能可选择[ctrl.scrollview](http://gitlab.alibaba-inc.com/mtb/ctrl-scrollview/tree/master)**
 
-    <script src="http://g.tbcdn.cn/mtb/lib-scroll/{{version}}/plugin.js"></script>
+## 降级
 
-### 滚动时强制重绘
+用原生的滚动。并保留部分API的行为。
 
-在有些机型上，在transform动画时会阻塞UI，所以需要进行强制重绘。
+引入`http://g.tbcdn.cn/mtb/lib-scroll/{{version}}/downgrade.js`。并在初始化时增加`downgrade`参数。
 
-	scroller.enablePlugin('force-repaint');
-
-### 贴边固定元素
-
-![图示](http://gtms01.alicdn.com/tps/i1/TB17UCqFVXXXXcbXFXXRNQOKpXX-1036-254.png)
-
-贴边固定元素可位于顶部/底部（只适用于Y轴滚动），左边/右边（只适用于X轴滚动）
-
-	scroller.enablePlugin('fixed', {
-		topOffset: 0, //默认为0，可省略
-		topElement: '<h2>标题xxxxx</h2>'  // 顶部的元素，可以是HTML片段也可以是HTML元素
-	});
-
-除了topOffset/topElement的参数，另外还有bottomOffset/bottomElement，leftOffset/leftElement，rightOffset/rightElement。
-
-启用这个插件后，scroller会增加如下方法/属性：
-
-**topFixedElement** 
-
-topElement的父元素
-
-**bottomFixedElement** 
-
-bottomElement的父元素
-
-**leftFixedElement** 
-
-leftElement的父元素
-
-**rightFixedElement** 
-
-rightElement的父元素
-
-### 懒加载
-
-懒加载的触发条件是元素有`lazy`的类名，并且该元素是img标签或其子元素有img标签，且img标签的图片用`data-src`属性标识。
-
-	scroller.enablePlugin('lazyload', {
-	    realTimeLoad: false // 是否在滚动时进行懒加载，默认为false
-	});
-
-启用这个插件后，scroller会增加如下方法/属性：
-
-**checkLazyload()**
-
-执行懒加载
-
-### 元素吸顶
-
-![图示](http://gtms02.alicdn.com/tps/i2/TB1MHSqFVXXXXXXXVXX0vNdTFXX-1057-289.png)
-
-吸顶的触发条件是元素有`sticky`的类名，并且该元素的父元素是个固定高度的元素（也就是原始位置需要有个占位符）。
-	
-	scroller.enablePlugin('sticky'， {
-		offset: 0, //元素距离顶部的偏移，默认为0，可为负数
-	});
-
-启用这个插件后，scroller会增加如下方法/属性：
-
-**checkSticky()**
-
-执行元素吸顶。
-
-**makeSticky(element)**
-
-让某个元素拥有吸顶功能。
-
-### 下拉刷新
-
-![图示](http://gtms03.alicdn.com/tps/i3/TB1wQ9rFVXXXXbAXFXX25K14XXX-1079-229.png)
-
-	scroller.enablePlugin('refresh', {
-		element: '<div>下拉刷新</div>' //可以是HTML片段也可以是HTML元素
-		height: 20, // 元素的高度，默认为0
-		offset: 0,  // 元素距离顶部的偏移，默认为0，可为负数
-		onrefresh： function(done) {
-			// 上下文是当前的scroller对象
-			// 触发刷新动作时的回调
-			// 自行做刷新的渲染
-			// 完成后运行done方法
-			done();
-        }
-	});
-
-启用这个插件后，scroller会增加如下方法/属性：
-
-**refreshElement**
-
-element的父元素
-
-### 上拉加载更多
-
-	scroller.enablePlugin('update', {
-		element: '<div>加载更多</div>' //可以是HTML片段也可以是HTML元素
-		height: 20, // 元素的高度，默认为0
-		offset: 0,  // 元素距离顶部的偏移，默认为0，可为负数
-		onupdate： function(done) {
-			// 上下文是当前的scroller对象
-			// 触发加载动作时的回调
-			// 自行做加载的渲染
-			// 完成后运行done方法
-			done();
-        }
-	});
-
-启用这个插件后，scroller会增加如下方法/属性：
-
-**updateElement**
-
-element的父元素
+    <script src="http://g.tbcdn.cn/mtb/lib-scroll/{{version}}/??combo.js,scroll.js,downgrade.js"></script>
+    <script>
+        var scroll = lib.scroll({
+			downgrade: true,
+            scrollWrap: document.getElementById('scroll-wrap')
+        });
+        scroll.init();
+    </script
 
 ## API使用
 
